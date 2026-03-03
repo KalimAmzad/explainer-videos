@@ -1,0 +1,1764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Large Language Models from Scratch — Whiteboard Explainer</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@400;700&family=Caveat:wght@400;700&family=Patrick+Hand&family=Permanent+Marker&display=swap');
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: #111;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-height: 100vh; overflow: hidden;
+}
+.wrap {
+  width: 100vw; max-width: 1280px;
+  aspect-ratio: 16/9; position: relative;
+  border-radius: 6px; overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,.6);
+}
+#board { width: 100%; height: 100%; display: block; }
+.scene { opacity: 0; }
+#controls {
+  margin-top: 10px; display: flex; gap: 10px; align-items: center;
+}
+#controls button {
+  padding: 7px 18px; background: #2b7ec2; color: #fff;
+  border: none; border-radius: 5px; font-size: 13px; cursor: pointer;
+  transition: background 0.2s;
+}
+#controls button:hover { background: #1e5fa0; }
+#timeDisp { color: #888; font: 13px/1 monospace; min-width: 90px; }
+#seekBar { width: 300px; cursor: pointer; accent-color: #2b7ec2; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<svg id="board" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2=".04" y2="1">
+    <stop offset="0%" stop-color="#f5f3ef"/>
+    <stop offset="100%" stop-color="#edeae4"/>
+  </linearGradient>
+
+  <!-- ═══ SCENE 1: Title ═══ -->
+  <clipPath id="cp_s1_title"><rect id="cr_s1_title" x="100" y="240" width="0" height="80"/></clipPath>
+  <clipPath id="cp_s1_sub"><rect id="cr_s1_sub" x="200" y="320" width="0" height="60"/></clipPath>
+  <clipPath id="cp_s1_tag"><rect id="cr_s1_tag" x="200" y="400" width="0" height="50"/></clipPath>
+
+  <!-- ═══ SCENE 2: Language Model ═══ -->
+  <clipPath id="cp_s2_title"><rect id="cr_s2_title" x="50" y="35" width="0" height="55"/></clipPath>
+  <clipPath id="cp_s2_def"><rect id="cr_s2_def" x="50" y="100" width="0" height="45"/></clipPath>
+  <clipPath id="cp_s2_formula"><rect id="cr_s2_formula" x="50" y="155" width="0" height="50"/></clipPath>
+  <clipPath id="cp_s2_sent"><rect id="cr_s2_sent" x="550" y="265" width="0" height="50"/></clipPath>
+  <clipPath id="cp_s2_lbl1"><rect id="cr_s2_lbl1" x="680" y="545" width="0" height="50"/></clipPath>
+  <clipPath id="cp_s2_lbl2"><rect id="cr_s2_lbl2" x="790" y="545" width="0" height="50"/></clipPath>
+  <clipPath id="cp_s2_lbl3"><rect id="cr_s2_lbl3" x="900" y="545" width="0" height="50"/></clipPath>
+  <clipPath id="cp_s2_goal"><rect id="cr_s2_goal" x="50" y="655" width="0" height="40"/></clipPath>
+
+  <!-- ═══ SCENE 3: Tokenization ═══ -->
+  <clipPath id="cp_s3_title"><rect id="cr_s3_title" x="50" y="35" width="0" height="55"/></clipPath>
+  <clipPath id="cp_s3_word"><rect id="cr_s3_word" x="130" y="215" width="0" height="55"/></clipPath>
+  <clipPath id="cp_s3_t1"><rect id="cr_s3_t1" x="120" y="335" width="0" height="50"/></clipPath>
+  <clipPath id="cp_s3_t2"><rect id="cr_s3_t2" x="370" y="335" width="0" height="50"/></clipPath>
+  <clipPath id="cp_s3_t3"><rect id="cr_s3_t3" x="620" y="335" width="0" height="50"/></clipPath>
+  <clipPath id="cp_s3_id1"><rect id="cr_s3_id1" x="830" y="335" width="0" height="50"/></clipPath>
+  <clipPath id="cp_s3_id2"><rect id="cr_s3_id2" x="930" y="335" width="0" height="50"/></clipPath>
+  <clipPath id="cp_s3_id3"><rect id="cr_s3_id3" x="1030" y="335" width="0" height="50"/></clipPath>
+  <clipPath id="cp_s3_bpe"><rect id="cr_s3_bpe" x="50" y="520" width="0" height="45"/></clipPath>
+  <clipPath id="cp_s3_vocab"><rect id="cr_s3_vocab" x="50" y="595" width="0" height="40"/></clipPath>
+
+  <!-- ═══ SCENE 4: Embeddings ═══ -->
+  <clipPath id="cp_s4_title"><rect id="cr_s4_title" x="50" y="35" width="0" height="55"/></clipPath>
+  <clipPath id="cp_s4_tok"><rect id="cr_s4_tok" x="50" y="140" width="0" height="50"/></clipPath>
+  <clipPath id="cp_s4_vec"><rect id="cr_s4_vec" x="50" y="240" width="0" height="45"/></clipPath>
+  <clipPath id="cp_s4_dim"><rect id="cr_s4_dim" x="50" y="305" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s4_w1"><rect id="cr_s4_w1" x="680" y="210" width="0" height="28"/></clipPath>
+  <clipPath id="cp_s4_w2"><rect id="cr_s4_w2" x="750" y="240" width="0" height="28"/></clipPath>
+  <clipPath id="cp_s4_w3"><rect id="cr_s4_w3" x="820" y="380" width="0" height="28"/></clipPath>
+  <clipPath id="cp_s4_w4"><rect id="cr_s4_w4" x="880" y="410" width="0" height="28"/></clipPath>
+  <clipPath id="cp_s4_w5"><rect id="cr_s4_w5" x="940" y="520" width="0" height="28"/></clipPath>
+  <clipPath id="cp_s4_w6"><rect id="cr_s4_w6" x="990" y="550" width="0" height="28"/></clipPath>
+  <clipPath id="cp_s4_analogy"><rect id="cr_s4_analogy" x="50" y="570" width="0" height="45"/></clipPath>
+  <clipPath id="cp_s4_summary"><rect id="cr_s4_summary" x="50" y="650" width="0" height="45"/></clipPath>
+
+  <!-- ═══ SCENE 5: Attention ═══ -->
+  <clipPath id="cp_s5_title"><rect id="cr_s5_title" x="50" y="20" width="0" height="55"/></clipPath>
+  <clipPath id="cp_s5_sent"><rect id="cr_s5_sent" x="50" y="85" width="0" height="50"/></clipPath>
+  <clipPath id="cp_s5_q"><rect id="cr_s5_q" x="100" y="400" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s5_k"><rect id="cr_s5_k" x="400" y="400" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s5_v"><rect id="cr_s5_v" x="700" y="400" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s5_formula"><rect id="cr_s5_formula" x="150" y="570" width="0" height="55"/></clipPath>
+  <clipPath id="cp_s5_multi"><rect id="cr_s5_multi" x="150" y="635" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s5_ctx"><rect id="cr_s5_ctx" x="50" y="290" width="0" height="45"/></clipPath>
+
+  <!-- ═══ SCENE 6: Transformer ═══ -->
+  <clipPath id="cp_s6_title"><rect id="cr_s6_title" x="50" y="20" width="0" height="55"/></clipPath>
+  <clipPath id="cp_s6_input"><rect id="cr_s6_input" x="280" y="595" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s6_attn"><rect id="cr_s6_attn" x="280" y="440" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s6_norm1"><rect id="cr_s6_norm1" x="280" y="385" width="0" height="35"/></clipPath>
+  <clipPath id="cp_s6_ffn"><rect id="cr_s6_ffn" x="280" y="270" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s6_norm2"><rect id="cr_s6_norm2" x="280" y="215" width="0" height="35"/></clipPath>
+  <clipPath id="cp_s6_xn"><rect id="cr_s6_xn" x="780" y="350" width="0" height="45"/></clipPath>
+  <clipPath id="cp_s6_gpt"><rect id="cr_s6_gpt" x="780" y="580" width="0" height="40"/></clipPath>
+
+  <!-- ═══ SCENE 7: Training ═══ -->
+  <clipPath id="cp_s7_title"><rect id="cr_s7_title" x="50" y="20" width="0" height="55"/></clipPath>
+  <clipPath id="cp_s7_inp"><rect id="cr_s7_inp" x="60" y="170" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s7_pred"><rect id="cr_s7_pred" x="350" y="170" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s7_loss"><rect id="cr_s7_loss" x="60" y="380" width="0" height="50"/></clipPath>
+  <clipPath id="cp_s7_grad"><rect id="cr_s7_grad" x="60" y="440" width="0" height="45"/></clipPath>
+  <clipPath id="cp_s7_update"><rect id="cr_s7_update" x="60" y="500" width="0" height="45"/></clipPath>
+  <clipPath id="cp_s7_data"><rect id="cr_s7_data" x="700" y="630" width="0" height="40"/></clipPath>
+
+  <!-- ═══ SCENE 8: Scaling ═══ -->
+  <clipPath id="cp_s8_title"><rect id="cr_s8_title" x="50" y="20" width="0" height="55"/></clipPath>
+  <clipPath id="cp_s8_p"><rect id="cr_s8_p" x="60" y="145" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s8_d"><rect id="cr_s8_d" x="60" y="225" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s8_c"><rect id="cr_s8_c" x="60" y="305" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s8_law"><rect id="cr_s8_law" x="600" y="550" width="0" height="50"/></clipPath>
+  <clipPath id="cp_s8_m1"><rect id="cr_s8_m1" x="700" y="220" width="0" height="30"/></clipPath>
+  <clipPath id="cp_s8_m2"><rect id="cr_s8_m2" x="820" y="310" width="0" height="30"/></clipPath>
+  <clipPath id="cp_s8_m3"><rect id="cr_s8_m3" x="940" y="400" width="0" height="30"/></clipPath>
+
+  <!-- ═══ SCENE 9: GPT to ChatGPT ═══ -->
+  <clipPath id="cp_s9_title"><rect id="cr_s9_title" x="50" y="20" width="0" height="55"/></clipPath>
+  <clipPath id="cp_s9_pt"><rect id="cr_s9_pt" x="70" y="200" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s9_sft"><rect id="cr_s9_sft" x="420" y="200" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s9_rlhf"><rect id="cr_s9_rlhf" x="770" y="200" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s9_base"><rect id="cr_s9_base" x="60" y="470" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s9_chat"><rect id="cr_s9_chat" x="600" y="470" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s9_align"><rect id="cr_s9_align" x="400" y="550" width="0" height="40"/></clipPath>
+
+  <!-- ═══ SCENE 10: Recap ═══ -->
+  <clipPath id="cp_s10_title"><rect id="cr_s10_title" x="50" y="20" width="0" height="55"/></clipPath>
+  <clipPath id="cp_s10_eq"><rect id="cr_s10_eq" x="600" y="310" width="0" height="55"/></clipPath>
+  <clipPath id="cp_s10_b1"><rect id="cr_s10_b1" x="120" y="545" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s10_b2"><rect id="cr_s10_b2" x="120" y="480" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s10_b3"><rect id="cr_s10_b3" x="120" y="415" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s10_b4"><rect id="cr_s10_b4" x="120" y="350" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s10_b5"><rect id="cr_s10_b5" x="120" y="285" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s10_b6"><rect id="cr_s10_b6" x="120" y="220" width="0" height="40"/></clipPath>
+  <clipPath id="cp_s10_b7"><rect id="cr_s10_b7" x="120" y="155" width="0" height="40"/></clipPath>
+</defs>
+
+<!-- Background -->
+<rect width="1280" height="720" fill="url(#bg)"/>
+
+<!-- ═══ SCENE 1: Title Card (0-6s) ═══ -->
+<g id="scene1" class="scene">
+  <!-- Title -->
+  <g clip-path="url(#cp_s1_title)">
+    <text x="640" y="280" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="56" font-weight="700" fill="#2b7ec2">
+      Large Language Models
+    </text>
+  </g>
+  <!-- Underline -->
+  <path id="s1_ul" d="M280,295 Q640,305 1000,295" fill="none"
+        stroke="#cc3333" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+  <!-- Subtitle -->
+  <g clip-path="url(#cp_s1_sub)">
+    <text x="640" y="360" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="40" font-weight="700" fill="#333">
+      from Scratch
+    </text>
+  </g>
+  <!-- Tag line -->
+  <g clip-path="url(#cp_s1_tag)">
+    <text x="640" y="430" text-anchor="middle" font-family="'Caveat',cursive"
+          font-size="28" fill="#888">
+      From Probability to ChatGPT
+    </text>
+  </g>
+  <!-- Brain-circuit illustration -->
+  <g id="s1_brain" opacity="0">
+    <!-- Brain outline -->
+    <path d="M580,500 C560,470 570,440 600,430 C610,410 640,400 660,410 C680,395 710,400 720,420 C740,415 755,430 750,450 C770,460 770,490 750,500 C760,520 745,540 720,535 C710,550 680,555 660,545 C640,555 610,550 600,535 C580,540 565,525 570,510 C555,505 555,490 580,500Z"
+          fill="none" stroke="#8844aa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Brain folds -->
+    <path d="M620,430 C630,460 650,470 660,450" fill="none" stroke="#8844aa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+    <path d="M680,425 C690,455 700,470 720,455" fill="none" stroke="#8844aa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+    <path d="M610,480 C630,500 670,505 690,490" fill="none" stroke="#8844aa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+    <!-- Circuit traces coming out -->
+    <path d="M750,450 L790,440 L810,460" fill="none" stroke="#2b7ec2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M750,500 L800,510 L820,490" fill="none" stroke="#2b7ec2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M570,510 L530,520 L510,500" fill="none" stroke="#2b7ec2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M580,460 L540,450 L520,470" fill="none" stroke="#2b7ec2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Circuit dots -->
+    <circle cx="810" cy="460" r="4" fill="#2b7ec2"/>
+    <circle cx="820" cy="490" r="4" fill="#2b7ec2"/>
+    <circle cx="510" cy="500" r="4" fill="#2b7ec2"/>
+    <circle cx="520" cy="470" r="4" fill="#2b7ec2"/>
+  </g>
+</g>
+
+<!-- ═══ SCENE 2: What Is a Language Model? (6-18s) ═══ -->
+<g id="scene2" class="scene">
+  <!-- Title -->
+  <g clip-path="url(#cp_s2_title)">
+    <text x="60" y="70" font-family="'Cabin Sketch',cursive"
+          font-size="48" font-weight="700" fill="#2b7ec2">
+      What Is a Language Model?
+    </text>
+  </g>
+  <!-- Definition -->
+  <g clip-path="url(#cp_s2_def)">
+    <text x="60" y="130" font-family="'Cabin Sketch',cursive"
+          font-size="32" font-weight="400" fill="#333">
+      A probability distribution over sequences
+    </text>
+  </g>
+  <!-- Formula -->
+  <g clip-path="url(#cp_s2_formula)">
+    <text x="60" y="190" font-family="'Cabin Sketch',cursive"
+          font-size="30" fill="#cc3333">
+      P( w<tspan font-size="22" dy="6">t</tspan><tspan dy="-6"> | w</tspan><tspan font-size="22" dy="6">1</tspan><tspan dy="-6">, w</tspan><tspan font-size="22" dy="6">2</tspan><tspan dy="-6">, ..., w</tspan><tspan font-size="22" dy="6">t-1</tspan><tspan dy="-6"> )</tspan>
+    </text>
+  </g>
+  <!-- Sentence on right -->
+  <g clip-path="url(#cp_s2_sent)">
+    <text x="640" y="300" font-family="'Cabin Sketch',cursive"
+          font-size="36" font-weight="400" fill="#333" text-anchor="middle">
+      "The cat sat on the ___"
+    </text>
+  </g>
+  <!-- Arrow from sentence to bar chart -->
+  <path id="s2_arrow" d="M750,320 C760,360 760,370 750,390 L755,385 M750,390 L745,385"
+        fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+  <!-- Bar chart area -->
+  <!-- Bar 1: "mat" (0.35) -->
+  <g id="s2_bar1" opacity="0">
+    <rect x="700" y="350" width="70" height="190" rx="2" fill="none" stroke="#1e8c5a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="700" y="350" width="70" height="190" rx="2" fill="#1e8c5a" opacity="0.15"/>
+    <!-- Hatching lines -->
+    <line x1="708" y1="360" x2="728" y2="530" stroke="#1e8c5a" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+    <line x1="720" y1="360" x2="740" y2="530" stroke="#1e8c5a" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+    <line x1="732" y1="360" x2="752" y2="530" stroke="#1e8c5a" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+    <line x1="744" y1="360" x2="764" y2="530" stroke="#1e8c5a" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+    <line x1="706" y1="390" x2="706" y2="530" stroke="#1e8c5a" stroke-width="1" stroke-linecap="round" opacity="0.3"/>
+    <line x1="764" y1="380" x2="764" y2="530" stroke="#1e8c5a" stroke-width="1" stroke-linecap="round" opacity="0.3"/>
+  </g>
+  <!-- Bar 2: "floor" (0.20) -->
+  <g id="s2_bar2" opacity="0">
+    <rect x="810" y="430" width="70" height="110" rx="2" fill="none" stroke="#1e8c5a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="810" y="430" width="70" height="110" rx="2" fill="#1e8c5a" opacity="0.15"/>
+    <!-- Hatching lines -->
+    <line x1="818" y1="440" x2="838" y2="530" stroke="#1e8c5a" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+    <line x1="838" y1="440" x2="858" y2="530" stroke="#1e8c5a" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+    <line x1="858" y1="440" x2="874" y2="530" stroke="#1e8c5a" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+  </g>
+  <!-- Bar 3: "table" (0.15) -->
+  <g id="s2_bar3" opacity="0">
+    <rect x="920" y="460" width="70" height="80" rx="2" fill="none" stroke="#1e8c5a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="920" y="460" width="70" height="80" rx="2" fill="#1e8c5a" opacity="0.15"/>
+    <!-- Hatching lines -->
+    <line x1="928" y1="470" x2="948" y2="530" stroke="#1e8c5a" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+    <line x1="950" y1="470" x2="970" y2="530" stroke="#1e8c5a" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+  </g>
+  <!-- Baseline for bars -->
+  <line x1="690" y1="540" x2="1000" y2="540" stroke="#333" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Bar labels -->
+  <g clip-path="url(#cp_s2_lbl1)">
+    <text x="735" y="565" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="22" font-weight="400" fill="#333">mat</text>
+    <text x="735" y="585" text-anchor="middle" font-family="'Caveat',cursive"
+          font-size="20" fill="#1e8c5a">0.35</text>
+  </g>
+  <g clip-path="url(#cp_s2_lbl2)">
+    <text x="845" y="565" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="22" font-weight="400" fill="#333">floor</text>
+    <text x="845" y="585" text-anchor="middle" font-family="'Caveat',cursive"
+          font-size="20" fill="#1e8c5a">0.20</text>
+  </g>
+  <g clip-path="url(#cp_s2_lbl3)">
+    <text x="955" y="565" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="22" font-weight="400" fill="#333">table</text>
+    <text x="955" y="585" text-anchor="middle" font-family="'Caveat',cursive"
+          font-size="20" fill="#1e8c5a">0.15</text>
+  </g>
+  <!-- Goal text -->
+  <g clip-path="url(#cp_s2_goal)">
+    <text x="60" y="680" font-family="'Caveat',cursive"
+          font-size="26" fill="#888">
+      Goal: predict the next token
+    </text>
+  </g>
+</g>
+
+<!-- ═══ SCENE 3: Tokenization (18-28s) ═══ -->
+<g id="scene3" class="scene">
+  <!-- Title -->
+  <g clip-path="url(#cp_s3_title)">
+    <text x="60" y="70" font-family="'Cabin Sketch',cursive"
+          font-size="48" font-weight="700" fill="#2b7ec2">
+      Tokenization: Text → Numbers
+    </text>
+  </g>
+  <!-- Large word "unbelievable" -->
+  <g clip-path="url(#cp_s3_word)">
+    <text x="200" y="250" font-family="'Permanent Marker',cursive"
+          font-size="44" fill="#333">
+      unbelievable
+    </text>
+  </g>
+  <!-- Red cutting lines -->
+  <path id="s3_cut1" d="M268,218 L268,268 M266,228 L270,228 M266,258 L270,258"
+        fill="none" stroke="#cc3333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+  <path id="s3_cut2" d="M430,218 L430,268 M428,228 L432,228 M428,258 L432,258"
+        fill="none" stroke="#cc3333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+  <!-- Subword piece boxes -->
+  <!-- Box 1: "un" -->
+  <g id="s3_box1" opacity="0">
+    <rect x="150" y="340" width="140" height="60" rx="4" fill="none"
+          stroke="#cc3333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="150" y="340" width="140" height="60" rx="4" fill="#cc3333" opacity="0.08"/>
+  </g>
+  <g clip-path="url(#cp_s3_t1)">
+    <text x="220" y="380" text-anchor="middle" font-family="'Permanent Marker',cursive"
+          font-size="32" fill="#cc3333">un</text>
+  </g>
+  <!-- Box 2: "believ" -->
+  <g id="s3_box2" opacity="0">
+    <rect x="400" y="340" width="140" height="60" rx="4" fill="none"
+          stroke="#cc3333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="400" y="340" width="140" height="60" rx="4" fill="#cc3333" opacity="0.08"/>
+  </g>
+  <g clip-path="url(#cp_s3_t2)">
+    <text x="470" y="380" text-anchor="middle" font-family="'Permanent Marker',cursive"
+          font-size="32" fill="#cc3333">believ</text>
+  </g>
+  <!-- Box 3: "able" -->
+  <g id="s3_box3" opacity="0">
+    <rect x="650" y="340" width="140" height="60" rx="4" fill="none"
+          stroke="#cc3333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="650" y="340" width="140" height="60" rx="4" fill="#cc3333" opacity="0.08"/>
+  </g>
+  <g clip-path="url(#cp_s3_t3)">
+    <text x="720" y="380" text-anchor="middle" font-family="'Permanent Marker',cursive"
+          font-size="32" fill="#cc3333">able</text>
+  </g>
+  <!-- Arrows from boxes to token IDs -->
+  <g id="s3_arrows" opacity="0">
+    <path id="s3_arr1" d="M290,370 C320,370 340,370 370,370 L380,370 C420,370 460,370 500,370 C540,370 580,370 620,370 C660,370 700,370 740,370 C760,370 780,370 830,370 L825,365 M830,370 L825,375"
+          fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          transform="translate(0,0)"/>
+    <path id="s3_arr2" d="M540,370 L620,370 C660,370 700,370 740,370 C760,370 780,370 830,370 C860,370 890,370 930,370 L925,365 M930,370 L925,375"
+          fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s3_arr3" d="M790,370 L830,370 C860,370 890,370 920,370 C950,370 980,370 1030,370 L1025,365 M1030,370 L1025,375"
+          fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <!-- Token ID boxes -->
+  <g id="s3_ids" opacity="0">
+    <!-- ID box 1 -->
+    <rect x="850" y="340" width="90" height="60" rx="4" fill="none"
+          stroke="#cc7722" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="850" y="340" width="90" height="60" rx="4" fill="#cc7722" opacity="0.12"/>
+    <!-- ID box 2 -->
+    <rect x="950" y="340" width="90" height="60" rx="4" fill="none"
+          stroke="#cc7722" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="950" y="340" width="90" height="60" rx="4" fill="#cc7722" opacity="0.12"/>
+    <!-- ID box 3 -->
+    <rect x="1050" y="340" width="90" height="60" rx="4" fill="none"
+          stroke="#cc7722" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="1050" y="340" width="90" height="60" rx="4" fill="#cc7722" opacity="0.12"/>
+  </g>
+  <!-- Token ID numbers -->
+  <g clip-path="url(#cp_s3_id1)">
+    <text x="895" y="380" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="30" font-weight="700" fill="#cc7722">412</text>
+  </g>
+  <g clip-path="url(#cp_s3_id2)">
+    <text x="995" y="380" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="30" font-weight="700" fill="#cc7722">8823</text>
+  </g>
+  <g clip-path="url(#cp_s3_id3)">
+    <text x="1095" y="380" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="30" font-weight="700" fill="#cc7722">481</text>
+  </g>
+  <!-- BPE label -->
+  <g clip-path="url(#cp_s3_bpe)">
+    <text x="60" y="555" font-family="'Cabin Sketch',cursive"
+          font-size="34" font-weight="700" fill="#cc3333">
+      BPE: Byte Pair Encoding
+    </text>
+  </g>
+  <!-- Vocab annotation -->
+  <g clip-path="url(#cp_s3_vocab)">
+    <text x="60" y="620" font-family="'Caveat',cursive"
+          font-size="26" fill="#888">
+      ~50,000 token vocabulary
+    </text>
+  </g>
+</g>
+
+<!-- ═══ SCENE 4: Embeddings (28-40s) ═══ -->
+<g id="scene4" class="scene">
+  <!-- Title -->
+  <g clip-path="url(#cp_s4_title)">
+    <text x="60" y="70" font-family="'Cabin Sketch',cursive"
+          font-size="48" font-weight="700" fill="#2b7ec2">
+      Embeddings: Words as Vectors
+    </text>
+  </g>
+
+  <!-- Left side: Token → Embedding lookup → Vector -->
+  <!-- Token label -->
+  <g clip-path="url(#cp_s4_tok)">
+    <text x="60" y="175" font-family="'Cabin Sketch',cursive"
+          font-size="32" fill="#333">
+      "king" → token 1247
+    </text>
+  </g>
+
+  <!-- Embedding matrix (tall rectangle with rows) -->
+  <g id="s4_matrix" opacity="0">
+    <rect x="80" y="200" width="120" height="180" rx="3" fill="none"
+          stroke="#cc7722" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="80" y="200" width="120" height="180" rx="3" fill="#cc7722" opacity="0.06"/>
+    <!-- Row lines -->
+    <line x1="85" y1="220" x2="195" y2="220" stroke="#cc7722" stroke-width="0.8" opacity="0.3"/>
+    <line x1="85" y1="240" x2="195" y2="240" stroke="#cc7722" stroke-width="0.8" opacity="0.3"/>
+    <line x1="85" y1="260" x2="195" y2="260" stroke="#cc7722" stroke-width="0.8" opacity="0.3"/>
+    <line x1="85" y1="280" x2="195" y2="280" stroke="#cc7722" stroke-width="0.8" opacity="0.3"/>
+    <line x1="85" y1="300" x2="195" y2="300" stroke="#cc7722" stroke-width="0.8" opacity="0.3"/>
+    <line x1="85" y1="320" x2="195" y2="320" stroke="#cc7722" stroke-width="0.8" opacity="0.3"/>
+    <line x1="85" y1="340" x2="195" y2="340" stroke="#cc7722" stroke-width="0.8" opacity="0.3"/>
+    <line x1="85" y1="360" x2="195" y2="360" stroke="#cc7722" stroke-width="0.8" opacity="0.3"/>
+    <!-- Highlight row for "king" -->
+    <rect x="82" y="281" width="116" height="18" fill="#cc7722" opacity="0.2"/>
+    <!-- Arrow pointing to highlighted row -->
+    <path d="M60,290 L78,290" fill="none" stroke="#cc3333" stroke-width="2" stroke-linecap="round"/>
+    <polygon points="78,286 86,290 78,294" fill="#cc3333"/>
+  </g>
+
+  <!-- Output vector -->
+  <g clip-path="url(#cp_s4_vec)">
+    <text x="60" y="270" font-family="'Cabin Sketch',cursive"
+          font-size="28" fill="#cc7722">
+      → [0.23, -0.45, 0.91, ...]
+    </text>
+  </g>
+
+  <!-- Dimension annotation -->
+  <g clip-path="url(#cp_s4_dim)">
+    <text x="60" y="335" font-family="'Caveat',cursive"
+          font-size="26" fill="#cc3333">
+      d = 768 dimensions
+    </text>
+  </g>
+
+  <!-- Right side: 2D Semantic Space -->
+  <!-- Axes -->
+  <g id="s4_axes" opacity="0">
+    <!-- Y axis -->
+    <path id="s4_yaxis" d="M660,130 L660,600" fill="none"
+          stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- X axis -->
+    <path id="s4_xaxis" d="M630,570 L1220,570" fill="none"
+          stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Axis arrows -->
+    <polygon points="660,128 655,138 665,138" fill="#555"/>
+    <polygon points="1222,570 1212,565 1212,575" fill="#555"/>
+  </g>
+
+  <!-- Word clusters -->
+  <g id="s4_dots" opacity="0">
+    <!-- Royalty cluster (orange) -->
+    <circle cx="720" cy="230" r="7" fill="#cc7722" opacity="0.8"/>
+    <circle cx="780" cy="260" r="7" fill="#cc7722" opacity="0.8"/>
+    <!-- Animal cluster (green) -->
+    <circle cx="860" cy="400" r="7" fill="#1e8c5a" opacity="0.8"/>
+    <circle cx="920" cy="430" r="7" fill="#1e8c5a" opacity="0.8"/>
+    <!-- Vehicle cluster (purple) -->
+    <circle cx="980" cy="540" r="7" fill="#8844aa" opacity="0.8"/>
+    <circle cx="1030" cy="565" r="7" fill="#8844aa" opacity="0.8"/>
+  </g>
+
+  <!-- Word labels -->
+  <g clip-path="url(#cp_s4_w1)">
+    <text x="700" y="220" font-family="'Caveat',cursive" font-size="24" fill="#cc7722">king</text>
+  </g>
+  <g clip-path="url(#cp_s4_w2)">
+    <text x="770" y="255" font-family="'Caveat',cursive" font-size="24" fill="#cc7722">queen</text>
+  </g>
+  <g clip-path="url(#cp_s4_w3)">
+    <text x="840" y="395" font-family="'Caveat',cursive" font-size="24" fill="#1e8c5a">cat</text>
+  </g>
+  <g clip-path="url(#cp_s4_w4)">
+    <text x="900" y="425" font-family="'Caveat',cursive" font-size="24" fill="#1e8c5a">dog</text>
+  </g>
+  <g clip-path="url(#cp_s4_w5)">
+    <text x="960" y="535" font-family="'Caveat',cursive" font-size="24" fill="#8844aa">car</text>
+  </g>
+  <g clip-path="url(#cp_s4_w6)">
+    <text x="1010" y="560" font-family="'Caveat',cursive" font-size="24" fill="#8844aa">bicycle</text>
+  </g>
+
+  <!-- Dashed cluster ovals -->
+  <g id="s4_clusters" opacity="0">
+    <ellipse cx="750" cy="245" rx="65" ry="35" fill="none"
+             stroke="#cc7722" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.5"/>
+    <ellipse cx="890" cy="415" rx="55" ry="35" fill="none"
+             stroke="#1e8c5a" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.5"/>
+    <ellipse cx="1005" cy="553" rx="55" ry="30" fill="none"
+             stroke="#8844aa" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.5"/>
+  </g>
+
+  <!-- Analogy arrow (king - man + woman = queen) -->
+  <path id="s4_analogy_arrow" d="M720,230 L780,260" fill="none"
+        stroke="#cc3333" stroke-width="2" stroke-dasharray="5,4" stroke-linecap="round" opacity="0"/>
+
+  <!-- Analogy text -->
+  <g clip-path="url(#cp_s4_analogy)">
+    <text x="60" y="600" font-family="'Cabin Sketch',cursive"
+          font-size="30" fill="#cc3333">
+      king − man + woman ≈ queen
+    </text>
+  </g>
+
+  <!-- Summary -->
+  <g clip-path="url(#cp_s4_summary)">
+    <text x="60" y="680" font-family="'Caveat',cursive"
+          font-size="26" fill="#888">
+      Similar meaning = nearby vectors
+    </text>
+  </g>
+</g>
+
+<!-- ═══ SCENE 5: Attention (40-58s) ═══ -->
+<g id="scene5" class="scene">
+  <!-- Title -->
+  <g clip-path="url(#cp_s5_title)">
+    <text x="60" y="55" font-family="'Cabin Sketch',cursive"
+          font-size="48" font-weight="700" fill="#8844aa">
+      Attention: The Breakthrough
+    </text>
+  </g>
+
+  <!-- Part A: Sentence with word boxes -->
+  <!-- Context question -->
+  <g clip-path="url(#cp_s5_ctx)">
+    <text x="60" y="320" font-family="'Caveat',cursive"
+          font-size="26" fill="#888">
+      Which words help understand "bank"?
+    </text>
+  </g>
+
+  <!-- Word boxes in a row at y=100-160 -->
+  <g id="s5_words" opacity="0">
+    <!-- "The" -->
+    <rect x="80" y="105" width="80" height="45" rx="4" fill="none" stroke="#555" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="120" y="135" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="24" fill="#555">The</text>
+    <!-- "bank" (highlighted purple) -->
+    <rect x="180" y="105" width="90" height="45" rx="4" fill="#8844aa" fill-opacity="0.15" stroke="#8844aa" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="225" y="135" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="24" font-weight="700" fill="#8844aa">bank</text>
+    <!-- "of" -->
+    <rect x="290" y="105" width="55" height="45" rx="4" fill="none" stroke="#555" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="317" y="135" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="24" fill="#555">of</text>
+    <!-- "the" -->
+    <rect x="365" y="105" width="65" height="45" rx="4" fill="none" stroke="#555" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="397" y="135" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="24" fill="#555">the</text>
+    <!-- "river" (high attention) -->
+    <rect x="450" y="105" width="90" height="45" rx="4" fill="none" stroke="#555" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="495" y="135" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="24" fill="#555">river</text>
+    <!-- "was" -->
+    <rect x="560" y="105" width="70" height="45" rx="4" fill="none" stroke="#555" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="595" y="135" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="24" fill="#555">was</text>
+    <!-- "steep" (high attention) -->
+    <rect x="650" y="105" width="90" height="45" rx="4" fill="none" stroke="#555" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="695" y="135" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="24" fill="#555">steep</text>
+  </g>
+
+  <!-- Attention beams from "bank" (varying thickness = weight) -->
+  <g id="s5_beams" opacity="0">
+    <!-- bank → The (low: 0.05) -->
+    <path id="s5_b1" d="M225,150 C220,180 130,180 120,155"
+          fill="none" stroke="#8844aa" stroke-width="1" stroke-linecap="round" opacity="0.3"/>
+    <!-- bank → of (low: 0.02) -->
+    <path id="s5_b2" d="M240,150 C250,175 305,175 317,155"
+          fill="none" stroke="#8844aa" stroke-width="0.8" stroke-linecap="round" opacity="0.2"/>
+    <!-- bank → the (low: 0.01) -->
+    <path id="s5_b3" d="M240,150 C260,190 380,190 397,155"
+          fill="none" stroke="#8844aa" stroke-width="0.8" stroke-linecap="round" opacity="0.2"/>
+    <!-- bank → river (HIGH: 0.42) -->
+    <path id="s5_b4" d="M240,150 C280,210 450,210 490,155"
+          fill="none" stroke="#8844aa" stroke-width="5" stroke-linecap="round" opacity="0.6"/>
+    <!-- bank → was (medium: 0.08) -->
+    <path id="s5_b5" d="M240,150 C290,220 550,220 590,155"
+          fill="none" stroke="#8844aa" stroke-width="1.5" stroke-linecap="round" opacity="0.3"/>
+    <!-- bank → steep (HIGH: 0.38) -->
+    <path id="s5_b6" d="M240,150 C300,230 640,230 690,155"
+          fill="none" stroke="#8844aa" stroke-width="4.5" stroke-linecap="round" opacity="0.55"/>
+  </g>
+
+  <!-- Attention weight labels -->
+  <g id="s5_weights" opacity="0">
+    <text x="120" y="195" text-anchor="middle" font-family="'Caveat',cursive" font-size="18" fill="#8844aa">.05</text>
+    <text x="317" y="195" text-anchor="middle" font-family="'Caveat',cursive" font-size="18" fill="#8844aa">.02</text>
+    <text x="397" y="205" text-anchor="middle" font-family="'Caveat',cursive" font-size="18" fill="#8844aa">.01</text>
+    <text x="490" y="225" text-anchor="middle" font-family="'Caveat',cursive" font-size="22" font-weight="700" fill="#8844aa">.42</text>
+    <text x="590" y="235" text-anchor="middle" font-family="'Caveat',cursive" font-size="18" fill="#8844aa">.08</text>
+    <text x="690" y="245" text-anchor="middle" font-family="'Caveat',cursive" font-size="22" font-weight="700" fill="#8844aa">.38</text>
+  </g>
+
+  <!-- Part B: Q, K, V mechanism -->
+  <!-- Q column -->
+  <g id="s5_qbox" opacity="0">
+    <rect x="120" y="370" width="200" height="80" rx="5" fill="none"
+          stroke="#8844aa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="120" y="370" width="200" height="80" rx="5" fill="#8844aa" opacity="0.08"/>
+  </g>
+  <g clip-path="url(#cp_s5_q)">
+    <text x="220" y="420" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="30" font-weight="700" fill="#8844aa">Q (Query)</text>
+    <text x="220" y="442" text-anchor="middle" font-family="'Caveat',cursive"
+          font-size="20" fill="#8844aa">"What am I looking for?"</text>
+  </g>
+
+  <!-- K column -->
+  <g id="s5_kbox" opacity="0">
+    <rect x="420" y="370" width="200" height="80" rx="5" fill="none"
+          stroke="#cc7722" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="420" y="370" width="200" height="80" rx="5" fill="#cc7722" opacity="0.08"/>
+  </g>
+  <g clip-path="url(#cp_s5_k)">
+    <text x="520" y="420" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="30" font-weight="700" fill="#cc7722">K (Key)</text>
+    <text x="520" y="442" text-anchor="middle" font-family="'Caveat',cursive"
+          font-size="20" fill="#cc7722">"What do I contain?"</text>
+  </g>
+
+  <!-- V column -->
+  <g id="s5_vbox" opacity="0">
+    <rect x="720" y="370" width="200" height="80" rx="5" fill="none"
+          stroke="#1e8c5a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="720" y="370" width="200" height="80" rx="5" fill="#1e8c5a" opacity="0.08"/>
+  </g>
+  <g clip-path="url(#cp_s5_v)">
+    <text x="820" y="420" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="30" font-weight="700" fill="#1e8c5a">V (Value)</text>
+    <text x="820" y="442" text-anchor="middle" font-family="'Caveat',cursive"
+          font-size="20" fill="#1e8c5a">"Here's my information"</text>
+  </g>
+
+  <!-- Arrows between Q·K and V -->
+  <g id="s5_qkv_arrows" opacity="0">
+    <!-- Q → K dot product -->
+    <path id="s5_qk_arrow" d="M320,410 L415,410 L410,405 M415,410 L410,415"
+          fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="370" y="400" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="20" fill="#333">Q · K</text>
+    <!-- Score → V multiply -->
+    <path id="s5_sv_arrow" d="M620,410 L715,410 L710,405 M715,410 L710,415"
+          fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="668" y="400" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="20" fill="#333">× V</text>
+  </g>
+
+  <!-- Score grid (small visualization) -->
+  <g id="s5_grid" opacity="0">
+    <!-- Small 3x3 grid representing attention scores -->
+    <rect x="360" y="470" width="120" height="90" rx="3" fill="none"
+          stroke="#8844aa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Grid lines -->
+    <line x1="400" y1="470" x2="400" y2="560" stroke="#8844aa" stroke-width="0.8" opacity="0.4"/>
+    <line x1="440" y1="470" x2="440" y2="560" stroke="#8844aa" stroke-width="0.8" opacity="0.4"/>
+    <line x1="360" y1="500" x2="480" y2="500" stroke="#8844aa" stroke-width="0.8" opacity="0.4"/>
+    <line x1="360" y1="530" x2="480" y2="530" stroke="#8844aa" stroke-width="0.8" opacity="0.4"/>
+    <!-- Score values -->
+    <text x="380" y="492" text-anchor="middle" font-family="'Caveat',cursive" font-size="16" fill="#8844aa">.42</text>
+    <text x="420" y="492" text-anchor="middle" font-family="'Caveat',cursive" font-size="16" fill="#8844aa">.05</text>
+    <text x="460" y="492" text-anchor="middle" font-family="'Caveat',cursive" font-size="16" fill="#8844aa">.02</text>
+    <text x="380" y="522" text-anchor="middle" font-family="'Caveat',cursive" font-size="16" fill="#8844aa">.08</text>
+    <text x="420" y="522" text-anchor="middle" font-family="'Caveat',cursive" font-size="16" fill="#8844aa">.38</text>
+    <text x="460" y="522" text-anchor="middle" font-family="'Caveat',cursive" font-size="16" fill="#8844aa">.01</text>
+    <!-- Label -->
+    <text x="420" y="578" text-anchor="middle" font-family="'Caveat',cursive" font-size="20" fill="#555">softmax scores</text>
+  </g>
+
+  <!-- Part C: Formula -->
+  <g clip-path="url(#cp_s5_formula)">
+    <text x="640" y="608" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="32" fill="#cc3333">
+      Attention(Q,K,V) = softmax(QK<tspan font-size="20" dy="-10">T</tspan><tspan dy="10"> / √d</tspan><tspan font-size="22" dy="5">k</tspan><tspan dy="-5">) V</tspan>
+    </text>
+  </g>
+
+  <!-- Multi-head annotation -->
+  <g clip-path="url(#cp_s5_multi)">
+    <text x="640" y="660" text-anchor="middle" font-family="'Caveat',cursive"
+          font-size="26" fill="#888">
+      Multi-head: 12–96 parallel attention heads
+    </text>
+  </g>
+</g>
+
+<!-- ═══ SCENE 6: Transformer (58-72s) ═══ -->
+<g id="scene6" class="scene">
+  <!-- Title -->
+  <g clip-path="url(#cp_s6_title)">
+    <text x="60" y="55" font-family="'Cabin Sketch',cursive"
+          font-size="48" font-weight="700" fill="#2b7ec2">
+      The Transformer Block
+    </text>
+  </g>
+
+  <!-- Main transformer block structure -->
+  <!-- Outer bracket/frame -->
+  <g id="s6_frame" opacity="0">
+    <rect x="250" y="160" width="400" height="490" rx="8" fill="none"
+          stroke="#333" stroke-width="2" stroke-dasharray="8,4" stroke-linecap="round" stroke-linejoin="round" opacity="0.3"/>
+  </g>
+
+  <!-- Input box (bottom) -->
+  <g id="s6_inputbox" opacity="0">
+    <rect x="290" y="590" width="320" height="50" rx="5" fill="none"
+          stroke="#cc7722" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="290" y="590" width="320" height="50" rx="5" fill="#cc7722" opacity="0.08"/>
+  </g>
+  <g clip-path="url(#cp_s6_input)">
+    <text x="450" y="622" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="24" fill="#cc7722">Input + Positional Encoding</text>
+  </g>
+
+  <!-- Arrow up from input -->
+  <path id="s6_arr1" d="M450,590 L450,520 L445,525 M450,520 L455,525"
+        fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+
+  <!-- Self-Attention box -->
+  <g id="s6_attnbox" opacity="0">
+    <rect x="290" y="440" width="320" height="70" rx="5" fill="none"
+          stroke="#8844aa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="290" y="440" width="320" height="70" rx="5" fill="#8844aa" opacity="0.1"/>
+    <!-- Hatching -->
+    <line x1="300" y1="450" x2="340" y2="500" stroke="#8844aa" stroke-width="0.8" opacity="0.2"/>
+    <line x1="340" y1="450" x2="380" y2="500" stroke="#8844aa" stroke-width="0.8" opacity="0.2"/>
+    <line x1="380" y1="450" x2="420" y2="500" stroke="#8844aa" stroke-width="0.8" opacity="0.2"/>
+    <line x1="420" y1="450" x2="460" y2="500" stroke="#8844aa" stroke-width="0.8" opacity="0.2"/>
+    <line x1="460" y1="450" x2="500" y2="500" stroke="#8844aa" stroke-width="0.8" opacity="0.2"/>
+    <line x1="500" y1="450" x2="540" y2="500" stroke="#8844aa" stroke-width="0.8" opacity="0.2"/>
+    <line x1="540" y1="450" x2="580" y2="500" stroke="#8844aa" stroke-width="0.8" opacity="0.2"/>
+  </g>
+  <g clip-path="url(#cp_s6_attn)">
+    <text x="450" y="482" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="26" font-weight="700" fill="#8844aa">Multi-Head Self-Attention</text>
+  </g>
+
+  <!-- Residual connection 1 (skip around attention) -->
+  <path id="s6_skip1" d="M610,530 C660,530 680,490 680,475 C680,460 660,420 610,420"
+        fill="none" stroke="#cc3333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        stroke-dasharray="5,4" opacity="0"/>
+
+  <!-- Add & Norm 1 -->
+  <g id="s6_norm1box" opacity="0">
+    <rect x="290" y="385" width="320" height="40" rx="3" fill="none"
+          stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="290" y="385" width="320" height="40" rx="3" fill="#eee" opacity="0.5"/>
+  </g>
+  <g clip-path="url(#cp_s6_norm1)">
+    <text x="450" y="412" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="22" fill="#888">Add &amp; LayerNorm</text>
+  </g>
+
+  <!-- Arrow up -->
+  <path id="s6_arr2" d="M450,385 L450,320 L445,325 M450,320 L455,325"
+        fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+
+  <!-- FFN box -->
+  <g id="s6_ffnbox" opacity="0">
+    <rect x="290" y="265" width="320" height="50" rx="5" fill="none"
+          stroke="#1e8c5a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="290" y="265" width="320" height="50" rx="5" fill="#1e8c5a" opacity="0.08"/>
+  </g>
+  <g clip-path="url(#cp_s6_ffn)">
+    <text x="450" y="297" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="26" font-weight="700" fill="#1e8c5a">Feed-Forward Network</text>
+  </g>
+
+  <!-- Residual connection 2 (skip around FFN) -->
+  <path id="s6_skip2" d="M610,350 C660,350 680,310 680,295 C680,280 660,240 610,240"
+        fill="none" stroke="#cc3333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        stroke-dasharray="5,4" opacity="0"/>
+
+  <!-- Add & Norm 2 -->
+  <g id="s6_norm2box" opacity="0">
+    <rect x="290" y="210" width="320" height="40" rx="3" fill="none"
+          stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="290" y="210" width="320" height="40" rx="3" fill="#eee" opacity="0.5"/>
+  </g>
+  <g clip-path="url(#cp_s6_norm2)">
+    <text x="450" y="237" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="22" fill="#888">Add &amp; LayerNorm</text>
+  </g>
+
+  <!-- Output arrow -->
+  <path id="s6_arr3" d="M450,210 L450,170 L445,175 M450,170 L455,175"
+        fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+
+  <!-- Right side: Stack of N blocks -->
+  <g id="s6_stack" opacity="0">
+    <!-- Simplified thin blocks -->
+    <rect x="800" y="180" width="160" height="25" rx="3" fill="none" stroke="#8844aa" stroke-width="1.5" opacity="0.7"/>
+    <rect x="800" y="215" width="160" height="25" rx="3" fill="none" stroke="#8844aa" stroke-width="1.5" opacity="0.6"/>
+    <rect x="800" y="250" width="160" height="25" rx="3" fill="none" stroke="#8844aa" stroke-width="1.5" opacity="0.5"/>
+    <rect x="800" y="285" width="160" height="25" rx="3" fill="none" stroke="#8844aa" stroke-width="1.5" opacity="0.4"/>
+    <text x="880" y="330" text-anchor="middle" font-family="'Caveat',cursive" font-size="22" fill="#888">...</text>
+    <rect x="800" y="340" width="160" height="25" rx="3" fill="none" stroke="#8844aa" stroke-width="1.5" opacity="0.3"/>
+    <rect x="800" y="375" width="160" height="25" rx="3" fill="none" stroke="#8844aa" stroke-width="1.5" opacity="0.3"/>
+    <!-- Bracket -->
+    <path d="M975,180 L990,180 L990,400 L975,400" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- x N label -->
+  <g clip-path="url(#cp_s6_xn)">
+    <text x="1020" y="300" font-family="'Cabin Sketch',cursive"
+          font-size="34" font-weight="700" fill="#cc3333">&#215; N</text>
+    <text x="1000" y="330" font-family="'Caveat',cursive"
+          font-size="22" fill="#888">(N = 12 to 96)</text>
+  </g>
+
+  <!-- GPT-3 annotation -->
+  <g clip-path="url(#cp_s6_gpt)">
+    <text x="800" y="610" font-family="'Caveat',cursive"
+          font-size="26" fill="#cc3333">GPT-3: 96 layers, 175B params</text>
+  </g>
+</g>
+
+<!-- ═══ SCENE 7: Training (72-86s) ═══ -->
+<g id="scene7" class="scene">
+  <!-- Title -->
+  <g clip-path="url(#cp_s7_title)">
+    <text x="60" y="55" font-family="'Cabin Sketch',cursive"
+          font-size="48" font-weight="700" fill="#2b7ec2">
+      Training: Learning to Predict
+    </text>
+  </g>
+
+  <!-- Training flow: Left side -->
+  <!-- Input tokens box -->
+  <g id="s7_inpbox" opacity="0">
+    <rect x="70" y="120" width="200" height="50" rx="5" fill="none"
+          stroke="#2299aa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="70" y="120" width="200" height="50" rx="5" fill="#2299aa" opacity="0.08"/>
+  </g>
+  <g clip-path="url(#cp_s7_inp)">
+    <text x="170" y="152" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="24" fill="#2299aa">Input tokens</text>
+  </g>
+
+  <!-- Arrow right -->
+  <path id="s7_arr1" d="M270,145 L340,145 L335,140 M340,145 L335,150"
+        fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+
+  <!-- Transformer box -->
+  <g id="s7_transbox" opacity="0">
+    <rect x="345" y="110" width="180" height="70" rx="5" fill="none"
+          stroke="#8844aa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="345" y="110" width="180" height="70" rx="5" fill="#8844aa" opacity="0.08"/>
+    <text x="435" y="152" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="24" font-weight="700" fill="#8844aa">Transformer</text>
+  </g>
+
+  <!-- Arrow right -->
+  <path id="s7_arr2" d="M525,145 L595,145 L590,140 M595,145 L590,150"
+        fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+
+  <!-- Predicted token box -->
+  <g id="s7_predbox" opacity="0">
+    <rect x="600" y="120" width="160" height="50" rx="5" fill="none"
+          stroke="#2299aa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="600" y="120" width="160" height="50" rx="5" fill="#2299aa" opacity="0.08"/>
+  </g>
+  <g clip-path="url(#cp_s7_pred)">
+    <text x="680" y="152" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="22" fill="#2299aa">Predicted token</text>
+  </g>
+
+  <!-- Arrow down from predicted -->
+  <path id="s7_arr3" d="M680,170 L680,230 L675,225 M680,230 L685,225"
+        fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+
+  <!-- Compare: Actual vs Predicted -->
+  <g id="s7_compare" opacity="0">
+    <!-- Actual token -->
+    <rect x="600" y="240" width="160" height="45" rx="5" fill="none"
+          stroke="#cc3333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="680" y="268" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="22" fill="#cc3333">Actual token</text>
+    <!-- X mark for comparison -->
+    <text x="580" y="265" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="28" fill="#cc3333">&#x2717;</text>
+  </g>
+
+  <!-- Arrow down to loss -->
+  <path id="s7_arr4" d="M680,285 L680,340 C680,360 500,360 350,370"
+        fill="none" stroke="#cc3333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+
+  <!-- Loss formula -->
+  <g clip-path="url(#cp_s7_loss)">
+    <text x="70" y="415" font-family="'Cabin Sketch',cursive"
+          font-size="28" fill="#cc3333">
+      L = &#x2212;&#x2211; log P(w<tspan font-size="20" dy="5">t</tspan><tspan dy="-5"> | context)</tspan>
+    </text>
+  </g>
+
+  <!-- Gradient update formula -->
+  <g clip-path="url(#cp_s7_grad)">
+    <text x="70" y="475" font-family="'Cabin Sketch',cursive"
+          font-size="26" fill="#2299aa">
+      &#x03B8; &#x2190; &#x03B8; &#x2212; &#x03B1;&#x2207;L
+    </text>
+  </g>
+
+  <!-- Backprop arrow (curved, going back up to transformer) -->
+  <path id="s7_backprop" d="M170,380 C100,350 80,280 100,220 C120,180 200,140 345,140"
+        fill="none" stroke="#cc3333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+        stroke-dasharray="6,4" opacity="0"/>
+  <g id="s7_backprop_label" opacity="0">
+    <text x="60" y="310" font-family="'Caveat',cursive" font-size="22" fill="#cc3333"
+          transform="rotate(-60,60,310)">backprop</text>
+  </g>
+
+  <!-- Right side: Loss landscape contour map -->
+  <g id="s7_contours" opacity="0">
+    <!-- Concentric contour ellipses -->
+    <ellipse cx="1000" cy="350" rx="160" ry="120" fill="none"
+             stroke="#2299aa" stroke-width="1.5" opacity="0.3" stroke-linecap="round"/>
+    <ellipse cx="1000" cy="350" rx="120" ry="90" fill="none"
+             stroke="#2299aa" stroke-width="1.5" opacity="0.4" stroke-linecap="round"/>
+    <ellipse cx="1000" cy="350" rx="80" ry="55" fill="none"
+             stroke="#2299aa" stroke-width="1.5" opacity="0.5" stroke-linecap="round"/>
+    <ellipse cx="1000" cy="350" rx="40" ry="25" fill="none"
+             stroke="#2299aa" stroke-width="1.5" opacity="0.6" stroke-linecap="round"/>
+    <!-- Minimum point -->
+    <circle cx="1000" cy="350" r="5" fill="#cc3333"/>
+  </g>
+
+  <!-- Gradient descent path (dotted) -->
+  <path id="s7_descent" d="M1120,250 C1100,270 1080,290 1060,310 C1040,330 1020,340 1010,345 C1005,348 1002,349 1000,350"
+        fill="none" stroke="#cc3333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+        stroke-dasharray="4,4" opacity="0"/>
+  <!-- Dots along path -->
+  <g id="s7_dots" opacity="0">
+    <circle cx="1120" cy="250" r="4" fill="#cc3333"/>
+    <circle cx="1080" cy="290" r="4" fill="#cc3333"/>
+    <circle cx="1040" cy="330" r="4" fill="#cc3333"/>
+    <circle cx="1010" cy="345" r="4" fill="#cc3333"/>
+  </g>
+
+  <!-- Gradient descent label -->
+  <g clip-path="url(#cp_s7_update)">
+    <text x="900" y="530" font-family="'Cabin Sketch',cursive"
+          font-size="26" fill="#2299aa">gradient descent</text>
+  </g>
+
+  <!-- Data scale annotation -->
+  <g clip-path="url(#cp_s7_data)">
+    <text x="700" y="660" font-family="'Caveat',cursive"
+          font-size="26" fill="#888">
+      Trained on ~1-15 trillion tokens
+    </text>
+  </g>
+</g>
+
+<!-- ═══ SCENE 8: Scaling (86-98s) ═══ -->
+<g id="scene8" class="scene">
+  <!-- Title -->
+  <g clip-path="url(#cp_s8_title)">
+    <text x="60" y="55" font-family="'Cabin Sketch',cursive"
+          font-size="48" font-weight="700" fill="#2b7ec2">
+      Scaling: More Is More
+    </text>
+  </g>
+
+  <!-- Three scaling axes (left side) -->
+  <!-- Parameters icon (brain) -->
+  <g id="s8_param_icon" opacity="0">
+    <circle cx="90" cy="155" r="20" fill="none" stroke="#993344" stroke-width="2" stroke-linecap="round"/>
+    <path d="M78,155 C78,145 85,140 90,142 C95,140 102,145 102,155 C102,165 95,168 90,166 C85,168 78,165 78,155"
+          fill="none" stroke="#993344" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g clip-path="url(#cp_s8_p)">
+    <text x="120" y="165" font-family="'Cabin Sketch',cursive"
+          font-size="28" fill="#993344">Parameters: 125M → 175B</text>
+  </g>
+
+  <!-- Data icon (database) -->
+  <g id="s8_data_icon" opacity="0">
+    <ellipse cx="90" cy="230" rx="20" ry="8" fill="none" stroke="#993344" stroke-width="2" stroke-linecap="round"/>
+    <path d="M70,230 L70,255 C70,263 110,263 110,255 L110,230" fill="none" stroke="#993344" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="90" cy="243" rx="20" ry="5" fill="none" stroke="#993344" stroke-width="1" opacity="0.4" stroke-linecap="round"/>
+  </g>
+  <g clip-path="url(#cp_s8_d)">
+    <text x="120" y="248" font-family="'Cabin Sketch',cursive"
+          font-size="28" fill="#993344">Data: billions of tokens</text>
+  </g>
+
+  <!-- Compute icon (chip) -->
+  <g id="s8_comp_icon" opacity="0">
+    <rect x="72" y="310" width="36" height="30" rx="3" fill="none" stroke="#993344" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="80" y1="310" x2="80" y2="305" stroke="#993344" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="90" y1="310" x2="90" y2="305" stroke="#993344" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="100" y1="310" x2="100" y2="305" stroke="#993344" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="80" y1="340" x2="80" y2="345" stroke="#993344" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="90" y1="340" x2="90" y2="345" stroke="#993344" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="100" y1="340" x2="100" y2="345" stroke="#993344" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+  <g clip-path="url(#cp_s8_c)">
+    <text x="120" y="333" font-family="'Cabin Sketch',cursive"
+          font-size="28" fill="#993344">Compute: petaFLOPs</text>
+  </g>
+
+  <!-- Right side: Log-log plot -->
+  <!-- Axes -->
+  <g id="s8_axes" opacity="0">
+    <path id="s8_yaxis" d="M600,130 L600,530" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round"/>
+    <path id="s8_xaxis" d="M580,510 L1200,510" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round"/>
+    <polygon points="600,128 595,138 605,138" fill="#555"/>
+    <polygon points="1202,510 1192,505 1192,515" fill="#555"/>
+    <!-- Axis labels -->
+    <text x="560" y="330" font-family="'Caveat',cursive" font-size="20" fill="#555"
+          transform="rotate(-90,560,330)">Loss ↓</text>
+    <text x="900" y="545" text-anchor="middle" font-family="'Caveat',cursive" font-size="20" fill="#555">Compute (FLOPs) →</text>
+  </g>
+
+  <!-- Scaling curve -->
+  <path id="s8_curve" d="M640,180 C700,220 780,290 860,340 C940,380 1020,420 1150,470"
+        fill="none" stroke="#993344" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+
+  <!-- Model labels along curve -->
+  <g clip-path="url(#cp_s8_m1)">
+    <text x="720" y="240" font-family="'Caveat',cursive" font-size="22" fill="#993344">GPT-2</text>
+  </g>
+  <g clip-path="url(#cp_s8_m2)">
+    <text x="840" y="335" font-family="'Caveat',cursive" font-size="22" fill="#993344">GPT-3</text>
+  </g>
+  <g clip-path="url(#cp_s8_m3)">
+    <text x="960" y="420" font-family="'Caveat',cursive" font-size="22" fill="#993344">GPT-4</text>
+  </g>
+
+  <!-- Model dots -->
+  <g id="s8_mdots" opacity="0">
+    <circle cx="720" cy="250" r="5" fill="#993344"/>
+    <circle cx="860" cy="345" r="5" fill="#993344"/>
+    <circle cx="1000" cy="410" r="5" fill="#993344"/>
+  </g>
+
+  <!-- Power law formula -->
+  <g clip-path="url(#cp_s8_law)">
+    <text x="640" y="585" font-family="'Cabin Sketch',cursive"
+          font-size="32" fill="#cc3333">
+      L(C) ∼ C<tspan font-size="22" dy="-10">−α</tspan>
+    </text>
+  </g>
+</g>
+
+<!-- ═══ SCENE 9: GPT to ChatGPT (98-112s) ═══ -->
+<g id="scene9" class="scene">
+  <!-- Title -->
+  <g clip-path="url(#cp_s9_title)">
+    <text x="60" y="55" font-family="'Cabin Sketch',cursive"
+          font-size="48" font-weight="700" fill="#2b7ec2">
+      From GPT to ChatGPT
+    </text>
+  </g>
+
+  <!-- Stage 1: Pre-training (green) -->
+  <g id="s9_ptbox" opacity="0">
+    <rect x="60" y="130" width="280" height="140" rx="6" fill="none"
+          stroke="#1e8c5a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="60" y="130" width="280" height="140" rx="6" fill="#1e8c5a" opacity="0.06"/>
+    <!-- Web/data icon -->
+    <circle cx="200" cy="170" r="18" fill="none" stroke="#1e8c5a" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M182,170 L218,170 M200,152 L200,188 M183,160 C193,170 193,170 183,180 M217,160 C207,170 207,170 217,180"
+          fill="none" stroke="#1e8c5a" stroke-width="1" stroke-linecap="round" opacity="0.6"/>
+  </g>
+  <g clip-path="url(#cp_s9_pt)">
+    <text x="200" y="220" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="26" font-weight="700" fill="#1e8c5a">Pre-training</text>
+    <text x="200" y="248" text-anchor="middle" font-family="'Caveat',cursive"
+          font-size="22" fill="#1e8c5a">Next token prediction</text>
+  </g>
+
+  <!-- Arrow 1 -->
+  <path id="s9_arr1" d="M340,200 L405,200 L400,195 M405,200 L400,205"
+        fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+
+  <!-- Stage 2: SFT (orange) -->
+  <g id="s9_sftbox" opacity="0">
+    <rect x="410" y="130" width="280" height="140" rx="6" fill="none"
+          stroke="#cc7722" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="410" y="130" width="280" height="140" rx="6" fill="#cc7722" opacity="0.06"/>
+    <!-- Human + checklist icon -->
+    <circle cx="550" cy="162" r="12" fill="none" stroke="#cc7722" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M538,178 C538,172 545,168 550,168 C555,168 562,172 562,178"
+          fill="none" stroke="#cc7722" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M530,175 L533,178 L538,172" fill="none" stroke="#cc7722" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g clip-path="url(#cp_s9_sft)">
+    <text x="550" y="220" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="26" font-weight="700" fill="#cc7722">SFT</text>
+    <text x="550" y="248" text-anchor="middle" font-family="'Caveat',cursive"
+          font-size="22" fill="#cc7722">Human Q&amp;A examples</text>
+  </g>
+
+  <!-- Arrow 2 -->
+  <path id="s9_arr2" d="M690,200 L755,200 L750,195 M755,200 L750,205"
+        fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+
+  <!-- Stage 3: RLHF (purple) -->
+  <g id="s9_rlhfbox" opacity="0">
+    <rect x="760" y="130" width="280" height="140" rx="6" fill="none"
+          stroke="#8844aa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="760" y="130" width="280" height="140" rx="6" fill="#8844aa" opacity="0.06"/>
+    <!-- Thumbs up/down -->
+    <text x="880" y="175" text-anchor="middle" font-family="sans-serif" font-size="24" fill="#1e8c5a">&#x1F44D;</text>
+    <text x="920" y="175" text-anchor="middle" font-family="sans-serif" font-size="24" fill="#cc3333">&#x1F44E;</text>
+  </g>
+  <g clip-path="url(#cp_s9_rlhf)">
+    <text x="900" y="220" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="26" font-weight="700" fill="#8844aa">RLHF</text>
+    <text x="900" y="248" text-anchor="middle" font-family="'Caveat',cursive"
+          font-size="22" fill="#8844aa">Human preferences</text>
+  </g>
+
+  <!-- Comparison below -->
+  <!-- Base GPT output (messy, gray) -->
+  <g id="s9_basebox" opacity="0">
+    <rect x="60" y="380" width="450" height="120" rx="5" fill="none"
+          stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="60" y="380" width="450" height="120" rx="5" fill="#eee" opacity="0.3"/>
+  </g>
+  <g clip-path="url(#cp_s9_base)">
+    <text x="285" y="410" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="24" font-weight="700" fill="#888">Base GPT</text>
+    <text x="285" y="440" text-anchor="middle" font-family="'Caveat',cursive"
+          font-size="22" fill="#888">"...continues text, rambles on</text>
+    <text x="285" y="465" text-anchor="middle" font-family="'Caveat',cursive"
+          font-size="22" fill="#888">about random topics..."</text>
+  </g>
+
+  <!-- ChatGPT output (clean, blue) -->
+  <g id="s9_chatbox" opacity="0">
+    <rect x="600" y="380" width="450" height="120" rx="5" fill="none"
+          stroke="#2b7ec2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="600" y="380" width="450" height="120" rx="5" fill="#2b7ec2" opacity="0.05"/>
+  </g>
+  <g clip-path="url(#cp_s9_chat)">
+    <text x="825" y="410" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="24" font-weight="700" fill="#2b7ec2">ChatGPT</text>
+    <text x="825" y="440" text-anchor="middle" font-family="'Caveat',cursive"
+          font-size="22" fill="#2b7ec2">"Here's a clear, helpful answer</text>
+    <text x="825" y="465" text-anchor="middle" font-family="'Caveat',cursive"
+          font-size="22" fill="#2b7ec2">to your question!"</text>
+  </g>
+
+  <!-- Alignment arrow -->
+  <path id="s9_align_arrow" d="M510,440 L595,440 L590,435 M595,440 L590,445"
+        fill="none" stroke="#cc3333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+  <g clip-path="url(#cp_s9_align)">
+    <text x="555" y="580" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="28" fill="#cc3333">Alignment</text>
+  </g>
+</g>
+
+<!-- ═══ SCENE 10: Recap (112-120s) ═══ -->
+<g id="scene10" class="scene">
+  <!-- Title -->
+  <g clip-path="url(#cp_s10_title)">
+    <text x="60" y="55" font-family="'Cabin Sketch',cursive"
+          font-size="48" font-weight="700" fill="#2b7ec2">
+      The LLM Stack
+    </text>
+  </g>
+
+  <!-- Building blocks (bottom to top) -->
+  <!-- Block 1: Tokenization (bottom) -->
+  <g id="s10_blk1" opacity="0">
+    <rect x="100" y="545" width="400" height="50" rx="5" fill="none"
+          stroke="#1e8c5a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="100" y="545" width="400" height="50" rx="5" fill="#1e8c5a" opacity="0.1"/>
+  </g>
+  <g clip-path="url(#cp_s10_b1)">
+    <text x="300" y="578" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="24" fill="#1e8c5a">Tokenization — text to numbers</text>
+  </g>
+
+  <!-- Block 2: Embeddings -->
+  <g id="s10_blk2" opacity="0">
+    <rect x="100" y="480" width="400" height="50" rx="5" fill="none"
+          stroke="#cc7722" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="100" y="480" width="400" height="50" rx="5" fill="#cc7722" opacity="0.1"/>
+  </g>
+  <g clip-path="url(#cp_s10_b2)">
+    <text x="300" y="513" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="24" fill="#cc7722">Embeddings — numbers to meaning</text>
+  </g>
+
+  <!-- Block 3: Attention -->
+  <g id="s10_blk3" opacity="0">
+    <rect x="100" y="415" width="400" height="50" rx="5" fill="none"
+          stroke="#8844aa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="100" y="415" width="400" height="50" rx="5" fill="#8844aa" opacity="0.1"/>
+  </g>
+  <g clip-path="url(#cp_s10_b3)">
+    <text x="300" y="448" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="24" fill="#8844aa">Attention — context awareness</text>
+  </g>
+
+  <!-- Block 4: Transformer -->
+  <g id="s10_blk4" opacity="0">
+    <rect x="100" y="350" width="400" height="50" rx="5" fill="none"
+          stroke="#2b7ec2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="100" y="350" width="400" height="50" rx="5" fill="#2b7ec2" opacity="0.1"/>
+  </g>
+  <g clip-path="url(#cp_s10_b4)">
+    <text x="300" y="383" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="24" fill="#2b7ec2">Transformer — the architecture</text>
+  </g>
+
+  <!-- Block 5: Training -->
+  <g id="s10_blk5" opacity="0">
+    <rect x="100" y="285" width="400" height="50" rx="5" fill="none"
+          stroke="#2299aa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="100" y="285" width="400" height="50" rx="5" fill="#2299aa" opacity="0.1"/>
+  </g>
+  <g clip-path="url(#cp_s10_b5)">
+    <text x="300" y="318" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="24" fill="#2299aa">Training — learn to predict</text>
+  </g>
+
+  <!-- Block 6: Scaling -->
+  <g id="s10_blk6" opacity="0">
+    <rect x="100" y="220" width="400" height="50" rx="5" fill="none"
+          stroke="#993344" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="100" y="220" width="400" height="50" rx="5" fill="#993344" opacity="0.1"/>
+  </g>
+  <g clip-path="url(#cp_s10_b6)">
+    <text x="300" y="253" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="24" fill="#993344">Scaling — bigger is better</text>
+  </g>
+
+  <!-- Block 7: Alignment (top) -->
+  <g id="s10_blk7" opacity="0">
+    <rect x="100" y="155" width="400" height="50" rx="5" fill="none"
+          stroke="#cc3333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="100" y="155" width="400" height="50" rx="5" fill="#cc3333" opacity="0.1"/>
+  </g>
+  <g clip-path="url(#cp_s10_b7)">
+    <text x="300" y="188" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="24" fill="#cc3333">Alignment — helpful, not just smart</text>
+  </g>
+
+  <!-- Bracket on the right -->
+  <path id="s10_bracket" d="M520,155 L550,155 L550,340 L570,340 L550,340 L550,595 L520,595"
+        fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+
+  <!-- = Large Language Model -->
+  <g clip-path="url(#cp_s10_eq)">
+    <text x="640" y="350" font-family="'Cabin Sketch',cursive"
+          font-size="40" font-weight="700" fill="#2b7ec2">
+      = Large Language
+    </text>
+    <text x="670" y="395" font-family="'Cabin Sketch',cursive"
+          font-size="40" font-weight="700" fill="#2b7ec2">
+      Model
+    </text>
+  </g>
+
+  <!-- Brain icon -->
+  <g id="s10_brain" opacity="0">
+    <path d="M780,450 C760,420 770,390 800,380 C810,360 840,350 860,360 C880,345 910,350 920,370 C940,365 955,380 950,400 C970,410 970,440 950,450 C960,470 945,490 920,485 C910,500 880,505 860,495 C840,505 810,500 800,485 C780,490 765,475 770,460 C755,455 755,440 780,450Z"
+          fill="none" stroke="#8844aa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Lightning bolt -->
+    <path d="M850,395 L870,420 L855,420 L875,450" fill="none" stroke="#cc7722" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</g>
+
+<!-- Progress bar -->
+<rect x="0" y="716" width="1280" height="4" fill="#ddd8d0"/>
+<rect id="progBar" x="0" y="716" width="0" height="4" fill="#2b7ec2"/>
+</svg>
+</div>
+
+<div id="controls">
+  <button id="btnPlay">&#9654; Play</button>
+  <button id="btnReplay">&#8635; Replay</button>
+  <input type="range" id="seekBar" min="0" max="120000" value="0" step="100"/>
+  <span id="timeDisp">0.0 / 120.0s</span>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/DrawSVGPlugin.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.min.js"></script>
+<script>
+if (typeof DrawSVGPlugin !== 'undefined') gsap.registerPlugin(DrawSVGPlugin);
+
+document.addEventListener('DOMContentLoaded', () => {
+  const TOTAL = 120;
+  const board = document.getElementById('board');
+  const seekBar = document.getElementById('seekBar');
+  const timeDisp = document.getElementById('timeDisp');
+  const btnPlay = document.getElementById('btnPlay');
+  const progBar = document.getElementById('progBar');
+  let isSeeking = false;
+
+  const rc = rough.svg(board);
+
+  // ── Utility Functions ──
+  function drawOn(el, dur, ease) {
+    if (typeof el === 'string') el = document.getElementById(el);
+    if (!el) return gsap.to({}, { duration: 0.01 });
+    if (typeof DrawSVGPlugin !== 'undefined') {
+      return gsap.fromTo(el, { drawSVG: '0%' }, { drawSVG: '100%', duration: dur, ease: ease || 'power1.inOut' });
+    }
+    const len = el.getTotalLength ? el.getTotalLength() : 500;
+    return gsap.fromTo(el, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration: dur, ease: ease || 'power1.inOut' });
+  }
+
+  function wipe(clipRectId, targetWidth, dur, ease) {
+    return gsap.to('#' + clipRectId, { attr: { width: targetWidth }, duration: dur, ease: ease || 'power1.inOut' });
+  }
+
+  function fadeIn(sel, dur) {
+    return gsap.to(sel, { opacity: 1, duration: dur || 0.5, ease: 'power2.out' });
+  }
+
+  function showScene(sel) { gsap.set(sel, { opacity: 1 }); }
+  function hideScene(sel) { gsap.set(sel, { opacity: 0 }); }
+
+  function addRoughShape(shape, id, parentId) {
+    shape.setAttribute('opacity', '0');
+    shape.id = id;
+    document.getElementById(parentId).appendChild(shape);
+    return shape;
+  }
+
+  const hachureOpts = (color, fillColor, extra) => Object.assign({
+    roughness: 1.8, stroke: color, strokeWidth: 3, fill: fillColor,
+    fillStyle: 'hachure', hachureGap: 8, bowing: 2
+  }, extra || {});
+
+  const solidOpts = (color, extra) => Object.assign({
+    roughness: 1.5, stroke: color, strokeWidth: 2.5, fill: 'none', bowing: 2
+  }, extra || {});
+
+  // ── Rough.js Shapes ──
+  // Scene 1: Title frame
+  addRoughShape(rc.rectangle(200, 220, 880, 250, hachureOpts('#2b7ec2', 'rgba(43,126,194,0.03)', { roughness: 2.2, strokeWidth: 2 })), 'rough_s1_frame', 'scene1');
+
+  // Scene 2: Probability bar outlines (hand-drawn feel)
+  addRoughShape(rc.rectangle(695, 345, 80, 200, solidOpts('#1e8c5a', { roughness: 2 })), 'rough_s2_bar1', 'scene2');
+  addRoughShape(rc.rectangle(805, 425, 80, 120, solidOpts('#1e8c5a', { roughness: 2 })), 'rough_s2_bar2', 'scene2');
+  addRoughShape(rc.rectangle(915, 455, 80, 90, solidOpts('#1e8c5a', { roughness: 2 })), 'rough_s2_bar3', 'scene2');
+
+  // Scene 4: Embedding matrix frame
+  addRoughShape(rc.rectangle(75, 195, 130, 190, hachureOpts('#cc7722', 'rgba(204,119,34,0.04)', { roughness: 2.5 })), 'rough_s4_matrix', 'scene4');
+
+  // Scene 6: Transformer block outer frame
+  addRoughShape(rc.rectangle(245, 155, 410, 500, solidOpts('#333', { roughness: 2, strokeWidth: 2 })), 'rough_s6_block', 'scene6');
+
+  // Scene 9: Three pipeline boxes
+  addRoughShape(rc.rectangle(55, 125, 290, 150, hachureOpts('#1e8c5a', 'rgba(30,140,90,0.04)', { roughness: 2 })), 'rough_s9_pt', 'scene9');
+  addRoughShape(rc.rectangle(405, 125, 290, 150, hachureOpts('#cc7722', 'rgba(204,119,34,0.04)', { roughness: 2 })), 'rough_s9_sft', 'scene9');
+  addRoughShape(rc.rectangle(755, 125, 290, 150, hachureOpts('#8844aa', 'rgba(136,68,170,0.04)', { roughness: 2 })), 'rough_s9_rlhf', 'scene9');
+
+  // ── Master Timeline ──
+  const tl = gsap.timeline({
+    paused: true,
+    onUpdate() {
+      const t = tl.time();
+      if (!isSeeking) seekBar.value = Math.round(t * 1000);
+      timeDisp.textContent = t.toFixed(1) + ' / ' + TOTAL + 's';
+      gsap.set(progBar, { attr: { width: (t / TOTAL) * 1280 } });
+    }
+  });
+
+  // ═══════════════════════════════════════════
+  //  SCENE 1: Title Card (0s → 6s)
+  // ═══════════════════════════════════════════
+  tl.call(() => showScene('#scene1'), null, 0);
+  // 0.3s → 1.8s — Title wipes in
+  tl.add(wipe('cr_s1_title', 1100, 1.5), 0.3);
+  // 2.0s → 2.8s — Underline draws on
+  tl.add(fadeIn('#s1_ul', 0.2), 2.0);
+  tl.add(drawOn('s1_ul', 0.8), 2.0);
+  // 3.0s → 4.2s — Subtitle wipes in
+  tl.add(wipe('cr_s1_sub', 900, 1.2), 3.0);
+  // 4.5s → 5.5s — Tag line wipes in
+  tl.add(wipe('cr_s1_tag', 900, 1.0), 4.5);
+  // 5.0s → 6.0s — Brain illustration fades in
+  tl.add(fadeIn('#s1_brain', 1.0), 5.0);
+  // 0.2s — Rough title frame fades in
+  tl.add(fadeIn('#rough_s1_frame', 1.5), 0.2);
+
+  // ═══════════════════════════════════════════
+  //  SCENE 2: Language Model (6s → 18s)
+  // ═══════════════════════════════════════════
+  tl.call(() => { hideScene('#scene1'); showScene('#scene2'); }, null, 6.0);
+  // 6.3s → 7.5s — Title wipes
+  tl.add(wipe('cr_s2_title', 500, 1.2), 6.3);
+  // 7.8s → 8.8s — Definition wipes
+  tl.add(wipe('cr_s2_def', 450, 1.0), 7.8);
+  // 9.0s → 10.0s — Formula wipes (red)
+  tl.add(wipe('cr_s2_formula', 480, 1.0), 9.0);
+  // 10.5s → 11.7s — Sentence wipes
+  tl.add(wipe('cr_s2_sent', 620, 1.2), 10.5);
+  // 12.0s → 12.6s — Arrow draws on
+  tl.add(fadeIn('#s2_arrow', 0.2), 12.0);
+  tl.add(drawOn('s2_arrow', 0.6), 12.0);
+  // 12.8s → 14.6s — Bars fade in sequentially (with rough overlays)
+  tl.add(fadeIn('#s2_bar1', 0.8), 12.8);
+  tl.add(fadeIn('#rough_s2_bar1', 0.8), 12.8);
+  tl.add(fadeIn('#s2_bar2', 0.8), 13.3);
+  tl.add(fadeIn('#rough_s2_bar2', 0.8), 13.3);
+  tl.add(fadeIn('#s2_bar3', 0.8), 13.8);
+  tl.add(fadeIn('#rough_s2_bar3', 0.8), 13.8);
+  // 14.5s → 15.7s — Bar labels wipe
+  tl.add(wipe('cr_s2_lbl1', 100, 0.6), 14.5);
+  tl.add(wipe('cr_s2_lbl2', 100, 0.6), 14.8);
+  tl.add(wipe('cr_s2_lbl3', 100, 0.6), 15.1);
+  // 16.5s → 17.5s — Goal text wipes
+  tl.add(wipe('cr_s2_goal', 500, 1.0), 16.5);
+
+  // ═══════════════════════════════════════════
+  //  SCENE 3: Tokenization (18s → 28s)
+  // ═══════════════════════════════════════════
+  tl.call(() => { hideScene('#scene2'); showScene('#scene3'); }, null, 18.0);
+  // 18.3s → 19.5s — Title wipes
+  tl.add(wipe('cr_s3_title', 600, 1.2), 18.3);
+  // 19.8s → 20.8s — Word wipes in
+  tl.add(wipe('cr_s3_word', 650, 1.0), 19.8);
+  // 21.0s → 21.8s — Cut lines draw on
+  tl.add(fadeIn('#s3_cut1', 0.2), 21.0);
+  tl.add(drawOn('s3_cut1', 0.5), 21.0);
+  tl.add(fadeIn('#s3_cut2', 0.2), 21.3);
+  tl.add(drawOn('s3_cut2', 0.5), 21.3);
+  // 22.0s → 23.4s — Subword boxes and text
+  tl.add(fadeIn('#s3_box1', 0.5), 22.0);
+  tl.add(wipe('cr_s3_t1', 140, 0.6), 22.0);
+  tl.add(fadeIn('#s3_box2', 0.5), 22.4);
+  tl.add(wipe('cr_s3_t2', 140, 0.6), 22.4);
+  tl.add(fadeIn('#s3_box3', 0.5), 22.8);
+  tl.add(wipe('cr_s3_t3', 140, 0.6), 22.8);
+  // 23.5s → 24.4s — Arrows draw
+  tl.add(fadeIn('#s3_arrows', 0.2), 23.5);
+  tl.add(drawOn('s3_arr1', 0.5), 23.5);
+  tl.add(drawOn('s3_arr2', 0.5), 23.7);
+  tl.add(drawOn('s3_arr3', 0.5), 23.9);
+  // 24.5s → 25.6s — Token IDs wipe
+  tl.add(fadeIn('#s3_ids', 0.3), 24.5);
+  tl.add(wipe('cr_s3_id1', 90, 0.5), 24.5);
+  tl.add(wipe('cr_s3_id2', 90, 0.5), 24.8);
+  tl.add(wipe('cr_s3_id3', 90, 0.5), 25.1);
+  // 26.0s → 26.8s — BPE label
+  tl.add(wipe('cr_s3_bpe', 450, 0.8), 26.0);
+  // 27.0s → 27.8s — Vocab annotation
+  tl.add(wipe('cr_s3_vocab', 400, 0.8), 27.0);
+
+  // ═══════════════════════════════════════════
+  //  SCENE 4: Embeddings (28s → 40s)
+  // ═══════════════════════════════════════════
+  tl.call(() => { hideScene('#scene3'); showScene('#scene4'); }, null, 28.0);
+  // 28.3s — Title wipes
+  tl.add(wipe('cr_s4_title', 550, 1.2), 28.3);
+  // 29.8s — Token label wipes
+  tl.add(wipe('cr_s4_tok', 400, 1.0), 29.8);
+  // 31.0s — Embedding matrix fades in (with rough overlay)
+  tl.add(fadeIn('#s4_matrix', 1.5), 31.0);
+  tl.add(fadeIn('#rough_s4_matrix', 1.5), 31.0);
+  // 32.5s — Output vector wipes
+  tl.add(wipe('cr_s4_vec', 450, 1.0), 32.5);
+  // 33.5s — Dimension annotation wipes
+  tl.add(wipe('cr_s4_dim', 300, 0.8), 33.5);
+  // 34.5s — Axes draw on
+  tl.add(fadeIn('#s4_axes', 0.3), 34.5);
+  tl.add(drawOn('s4_yaxis', 0.6), 34.5);
+  tl.add(drawOn('s4_xaxis', 0.6), 34.8);
+  // 35.5s — Word dots fade in
+  tl.add(fadeIn('#s4_dots', 1.0), 35.5);
+  // 36.5s — Word labels wipe
+  tl.add(wipe('cr_s4_w1', 70, 0.5), 36.5);
+  tl.add(wipe('cr_s4_w2', 80, 0.5), 36.7);
+  tl.add(wipe('cr_s4_w3', 60, 0.5), 36.9);
+  tl.add(wipe('cr_s4_w4', 60, 0.5), 37.1);
+  tl.add(wipe('cr_s4_w5', 60, 0.5), 37.3);
+  tl.add(wipe('cr_s4_w6', 80, 0.5), 37.5);
+  // 37.8s — Cluster ovals fade in
+  tl.add(fadeIn('#s4_clusters', 0.8), 37.8);
+  // 38.5s — Analogy arrow draws
+  tl.add(fadeIn('#s4_analogy_arrow', 0.2), 38.5);
+  tl.add(drawOn('s4_analogy_arrow', 0.6), 38.5);
+  // 38.8s — Analogy text wipes
+  tl.add(wipe('cr_s4_analogy', 550, 1.0), 38.8);
+  // 39.5s — Summary wipes
+  tl.add(wipe('cr_s4_summary', 500, 0.8), 39.5);
+
+  // ═══════════════════════════════════════════
+  //  SCENE 5: Attention (40s → 58s)
+  // ═══════════════════════════════════════════
+  tl.call(() => { hideScene('#scene4'); showScene('#scene5'); }, null, 40.0);
+
+  // ── Part A: Spotlight metaphor ──
+  // 40.3s — Title wipes
+  tl.add(wipe('cr_s5_title', 600, 1.2), 40.3);
+  // 41.8s — Word boxes fade in
+  tl.add(fadeIn('#s5_words', 1.0), 41.8);
+  // 43.0s — Attention beams draw on (the key visual!)
+  tl.add(fadeIn('#s5_beams', 0.3), 43.0);
+  tl.add(drawOn('s5_b1', 0.6), 43.0);
+  tl.add(drawOn('s5_b2', 0.5), 43.2);
+  tl.add(drawOn('s5_b3', 0.5), 43.4);
+  tl.add(drawOn('s5_b4', 1.0), 43.6);
+  tl.add(drawOn('s5_b5', 0.6), 44.2);
+  tl.add(drawOn('s5_b6', 1.0), 44.5);
+  // 45.5s — Weight labels fade in
+  tl.add(fadeIn('#s5_weights', 0.8), 45.5);
+  // 46.5s — Context question wipes
+  tl.add(wipe('cr_s5_ctx', 550, 1.0), 46.5);
+
+  // ── Part B: Q, K, V mechanism ──
+  // 48.0s — Q box
+  tl.add(fadeIn('#s5_qbox', 0.6), 48.0);
+  tl.add(wipe('cr_s5_q', 200, 0.8), 48.2);
+  // 49.2s — K box
+  tl.add(fadeIn('#s5_kbox', 0.6), 49.2);
+  tl.add(wipe('cr_s5_k', 200, 0.8), 49.4);
+  // 50.4s — V box
+  tl.add(fadeIn('#s5_vbox', 0.6), 50.4);
+  tl.add(wipe('cr_s5_v', 200, 0.8), 50.6);
+  // 51.5s — QKV arrows
+  tl.add(fadeIn('#s5_qkv_arrows', 0.3), 51.5);
+  tl.add(drawOn('s5_qk_arrow', 0.6), 51.5);
+  tl.add(drawOn('s5_sv_arrow', 0.6), 51.8);
+  // 52.5s — Score grid fades in
+  tl.add(fadeIn('#s5_grid', 1.2), 52.5);
+
+  // ── Part C: Formula ──
+  // 55.0s — Formula wipes in
+  tl.add(wipe('cr_s5_formula', 900, 1.5), 55.0);
+  // 56.8s — Multi-head annotation
+  tl.add(wipe('cr_s5_multi', 700, 1.0), 56.8);
+
+  // ═══════════════════════════════════════════
+  //  SCENE 6: Transformer (58s → 72s)
+  // ═══════════════════════════════════════════
+  tl.call(() => { hideScene('#scene5'); showScene('#scene6'); }, null, 58.0);
+  // 58.3s — Title wipes
+  tl.add(wipe('cr_s6_title', 500, 1.2), 58.3);
+  // 59.5s — Input box draws
+  tl.add(fadeIn('#s6_inputbox', 0.6), 59.5);
+  tl.add(wipe('cr_s6_input', 320, 0.8), 59.7);
+  // 60.5s — Arrow up
+  tl.add(fadeIn('#s6_arr1', 0.2), 60.5);
+  tl.add(drawOn('s6_arr1', 0.5), 60.5);
+  // 61.0s — Self-Attention box
+  tl.add(fadeIn('#s6_attnbox', 0.8), 61.0);
+  tl.add(wipe('cr_s6_attn', 320, 0.8), 61.2);
+  // 62.2s — Residual skip 1
+  tl.add(fadeIn('#s6_skip1', 0.2), 62.2);
+  tl.add(drawOn('s6_skip1', 0.8), 62.2);
+  // 63.0s — Add & Norm 1
+  tl.add(fadeIn('#s6_norm1box', 0.5), 63.0);
+  tl.add(wipe('cr_s6_norm1', 320, 0.6), 63.2);
+  // 64.0s — Arrow up
+  tl.add(fadeIn('#s6_arr2', 0.2), 64.0);
+  tl.add(drawOn('s6_arr2', 0.5), 64.0);
+  // 64.5s — FFN box
+  tl.add(fadeIn('#s6_ffnbox', 0.8), 64.5);
+  tl.add(wipe('cr_s6_ffn', 320, 0.8), 64.7);
+  // 65.5s — Residual skip 2
+  tl.add(fadeIn('#s6_skip2', 0.2), 65.5);
+  tl.add(drawOn('s6_skip2', 0.8), 65.5);
+  // 66.5s — Add & Norm 2
+  tl.add(fadeIn('#s6_norm2box', 0.5), 66.5);
+  tl.add(wipe('cr_s6_norm2', 320, 0.6), 66.7);
+  // 67.5s — Output arrow
+  tl.add(fadeIn('#s6_arr3', 0.2), 67.5);
+  tl.add(drawOn('s6_arr3', 0.5), 67.5);
+  // 68.0s — Frame fades in (with rough overlay)
+  tl.add(fadeIn('#s6_frame', 0.8), 68.0);
+  tl.add(fadeIn('#rough_s6_block', 0.8), 68.0);
+  // 69.0s — Stack fades in
+  tl.add(fadeIn('#s6_stack', 1.0), 69.0);
+  // 70.0s — x N label wipes
+  tl.add(wipe('cr_s6_xn', 250, 0.8), 70.0);
+  // 71.0s — GPT-3 annotation wipes
+  tl.add(wipe('cr_s6_gpt', 500, 0.8), 71.0);
+
+  // ═══════════════════════════════════════════
+  //  SCENE 7: Training (72s → 86s)
+  // ═══════════════════════════════════════════
+  tl.call(() => { hideScene('#scene6'); showScene('#scene7'); }, null, 72.0);
+  // 72.3s — Title wipes
+  tl.add(wipe('cr_s7_title', 550, 1.2), 72.3);
+  // 73.5s — Input box
+  tl.add(fadeIn('#s7_inpbox', 0.6), 73.5);
+  tl.add(wipe('cr_s7_inp', 200, 0.6), 73.7);
+  // 74.3s — Arrow 1
+  tl.add(fadeIn('#s7_arr1', 0.2), 74.3);
+  tl.add(drawOn('s7_arr1', 0.4), 74.3);
+  // 74.8s — Transformer box
+  tl.add(fadeIn('#s7_transbox', 0.6), 74.8);
+  // 75.5s — Arrow 2
+  tl.add(fadeIn('#s7_arr2', 0.2), 75.5);
+  tl.add(drawOn('s7_arr2', 0.4), 75.5);
+  // 76.0s — Predicted box
+  tl.add(fadeIn('#s7_predbox', 0.6), 76.0);
+  tl.add(wipe('cr_s7_pred', 160, 0.6), 76.2);
+  // 76.8s — Arrow 3 down
+  tl.add(fadeIn('#s7_arr3', 0.2), 76.8);
+  tl.add(drawOn('s7_arr3', 0.4), 76.8);
+  // 77.3s — Compare (actual vs predicted)
+  tl.add(fadeIn('#s7_compare', 0.8), 77.3);
+  // 78.2s — Arrow 4 to loss
+  tl.add(fadeIn('#s7_arr4', 0.2), 78.2);
+  tl.add(drawOn('s7_arr4', 0.8), 78.2);
+  // 79.0s — Loss formula wipes
+  tl.add(wipe('cr_s7_loss', 500, 1.0), 79.0);
+  // 80.0s — Gradient update wipes
+  tl.add(wipe('cr_s7_grad', 300, 0.8), 80.0);
+  // 80.8s — Backprop arrow draws
+  tl.add(fadeIn('#s7_backprop', 0.2), 80.8);
+  tl.add(drawOn('s7_backprop', 1.2), 80.8);
+  tl.add(fadeIn('#s7_backprop_label', 0.5), 81.0);
+  // 82.0s — Contours fade in
+  tl.add(fadeIn('#s7_contours', 1.5), 82.0);
+  // 83.5s — Gradient descent path draws
+  tl.add(fadeIn('#s7_descent', 0.2), 83.5);
+  tl.add(drawOn('s7_descent', 1.2), 83.5);
+  tl.add(fadeIn('#s7_dots', 0.8), 83.8);
+  // 84.5s — Gradient descent label
+  tl.add(wipe('cr_s7_update', 350, 0.8), 84.5);
+  // 85.2s — Data scale
+  tl.add(wipe('cr_s7_data', 500, 0.8), 85.2);
+
+  // ═══════════════════════════════════════════
+  //  SCENE 8: Scaling (86s → 98s)
+  // ═══════════════════════════════════════════
+  tl.call(() => { hideScene('#scene7'); showScene('#scene8'); }, null, 86.0);
+  // 86.3s — Title wipes
+  tl.add(wipe('cr_s8_title', 500, 1.2), 86.3);
+  // 87.8s — Parameter icon + label
+  tl.add(fadeIn('#s8_param_icon', 0.6), 87.8);
+  tl.add(wipe('cr_s8_p', 450, 0.8), 88.0);
+  // 89.0s — Data icon + label
+  tl.add(fadeIn('#s8_data_icon', 0.6), 89.0);
+  tl.add(wipe('cr_s8_d', 400, 0.8), 89.2);
+  // 90.2s — Compute icon + label
+  tl.add(fadeIn('#s8_comp_icon', 0.6), 90.2);
+  tl.add(wipe('cr_s8_c', 380, 0.8), 90.4);
+  // 91.2s — Axes draw on
+  tl.add(fadeIn('#s8_axes', 0.3), 91.2);
+  tl.add(drawOn('s8_yaxis', 0.6), 91.2);
+  tl.add(drawOn('s8_xaxis', 0.6), 91.5);
+  // 92.2s — Scaling curve draws on
+  tl.add(fadeIn('#s8_curve', 0.2), 92.2);
+  tl.add(drawOn('s8_curve', 2.0), 92.2);
+  // 94.2s — Model dots + labels
+  tl.add(fadeIn('#s8_mdots', 0.5), 94.2);
+  tl.add(wipe('cr_s8_m1', 100, 0.5), 94.5);
+  tl.add(wipe('cr_s8_m2', 100, 0.5), 95.0);
+  tl.add(wipe('cr_s8_m3', 100, 0.5), 95.5);
+  // 96.5s — Power law formula
+  tl.add(wipe('cr_s8_law', 350, 1.0), 96.5);
+
+  // ═══════════════════════════════════════════
+  //  SCENE 9: GPT to ChatGPT (98s → 112s)
+  // ═══════════════════════════════════════════
+  tl.call(() => { hideScene('#scene8'); showScene('#scene9'); }, null, 98.0);
+  // 98.3s — Title wipes
+  tl.add(wipe('cr_s9_title', 550, 1.2), 98.3);
+  // 99.8s — Pre-training box (with rough overlay)
+  tl.add(fadeIn('#s9_ptbox', 0.8), 99.8);
+  tl.add(fadeIn('#rough_s9_pt', 0.8), 99.8);
+  tl.add(wipe('cr_s9_pt', 280, 0.8), 100.0);
+  // 101.0s — Arrow 1
+  tl.add(fadeIn('#s9_arr1', 0.2), 101.0);
+  tl.add(drawOn('s9_arr1', 0.5), 101.0);
+  // 101.5s — SFT box (with rough overlay)
+  tl.add(fadeIn('#s9_sftbox', 0.8), 101.5);
+  tl.add(fadeIn('#rough_s9_sft', 0.8), 101.5);
+  tl.add(wipe('cr_s9_sft', 280, 0.8), 101.7);
+  // 103.0s — Arrow 2
+  tl.add(fadeIn('#s9_arr2', 0.2), 103.0);
+  tl.add(drawOn('s9_arr2', 0.5), 103.0);
+  // 103.5s — RLHF box (with rough overlay)
+  tl.add(fadeIn('#s9_rlhfbox', 0.8), 103.5);
+  tl.add(fadeIn('#rough_s9_rlhf', 0.8), 103.5);
+  tl.add(wipe('cr_s9_rlhf', 280, 0.8), 103.7);
+  // 105.0s — Base GPT box
+  tl.add(fadeIn('#s9_basebox', 0.6), 105.0);
+  tl.add(wipe('cr_s9_base', 450, 1.0), 105.2);
+  // 107.0s — ChatGPT box
+  tl.add(fadeIn('#s9_chatbox', 0.6), 107.0);
+  tl.add(wipe('cr_s9_chat', 450, 1.0), 107.2);
+  // 109.0s — Alignment arrow + label
+  tl.add(fadeIn('#s9_align_arrow', 0.2), 109.0);
+  tl.add(drawOn('s9_align_arrow', 0.6), 109.0);
+  tl.add(wipe('cr_s9_align', 250, 0.8), 109.5);
+
+  // ═══════════════════════════════════════════
+  //  SCENE 10: Recap (112s → 120s)
+  // ═══════════════════════════════════════════
+  tl.call(() => { hideScene('#scene9'); showScene('#scene10'); }, null, 112.0);
+  // 112.3s — Title wipes
+  tl.add(wipe('cr_s10_title', 350, 1.0), 112.3);
+  // 113.3s — Blocks draw from bottom to top
+  tl.add(fadeIn('#s10_blk1', 0.4), 113.3);
+  tl.add(wipe('cr_s10_b1', 400, 0.5), 113.3);
+  tl.add(fadeIn('#s10_blk2', 0.4), 113.8);
+  tl.add(wipe('cr_s10_b2', 400, 0.5), 113.8);
+  tl.add(fadeIn('#s10_blk3', 0.4), 114.3);
+  tl.add(wipe('cr_s10_b3', 400, 0.5), 114.3);
+  tl.add(fadeIn('#s10_blk4', 0.4), 114.8);
+  tl.add(wipe('cr_s10_b4', 400, 0.5), 114.8);
+  tl.add(fadeIn('#s10_blk5', 0.4), 115.3);
+  tl.add(wipe('cr_s10_b5', 400, 0.5), 115.3);
+  tl.add(fadeIn('#s10_blk6', 0.4), 115.8);
+  tl.add(wipe('cr_s10_b6', 400, 0.5), 115.8);
+  tl.add(fadeIn('#s10_blk7', 0.4), 116.3);
+  tl.add(wipe('cr_s10_b7', 400, 0.5), 116.3);
+  // 117.0s — Bracket draws
+  tl.add(fadeIn('#s10_bracket', 0.2), 117.0);
+  tl.add(drawOn('s10_bracket', 0.8), 117.0);
+  // 117.8s — "= Large Language Model" wipes
+  tl.add(wipe('cr_s10_eq', 600, 1.2), 117.8);
+  // 119.0s — Brain icon fades in
+  tl.add(fadeIn('#s10_brain', 0.8), 119.0);
+
+  // Hold final frame
+  tl.to({}, { duration: 0.5 }, TOTAL - 0.5);
+
+  // ── Controls ──
+  btnPlay.addEventListener('click', () => {
+    if (tl.isActive()) { tl.pause(); btnPlay.textContent = '\u25B6 Play'; }
+    else { tl.play(); btnPlay.textContent = '\u23F8 Pause'; }
+  });
+
+  document.getElementById('btnReplay').addEventListener('click', () => {
+    document.querySelectorAll('.scene').forEach(s => gsap.set(s, { opacity: 0 }));
+    document.querySelectorAll('[id^="cr_"]').forEach(r => r.setAttribute('width', '0'));
+    gsap.set(progBar, { attr: { width: 0 } });
+    tl.restart();
+    btnPlay.textContent = '\u23F8 Pause';
+  });
+
+  seekBar.addEventListener('input', () => {
+    isSeeking = true;
+    tl.seek(seekBar.value / 1000).pause();
+    btnPlay.textContent = '\u25B6 Play';
+  });
+  seekBar.addEventListener('change', () => { isSeeking = false; });
+
+  document.fonts.ready.then(() => {
+    tl.play();
+    btnPlay.textContent = '\u23F8 Pause';
+  });
+});
+</script>
+</body>
+</html>
