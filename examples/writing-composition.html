@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class 3: Writing & Composition Skills — Whiteboard Explainer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@400;700&family=Caveat:wght@400;700&family=Patrick+Hand&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#111;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    min-height:100vh; overflow:hidden;
+  }
+  .wrap {
+    width:100vw; max-width:1280px;
+    aspect-ratio:16/9; position:relative;
+    border-radius:6px; overflow:hidden;
+    box-shadow:0 8px 40px rgba(0,0,0,.6);
+  }
+  #board { width:100%; height:100%; display:block; }
+  #controls {
+    margin-top:10px; display:flex; gap:10px; align-items:center;
+  }
+  #controls button {
+    padding:7px 18px; background:#2b7ec2; color:#fff;
+    border:none; border-radius:5px; font-size:13px; cursor:pointer;
+  }
+  #controls button:hover { background:#1e5fa0; }
+  #timeDisp { color:#777; font:13px monospace; min-width:80px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<svg id="board" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+<defs>
+  <!-- Background gradient -->
+  <linearGradient id="bg" x1="0" y1="0" x2=".04" y2="1">
+    <stop offset="0%" stop-color="#f5f3ef"/><stop offset="100%" stop-color="#edeae4"/>
+  </linearGradient>
+  <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#999" flood-opacity=".2"/></filter>
+
+  <!-- Dynamic clipPaths for text wipe-reveal (rects animated via JS) -->
+  <clipPath id="cp_title"><rect id="cr_title" x="60" y="20" width="0" height="80"/></clipPath>
+  <clipPath id="cp_sub"><rect id="cr_sub" x="280" y="120" width="0" height="80"/></clipPath>
+  <clipPath id="cp_hello"><rect id="cr_hello" x="125" y="280" width="0" height="50"/></clipPath>
+  <clipPath id="cp_class3"><rect id="cr_class3" x="120" y="315" width="0" height="55"/></clipPath>
+  <clipPath id="cp_lblhw"><rect id="cr_lblhw" x="55" y="458" width="0" height="70"/></clipPath>
+  <clipPath id="cp_intro"><rect id="cr_intro" x="445" y="240" width="0" height="50"/></clipPath>
+  <clipPath id="cp_body"><rect id="cr_body" x="445" y="308" width="0" height="65"/></clipPath>
+  <clipPath id="cp_conc"><rect id="cr_conc" x="445" y="385" width="0" height="50"/></clipPath>
+  <clipPath id="cp_lblst"><rect id="cr_lblst" x="410" y="455" width="0" height="70"/></clipPath>
+  <clipPath id="cp_lblgr"><rect id="cr_lblgr" x="870" y="455" width="0" height="70"/></clipPath>
+</defs>
+
+<!-- ========== BACKGROUND ========== -->
+<rect width="1280" height="720" fill="url(#bg)"/>
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  1. TITLE                                             -->
+<!-- ══════════════════════════════════════════════════════ -->
+
+<!-- Bullet dot (drawn as tiny circle path) -->
+<circle id="p_dot" cx="78" cy="55" r="11" fill="none" stroke="#2b7ec2" stroke-width="22" opacity="0"/>
+
+<!-- Title text with clip wipe -->
+<g clip-path="url(#cp_title)">
+  <text x="105" y="76" font-family="'Cabin Sketch','Patrick Hand',cursive"
+        font-size="52" font-weight="700" fill="#2b7ec2" letter-spacing="1">
+    Class 3: Writing &amp; Composition Skills
+  </text>
+</g>
+
+<!-- Underlines (stroke-draw) -->
+<line id="p_ul1" x1="98" y1="92" x2="955" y2="92" stroke="#2b7ec2" stroke-width="3.5" stroke-linecap="round"/>
+<line id="p_ul2" x1="98" y1="104" x2="955" y2="104" stroke="#2b7ec2" stroke-width="2.5" stroke-linecap="round"/>
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  2. SUBTITLE                                          -->
+<!-- ══════════════════════════════════════════════════════ -->
+<g clip-path="url(#cp_sub)">
+  <text x="640" y="175" text-anchor="middle"
+        font-family="'Cabin Sketch',Georgia,serif" font-size="58" font-weight="700"
+        fill="#1e8c5a" letter-spacing="2">
+    Mastering the Craft
+  </text>
+</g>
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  3. LEFT — PAPER SKETCH                               -->
+<!-- ══════════════════════════════════════════════════════ -->
+
+<!-- Back paper (tilted, hand-drawn edges) -->
+<path id="p_backpaper" d="M68,228 L72,224 L275,217 L278,220 L282,430 L279,434 L73,440 L68,436 Z"
+      fill="none" stroke="#7a9a7a" stroke-width="2" stroke-linejoin="round"/>
+
+<!-- Back paper ruled lines -->
+<g id="p_backlines" opacity="0">
+  <line x1="78" y1="258" x2="272" y2="253" stroke="#c0d0de" stroke-width=".7"/>
+  <line x1="79" y1="283" x2="273" y2="278" stroke="#c0d0de" stroke-width=".7"/>
+  <line x1="80" y1="308" x2="274" y2="303" stroke="#c0d0de" stroke-width=".7"/>
+  <line x1="81" y1="333" x2="275" y2="328" stroke="#c0d0de" stroke-width=".7"/>
+  <line x1="82" y1="358" x2="276" y2="353" stroke="#c0d0de" stroke-width=".7"/>
+  <line x1="83" y1="383" x2="277" y2="378" stroke="#c0d0de" stroke-width=".7"/>
+  <line x1="84" y1="408" x2="278" y2="403" stroke="#c0d0de" stroke-width=".7"/>
+</g>
+
+<!-- Front paper (slightly rotated, hand-drawn) -->
+<path id="p_frontpaper" d="M92,233 L95,229 L308,224 L312,228 L316,442 L312,446 L98,450 L92,446 Z"
+      fill="none" stroke="#6a8a6a" stroke-width="2.2" stroke-linejoin="round"/>
+<!-- Front paper fill (appears after outline) -->
+<path id="p_frontfill" d="M92,233 L308,224 L316,442 L98,450 Z"
+      fill="#fefef8" opacity="0"/>
+
+<!-- Red margin line -->
+<line id="p_margin" x1="138" y1="231" x2="140" y2="448" stroke="#dda0a0" stroke-width="2"/>
+
+<!-- Front ruled lines -->
+<g id="p_frontlines" opacity="0">
+  <line x1="102" y1="268" x2="306" y2="263" stroke="#b0c4de" stroke-width=".8"/>
+  <line x1="103" y1="293" x2="307" y2="288" stroke="#b0c4de" stroke-width=".8"/>
+  <line x1="104" y1="318" x2="308" y2="313" stroke="#b0c4de" stroke-width=".8"/>
+  <line x1="105" y1="343" x2="309" y2="338" stroke="#b0c4de" stroke-width=".8"/>
+  <line x1="106" y1="368" x2="310" y2="363" stroke="#b0c4de" stroke-width=".8"/>
+  <line x1="107" y1="393" x2="311" y2="388" stroke="#b0c4de" stroke-width=".8"/>
+  <line x1="108" y1="418" x2="312" y2="413" stroke="#b0c4de" stroke-width=".8"/>
+</g>
+
+<!-- Corner fold -->
+<path id="p_fold" d="M280,224 L308,224 L312,252" fill="none" stroke="#6a8a6a" stroke-width="1.5"/>
+
+<!-- Handwritten "hello" -->
+<g clip-path="url(#cp_hello)">
+  <text x="148" y="310" font-family="'Caveat',cursive" font-size="32" font-style="italic" fill="#2a7a3a">hello</text>
+</g>
+
+<!-- Handwritten "class 3" with underline flourish -->
+<g clip-path="url(#cp_class3)">
+  <text x="142" y="350" font-family="'Caveat',cursive" font-size="36" font-weight="700" font-style="italic" fill="#2a7a3a">class 3</text>
+</g>
+
+<!-- Pencil illustration (all paths) -->
+<g id="g_pencil" opacity="0">
+  <!-- Pencil shaft -->
+  <path d="M222,322 L300,275 L308,283 L230,330 Z" fill="#3a9a4a" stroke="#2a7a3a" stroke-width="1.2"/>
+  <path d="M222,322 L300,275 L304,279 L226,326 Z" fill="#4cb85c" opacity=".45"/>
+  <!-- Metal ferrule -->
+  <path d="M213,329 L222,322 L230,330 L221,337 Z" fill="#c0b080" stroke="#a09060" stroke-width=".8"/>
+  <!-- Wood tip -->
+  <path d="M205,335 L213,329 L221,337 Z" fill="#f5deb3" stroke="#d4a870" stroke-width=".6"/>
+  <!-- Graphite point -->
+  <path d="M198,340 L205,335 L209,339 Z" fill="#444"/>
+  <!-- Eraser -->
+  <path d="M300,275 L312,266 L320,274 L308,283 Z" fill="#e8a0a0" stroke="#cc8888" stroke-width=".6"/>
+  <!-- Band -->
+  <line x1="300" y1="275" x2="308" y2="283" stroke="#bba070" stroke-width="2"/>
+</g>
+
+<!-- Hand silhouette -->
+<g id="g_hand" opacity="0">
+  <path d="M268,292 C273,272 283,264 293,268 C296,261 306,261 306,271
+           C312,265 320,268 316,278 C323,273 328,278 323,288
+           L313,312 C308,322 296,325 283,320 L263,310 C258,306 260,297 268,292Z"
+        fill="#f0c8a0" stroke="#d4a070" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Finger creases -->
+  <path d="M293,268 L290,288" fill="none" stroke="#d4a070" stroke-width=".7" opacity=".5"/>
+  <path d="M306,271 L302,291" fill="none" stroke="#d4a070" stroke-width=".7" opacity=".5"/>
+  <path d="M316,278 L310,295" fill="none" stroke="#d4a070" stroke-width=".7" opacity=".5"/>
+</g>
+
+<!-- Label: Handwriting & Cursive -->
+<g clip-path="url(#cp_lblhw)">
+  <text x="175" y="480" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="26" font-weight="700" fill="#1e7a44">Handwriting</text>
+  <text x="175" y="510" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="26" font-weight="700" fill="#1e7a44">&amp; Cursive</text>
+</g>
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  4. MIDDLE — STACKED BLOCKS                           -->
+<!-- ══════════════════════════════════════════════════════ -->
+
+<!-- INTRODUCTION block -->
+<g id="g_introBlock">
+  <!-- 3D bottom/right edges -->
+  <path id="p_intro3d" d="M425,292 L433,300 L723,300 L715,292 M715,237 L723,245 L723,300 L715,292"
+        fill="none" stroke="#882020" stroke-width="2" opacity="0"/>
+  <!-- Block outline -->
+  <rect id="p_introRect" x="425" y="237" width="290" height="55" rx="5"
+        fill="none" stroke="#cc3333" stroke-width="2.8"/>
+  <!-- Block fill (appears after outline) -->
+  <rect id="p_introFill" x="425" y="237" width="290" height="55" rx="5"
+        fill="#cc3333" opacity="0"/>
+</g>
+<!-- Intro text -->
+<g clip-path="url(#cp_intro)">
+  <text x="570" y="275" text-anchor="middle" font-family="'Cabin Sketch',serif" font-size="28" font-weight="700" fill="#fff">Introduction</text>
+</g>
+
+<!-- BODY PARAGRAPH block -->
+<g id="g_bodyBlock">
+  <path id="p_body3d" d="M425,367 L433,375 L723,375 L715,367 M715,302 L723,310 L723,375 L715,367"
+        fill="none" stroke="#882020" stroke-width="2" opacity="0"/>
+  <rect id="p_bodyRect" x="425" y="302" width="290" height="65" rx="5"
+        fill="none" stroke="#cc3333" stroke-width="2.8"/>
+  <rect id="p_bodyFill" x="425" y="302" width="290" height="65" rx="5"
+        fill="#cc3333" opacity="0"/>
+</g>
+<g clip-path="url(#cp_body)">
+  <text x="570" y="334" text-anchor="middle" font-family="'Cabin Sketch',serif" font-size="26" font-weight="700" fill="#fff">Body</text>
+  <text x="570" y="360" text-anchor="middle" font-family="'Cabin Sketch',serif" font-size="26" font-weight="700" fill="#fff">Paragraph</text>
+</g>
+
+<!-- CONCLUSION block -->
+<g id="g_concBlock">
+  <path id="p_conc3d" d="M425,437 L433,445 L723,445 L715,437 M715,382 L723,390 L723,445 L715,437"
+        fill="none" stroke="#882020" stroke-width="2" opacity="0"/>
+  <rect id="p_concRect" x="425" y="382" width="290" height="55" rx="5"
+        fill="none" stroke="#cc3333" stroke-width="2.8"/>
+  <rect id="p_concFill" x="425" y="382" width="290" height="55" rx="5"
+        fill="#cc3333" opacity="0"/>
+</g>
+<g clip-path="url(#cp_conc)">
+  <text x="570" y="418" text-anchor="middle" font-family="'Cabin Sketch',serif" font-size="28" font-weight="700" fill="#fff">Conclusion</text>
+</g>
+
+<!-- Label: Sentence & Paragraph Structure -->
+<g clip-path="url(#cp_lblst)">
+  <text x="570" y="478" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="24" font-weight="700" fill="#333">Sentence &amp;</text>
+  <text x="570" y="506" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="24" font-weight="700" fill="#333">Paragraph Structure</text>
+</g>
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  5. RIGHT — PUNCTUATION MARKS                         -->
+<!-- ══════════════════════════════════════════════════════ -->
+
+<!-- QUESTION MARK — thick hand-drawn curve -->
+<path id="p_qcurve" d="M865,260 C862,228 882,210 912,210 C952,210 972,232 972,265
+     C972,295 948,310 938,330 C930,346 926,360 926,384"
+     fill="none" stroke="#2266bb" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+
+<!-- Question mark — inner highlight line -->
+<path id="p_qinner" d="M878,258 C876,235 892,222 912,222 C942,222 958,238 958,262
+     C958,285 942,296 934,312 C928,326 926,342 926,365"
+     fill="none" stroke="#4488dd" stroke-width="6" stroke-linecap="round" opacity=".3"/>
+
+<!-- Question mark hatching (diagonal lines inside) -->
+<g id="g_qhatch" opacity="0">
+  <line x1="872" y1="230" x2="952" y2="220" stroke="#88aadd" stroke-width="2.2"/>
+  <line x1="868" y1="248" x2="968" y2="240" stroke="#88aadd" stroke-width="2"/>
+  <line x1="866" y1="266" x2="970" y2="260" stroke="#88aadd" stroke-width="2.2"/>
+  <line x1="876" y1="282" x2="964" y2="278" stroke="#88aadd" stroke-width="2"/>
+  <line x1="898" y1="298" x2="955" y2="293" stroke="#88aadd" stroke-width="2.2"/>
+  <line x1="915" y1="314" x2="945" y2="308" stroke="#88aadd" stroke-width="2"/>
+  <line x1="924" y1="332" x2="940" y2="326" stroke="#88aadd" stroke-width="2.2"/>
+  <line x1="926" y1="352" x2="934" y2="348" stroke="#88aadd" stroke-width="2"/>
+  <line x1="924" y1="370" x2="930" y2="368" stroke="#88aadd" stroke-width="2"/>
+</g>
+
+<!-- Question mark dot -->
+<circle id="p_qdot" cx="928" cy="410" r="12" fill="none" stroke="#2266bb" stroke-width="24"/>
+
+<!-- EXCLAMATION MARK — tapered bar -->
+<path id="p_ebar" d="M1020,210 L1028,210 C1027,260 1025,310 1023,350 L1020,350 C1020,310 1020,260 1020,210Z"
+      fill="none" stroke="#2266bb" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+
+<!-- Exclamation hatching -->
+<g id="g_ehatch" opacity="0">
+  <line x1="1013" y1="225" x2="1035" y2="220" stroke="#88aadd" stroke-width="2"/>
+  <line x1="1013" y1="252" x2="1033" y2="248" stroke="#88aadd" stroke-width="2.2"/>
+  <line x1="1014" y1="280" x2="1032" y2="276" stroke="#88aadd" stroke-width="2"/>
+  <line x1="1015" y1="308" x2="1031" y2="305" stroke="#88aadd" stroke-width="2.2"/>
+  <line x1="1016" y1="335" x2="1028" y2="332" stroke="#88aadd" stroke-width="2"/>
+</g>
+
+<!-- Exclamation dot -->
+<circle id="p_edot" cx="1024" cy="380" r="10" fill="none" stroke="#2266bb" stroke-width="20"/>
+
+<!-- SPEECH BUBBLE -->
+<path id="p_bubble" d="M1072,242 C1072,218 1148,218 1148,242 C1148,262 1118,264 1110,264
+     L1100,284 L1104,264 C1085,264 1072,262 1072,242Z"
+     fill="none" stroke="#2266bb" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+
+<!-- COMMA -->
+<path id="p_comma" d="M1100,400 C1110,392 1118,400 1115,418 C1112,436 1096,452 1082,462"
+      fill="none" stroke="#2266bb" stroke-width="9" stroke-linecap="round"/>
+
+<!-- Label: Grammar & Punctuation -->
+<g clip-path="url(#cp_lblgr)">
+  <text x="1005" y="478" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="26" font-weight="700" fill="#2266bb">Grammar &amp;</text>
+  <text x="1005" y="508" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="26" font-weight="700" fill="#2266bb">Punctuation</text>
+</g>
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  6. MARKER TRAY                                       -->
+<!-- ══════════════════════════════════════════════════════ -->
+<g id="g_tray" opacity="0">
+  <rect x="370" y="650" width="530" height="14" rx="4" fill="#e8e4de" stroke="#ccc" stroke-width="1"/>
+  <rect x="370" y="650" width="530" height="4" rx="3" fill="#f2eee8"/>
+  <!-- Purple marker -->
+  <g transform="translate(395,605) rotate(-3,50,10)">
+    <rect width="100" height="18" rx="3" fill="#6b2fa0"/>
+    <rect x="82" width="18" height="18" rx="3" fill="#8844cc"/>
+    <rect y="2" width="12" height="14" rx="2" fill="#4a1a7a"/>
+    <text x="48" y="13" font-size="7" fill="#fff" font-family="Arial" font-weight="bold" text-anchor="middle">EXPO</text>
+  </g>
+  <!-- Red marker -->
+  <g transform="translate(515,603) rotate(1.5,50,10)">
+    <rect width="100" height="18" rx="3" fill="#cc2222"/>
+    <rect x="82" width="18" height="18" rx="3" fill="#ee4444"/>
+    <rect y="2" width="12" height="14" rx="2" fill="#991111"/>
+    <text x="48" y="13" font-size="7" fill="#fff" font-family="Arial" font-weight="bold" text-anchor="middle">EXPO</text>
+  </g>
+  <!-- Blue marker -->
+  <g transform="translate(638,607) rotate(-2,50,10)">
+    <rect width="100" height="18" rx="3" fill="#1e55aa"/>
+    <rect x="82" width="18" height="18" rx="3" fill="#3377dd"/>
+    <rect y="2" width="12" height="14" rx="2" fill="#0e3388"/>
+    <text x="48" y="13" font-size="7" fill="#fff" font-family="Arial" font-weight="bold" text-anchor="middle">EXPO</text>
+  </g>
+  <!-- Green marker -->
+  <g transform="translate(758,604) rotate(2,50,10)">
+    <rect width="100" height="18" rx="3" fill="#1e7733"/>
+    <rect x="82" width="18" height="18" rx="3" fill="#33aa55"/>
+    <rect y="2" width="12" height="14" rx="2" fill="#115522"/>
+    <text x="48" y="13" font-size="7" fill="#fff" font-family="Arial" font-weight="bold" text-anchor="middle">EXPO</text>
+  </g>
+</g>
+
+<!-- Progress bar -->
+<rect x="0" y="716" width="1280" height="4" fill="#ddd8d0"/>
+<rect id="progBar" x="0" y="716" width="0" height="4" fill="#2b7ec2"/>
+
+</svg>
+</div>
+
+<div id="controls">
+  <button id="btnPlay">▶ Play</button>
+  <button id="btnReplay">↻ Replay</button>
+  <span id="timeDisp">0.0 / 15.0s</span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  // ── Utilities ──
+
+  // Setup stroke draw-on for any path/line/rect/circle
+  function initStroke(id) {
+    const el = document.getElementById(id);
+    if (!el) return null;
+    const len = el.getTotalLength ? el.getTotalLength() : 500;
+    gsap.set(el, { strokeDasharray: len, strokeDashoffset: len });
+    return { el, len };
+  }
+
+  // Animate a clip-rect to wipe-reveal text (left→right)
+  function wipeReveal(clipRectId, targetWidth, duration, ease) {
+    return gsap.to('#' + clipRectId, {
+      attr: { width: targetWidth },
+      duration: duration,
+      ease: ease || 'power1.inOut'
+    });
+  }
+
+  // Stroke draw-on tween
+  function drawOn(id, duration, ease) {
+    const info = initStroke(id);
+    if (!info) return gsap.to({}, { duration: 0.01 });
+    return gsap.to(info.el, {
+      strokeDashoffset: 0,
+      duration: duration,
+      ease: ease || 'power1.inOut'
+    });
+  }
+
+  // ── Build Master Timeline ──
+
+  const tl = gsap.timeline({
+    paused: true,
+    onUpdate() {
+      const t = tl.time();
+      document.getElementById('timeDisp').textContent = t.toFixed(1) + ' / 15.0s';
+      gsap.set('#progBar', { attr: { width: (t / 15) * 1280 }});
+    }
+  });
+
+
+  // ════════════════════════════════════════════
+  //  SCENE 1: TITLE  (0.0 → 2.3s)
+  // ════════════════════════════════════════════
+
+  // 0.0 — Bullet dot scales in
+  tl.to('#p_dot', { opacity: 1, duration: 0.2, ease: 'power2.out' }, 0.0);
+
+  // 0.15 — Title text wipes in L→R
+  tl.add(wipeReveal('cr_title', 920, 1.4, 'power1.inOut'), 0.15);
+
+  // 1.6 — Underline 1 draws
+  tl.add(drawOn('p_ul1', 0.35), 1.6);
+
+  // 1.95 — Underline 2 draws
+  tl.add(drawOn('p_ul2', 0.3), 1.95);
+
+
+  // ════════════════════════════════════════════
+  //  SCENE 2: SUBTITLE  (2.3 → 3.6s)
+  // ════════════════════════════════════════════
+
+  tl.add(wipeReveal('cr_sub', 720, 1.2, 'power1.inOut'), 2.3);
+
+
+  // ════════════════════════════════════════════
+  //  SCENE 3: LEFT — Paper  (3.6 → 7.0s)
+  // ════════════════════════════════════════════
+
+  // 3.6 — Back paper outline draws
+  tl.add(drawOn('p_backpaper', 0.6), 3.6);
+  // Back paper fill
+  tl.set('#p_backpaper', { fill: '#f5f5ec' }, 4.0);
+  // Back paper lines appear
+  tl.to('#p_backlines', { opacity: 0.5, duration: 0.2 }, 4.1);
+
+  // 4.2 — Front paper outline draws
+  tl.add(drawOn('p_frontpaper', 0.55), 4.2);
+  // Front paper fill
+  tl.to('#p_frontfill', { opacity: 1, duration: 0.15 }, 4.6);
+  // Corner fold
+  tl.add(drawOn('p_fold', 0.15), 4.65);
+  // Red margin line draws
+  tl.add(drawOn('p_margin', 0.25), 4.7);
+  // Front paper ruled lines appear
+  tl.to('#p_frontlines', { opacity: 1, duration: 0.2 }, 4.85);
+
+  // 5.1 — "hello" handwriting wipes in
+  tl.add(wipeReveal('cr_hello', 120, 0.45, 'none'), 5.1);
+
+  // 5.6 — "class 3" handwriting wipes in
+  tl.add(wipeReveal('cr_class3', 145, 0.45, 'none'), 5.6);
+
+  // 6.1 — Pencil appears (draws in)
+  tl.to('#g_pencil', { opacity: 1, duration: 0.4, ease: 'power2.out' }, 6.1);
+  // Hand appears
+  tl.to('#g_hand', { opacity: 1, duration: 0.35, ease: 'power2.out' }, 6.2);
+
+  // 6.6 — Label wipes in
+  tl.add(wipeReveal('cr_lblhw', 250, 0.5, 'power1.inOut'), 6.6);
+
+
+  // ════════════════════════════════════════════
+  //  SCENE 4: MIDDLE — Blocks  (7.1 → 10.2s)
+  // ════════════════════════════════════════════
+
+  // --- Introduction ---
+  // 7.1 — Block outline draws
+  tl.add(drawOn('p_introRect', 0.45), 7.1);
+  // Fill appears
+  tl.to('#p_introFill', { opacity: 1, duration: 0.15 }, 7.45);
+  // 3D edges
+  tl.to('#p_intro3d', { opacity: 0.7, duration: 0.1 }, 7.5);
+  // "Introduction" text wipes
+  tl.add(wipeReveal('cr_intro', 260, 0.4, 'none'), 7.6);
+
+  // --- Body Paragraph ---
+  tl.add(drawOn('p_bodyRect', 0.45), 8.1);
+  tl.to('#p_bodyFill', { opacity: 1, duration: 0.15 }, 8.45);
+  tl.to('#p_body3d', { opacity: 0.7, duration: 0.1 }, 8.5);
+  tl.add(wipeReveal('cr_body', 260, 0.45, 'none'), 8.6);
+
+  // --- Conclusion ---
+  tl.add(drawOn('p_concRect', 0.45), 9.1);
+  tl.to('#p_concFill', { opacity: 1, duration: 0.15 }, 9.45);
+  tl.to('#p_conc3d', { opacity: 0.7, duration: 0.1 }, 9.5);
+  tl.add(wipeReveal('cr_conc', 260, 0.35, 'none'), 9.6);
+
+  // --- Label ---
+  tl.add(wipeReveal('cr_lblst', 330, 0.5, 'power1.inOut'), 9.95);
+
+
+  // ════════════════════════════════════════════
+  //  SCENE 5: RIGHT — Punctuation  (10.5 → 13.8s)
+  // ════════════════════════════════════════════
+
+  // 10.5 — Question mark outer curve draws
+  tl.add(drawOn('p_qcurve', 0.9, 'power1.inOut'), 10.5);
+  // Inner highlight
+  tl.add(drawOn('p_qinner', 0.7), 10.7);
+  // Hatching fades in
+  tl.to('#g_qhatch', { opacity: 0.45, duration: 0.3 }, 11.2);
+  // Q dot
+  tl.add(drawOn('p_qdot', 0.2), 11.4);
+
+  // 11.6 — Exclamation bar draws
+  tl.add(drawOn('p_ebar', 0.4), 11.6);
+  // E hatching
+  tl.to('#g_ehatch', { opacity: 0.45, duration: 0.2 }, 11.9);
+  // E dot
+  tl.add(drawOn('p_edot', 0.15), 12.05);
+
+  // 12.2 — Speech bubble draws
+  tl.add(drawOn('p_bubble', 0.4), 12.2);
+
+  // 12.6 — Comma draws
+  tl.add(drawOn('p_comma', 0.25), 12.6);
+
+  // 12.9 — Grammar & Punctuation label wipes
+  tl.add(wipeReveal('cr_lblgr', 280, 0.5, 'power1.inOut'), 12.9);
+
+
+  // ════════════════════════════════════════════
+  //  SCENE 6: MARKER TRAY  (13.8 → 14.6s)
+  // ════════════════════════════════════════════
+
+  tl.to('#g_tray', { opacity: 1, duration: 0.6, ease: 'power2.out' }, 13.8);
+
+  // Hold final frame
+  tl.to({}, { duration: 0.4 }, 14.6);
+
+
+  // ── Controls ──
+
+  document.getElementById('btnPlay').addEventListener('click', () => {
+    if (tl.isActive()) {
+      tl.pause();
+      document.getElementById('btnPlay').textContent = '▶ Play';
+    } else {
+      tl.play();
+      document.getElementById('btnPlay').textContent = '⏸ Pause';
+    }
+  });
+
+  document.getElementById('btnReplay').addEventListener('click', () => {
+    // Reset all clip rects
+    document.querySelectorAll('[id^="cr_"]').forEach(r => r.setAttribute('width', '0'));
+    // Reset all stroke elements
+    ['p_ul1','p_ul2','p_backpaper','p_frontpaper','p_fold','p_margin',
+     'p_introRect','p_bodyRect','p_concRect',
+     'p_qcurve','p_qinner','p_qdot','p_ebar','p_edot','p_bubble','p_comma'
+    ].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.getTotalLength) {
+        const len = el.getTotalLength();
+        gsap.set(el, { strokeDasharray: len, strokeDashoffset: len });
+      }
+    });
+    // Reset opacity elements
+    gsap.set('#p_dot', { opacity: 0 });
+    gsap.set('#p_backlines', { opacity: 0 });
+    gsap.set('#p_frontfill', { opacity: 0 });
+    gsap.set('#p_frontlines', { opacity: 0 });
+    gsap.set('#g_pencil, #g_hand', { opacity: 0 });
+    gsap.set('#p_introFill, #p_bodyFill, #p_concFill', { opacity: 0 });
+    gsap.set('#p_intro3d, #p_body3d, #p_conc3d', { opacity: 0 });
+    gsap.set('#g_qhatch, #g_ehatch', { opacity: 0 });
+    gsap.set('#g_tray', { opacity: 0 });
+    gsap.set('#p_backpaper', { fill: 'none' });
+    gsap.set('#progBar', { attr: { width: 0 }});
+
+    tl.restart();
+    document.getElementById('btnPlay').textContent = '⏸ Pause';
+  });
+
+  // Auto-play after brief delay
+  setTimeout(() => {
+    tl.play();
+    document.getElementById('btnPlay').textContent = '⏸ Pause';
+  }, 600);
+
+});
+</script>
+</body>
+</html>

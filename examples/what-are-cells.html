@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What are Cells? — Whiteboard Explainer</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@400;700&family=Caveat:wght@400;700&family=Patrick+Hand&family=Permanent+Marker&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}
+.wrap{width:100vw;max-width:1280px;aspect-ratio:16/9;position:relative;border-radius:6px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.6)}
+#board{width:100%;height:100%;display:block}
+.scene{opacity:0}
+#controls{margin-top:8px;display:flex;gap:10px;align-items:center}
+#controls button{padding:6px 16px;background:#2b7ec2;color:#fff;border:none;border-radius:5px;font-size:13px;cursor:pointer}
+#controls button:hover{background:#1a5a90}
+#timeDisp{color:#777;font:12px monospace;min-width:100px}
+#seekBar{width:300px;cursor:pointer;accent-color:#2b7ec2}
+</style>
+</head>
+<body>
+<div class="wrap">
+<svg id="board" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 714">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2=".03" y2="1"><stop offset="0%" stop-color="#eae8e0"/><stop offset="100%" stop-color="#e2dfda"/></linearGradient>
+<linearGradient id="bgGray" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8a8a82"/><stop offset="100%" stop-color="#7a7a72"/></linearGradient>
+</defs>
+<rect id="bgRect" width="1280" height="714" fill="url(#bg)"/>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SCENE 1: Body = Trillions of Cells (0-7s) -->
+<!-- ═══════════════════════════════════════════ -->
+<g id="scene1" class="scene">
+  <!-- Text: "Body =" -->
+  <g><clipPath id="c1a"><rect id="r1a" x="40" y="240" width="0" height="60"/></clipPath>
+  <text clip-path="url(#c1a)" x="55" y="290" font-family="'Cabin Sketch',cursive" font-size="50" font-weight="700" fill="#222">Body =</text></g>
+  
+  <!-- Text: "Trillions" with red underline -->
+  <g><clipPath id="c1b"><rect id="r1b" x="40" y="295" width="0" height="55"/></clipPath>
+  <text clip-path="url(#c1b)" x="55" y="345" font-family="'Cabin Sketch',cursive" font-size="48" font-weight="700" fill="#222">Trillions</text></g>
+  
+  <!-- Red underline under "Trillions" -->
+  <line id="s1_ul" x1="55" y1="352" x2="200" y2="352" stroke="#cc3333" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Text: "of Cells" -->
+  <g><clipPath id="c1c"><rect id="r1c" x="40" y="348" width="0" height="55"/></clipPath>
+  <text clip-path="url(#c1c)" x="55" y="400" font-family="'Cabin Sketch',cursive" font-size="48" font-weight="700" fill="#222">of Cells</text></g>
+  
+  <!-- Human body outline -->
+  <g id="s1_body" opacity="0">
+    <path d="M305,165 C305,150 315,140 325,140 C335,140 345,150 345,165 L345,170 C355,175 358,180 358,190 L350,190 
+            C350,190 365,200 370,220 L380,260 C382,268 378,272 373,270 L365,265 L360,285 L368,380 
+            C370,395 362,400 358,395 L340,340 L335,395 L338,470 L355,540 C358,550 350,555 345,550 
+            L310,470 L305,470 L305,470 L300,470 L265,550 C260,555 252,550 255,540 L272,470 
+            L275,395 L270,340 L252,395 C248,400 240,395 242,380 L250,285 L245,265 L237,270 
+            C232,272 228,268 230,260 L240,220 C245,200 260,190 260,190 L252,190 
+            C252,180 255,175 265,170 L265,165 C265,150 275,140 285,140 C295,140 305,150 305,165Z"
+          fill="none" stroke="#333" stroke-width="2" stroke-linejoin="round"/>
+    <!-- Body hatching lines -->
+    <path d="M280,180 L330,175 M275,200 L335,195 M270,230 L340,225 M272,260 L338,255 M275,290 L335,285 
+            M278,320 L332,315 M280,360 L330,355 M282,400 L328,395 M285,430 L325,425 M275,460 L310,458"
+          fill="none" stroke="#555" stroke-width=".6" opacity=".4"/>
+    <!-- Ground shadow -->
+    <path d="M245,558 L365,558" fill="none" stroke="#555" stroke-width="2" stroke-dasharray="4,3"/>
+  </g>
+</g>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SCENE 2: Body→Organ→Tissue zoom (7-13s)       -->
+<!-- ═══════════════════════════════════════════════ -->
+<g id="scene2" class="scene">
+  <!-- Reuse body text from left -->
+  <g><clipPath id="c2a"><rect id="r2a" x="30" y="240" width="0" height="170"/></clipPath>
+  <g clip-path="url(#c2a)">
+    <text x="45" y="290" font-family="'Cabin Sketch',cursive" font-size="42" font-weight="700" fill="#222">Body =</text>
+    <text x="45" y="340" font-family="'Cabin Sketch',cursive" font-size="40" font-weight="700" fill="#222">Trillions</text>
+    <line x1="45" y1="348" x2="178" y2="348" stroke="#cc3333" stroke-width="3"/>
+    <text x="45" y="390" font-family="'Cabin Sketch',cursive" font-size="40" font-weight="700" fill="#222">of Cells</text>
+  </g></g>
+
+  <!-- Small body figure -->
+  <g id="s2_body" opacity="0" transform="translate(220,160) scale(0.65)">
+    <path d="M305,165 C305,150 315,140 325,140 C335,140 345,150 345,165 L345,170 C355,175 358,180 358,190 L350,190 C350,190 365,200 370,220 L380,260 C382,268 378,272 373,270 L365,265 L360,285 L368,380 C370,395 362,400 358,395 L340,340 L335,395 L338,470 L355,540 C358,550 350,555 345,550 L310,470 L305,470 L300,470 L265,550 C260,555 252,550 255,540 L272,470 L275,395 L270,340 L252,395 C248,400 240,395 242,380 L250,285 L245,265 L237,270 C232,272 228,268 230,260 L240,220 C245,200 260,190 260,190 L252,190 C252,180 255,175 265,170 L265,165 C265,150 275,140 285,140 C295,140 305,150 305,165Z" fill="none" stroke="#333" stroke-width="2.5"/>
+    <path d="M280,180 L330,175 M275,200 L335,195 M270,230 L340,225 M272,260 L338,255 M275,290 L335,285 M278,320 L332,315 M280,360 L330,355" fill="none" stroke="#555" stroke-width=".7" opacity=".4"/>
+  </g>
+
+  <!-- Magnifying glass -->
+  <g id="s2_mag" opacity="0">
+    <circle cx="425" cy="420" r="22" fill="none" stroke="#cc3333" stroke-width="3"/>
+    <circle cx="425" cy="420" r="18" fill="#f5e5e5" opacity=".3"/>
+    <line x1="440" y1="438" x2="460" y2="458" stroke="#cc3333" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <!-- "ARM ORGAN" label -->
+  <g><clipPath id="c2b"><rect id="r2b" x="450" y="185" width="0" height="35"/></clipPath>
+  <text clip-path="url(#c2b)" x="460" y="210" font-family="'Cabin Sketch',cursive" font-size="26" font-weight="700" fill="#222">ARM ORGAN</text></g>
+
+  <!-- Arm illustration -->
+  <g id="s2_arm" opacity="0">
+    <path d="M500,230 C490,240 480,260 475,290 L470,340 C468,360 465,390 462,420 L460,450 C462,460 470,462 475,455 L480,430 C485,400 490,370 495,350 L510,300 C520,280 535,260 550,250 L580,240 C590,235 595,230 590,225 L560,230 C540,235 520,240 505,250 L500,230Z"
+          fill="none" stroke="#333" stroke-width="2"/>
+    <!-- Muscle detail -->
+    <path d="M488,275 C495,270 505,268 515,275 M482,300 C490,295 500,293 510,298 M478,330 C485,325 495,322 505,328"
+          fill="none" stroke="#555" stroke-width="1" opacity=".5"/>
+    <!-- Hatching -->
+    <path d="M490,260 L510,255 M485,280 L515,275 M480,310 L505,305 M475,340 L500,335 M472,370 L495,365 M468,400 L490,395"
+          fill="none" stroke="#444" stroke-width=".5" opacity=".3"/>
+  </g>
+
+  <!-- Red arrow -->
+  <path id="s2_arrow1" d="M610,350 L650,350 L645,340 L665,352 L645,364 L650,354 L610,354Z" fill="#cc3333" opacity="0"/>
+
+  <!-- "TISSUE TEXTURE" label -->
+  <g><clipPath id="c2c"><rect id="r2c" x="685" y="192" width="0" height="55"/></clipPath>
+  <text clip-path="url(#c2c)" x="700" y="215" font-family="'Cabin Sketch',cursive" font-size="24" font-weight="700" fill="#222">TISSUE</text>
+  <text clip-path="url(#c2c)" x="700" y="242" font-family="'Cabin Sketch',cursive" font-size="24" font-weight="700" fill="#222">TEXTURE</text></g>
+
+  <!-- Tissue texture illustration -->
+  <g id="s2_tissue" opacity="0">
+    <rect x="690" y="260" width="190" height="190" rx="8" fill="none" stroke="#333" stroke-width="2"/>
+    <!-- Muscle fiber bundles -->
+    <path d="M700,280 C720,275 740,290 760,285 C780,280 800,295 820,290 L870,285
+            M700,310 C720,305 740,320 760,315 C780,310 800,325 820,320 L870,315
+            M700,340 C720,335 740,350 760,345 C780,340 800,355 820,350 L870,345
+            M700,370 C720,365 740,380 760,375 C780,370 800,385 820,380 L870,375
+            M700,400 C720,395 740,410 760,405 C780,400 800,415 820,410 L870,405
+            M700,430 C720,425 740,440 760,435 C780,430 800,440 820,438 L870,435"
+          fill="none" stroke="#333" stroke-width="1.8" opacity=".7"/>
+    <!-- Cross-hatching -->
+    <path d="M710,275 L710,445 M730,275 L730,445 M750,275 L750,445 M770,275 L770,445 M790,275 L790,445 M810,275 L810,445 M830,275 L830,445 M850,275 L850,445 M870,275 L870,445"
+          fill="none" stroke="#555" stroke-width=".4" opacity=".25"/>
+  </g>
+</g>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SCENE 3: Cell = Tiny City (13-24s)             -->
+<!-- ═══════════════════════════════════════════════ -->
+<g id="scene3" class="scene">
+  <!-- Large cell diagram (left side) -->
+  <g id="s3_cell" opacity="0">
+    <!-- Cell outer membrane -->
+    <ellipse cx="250" cy="370" rx="220" ry="240" fill="none" stroke="#333" stroke-width="3"/>
+    <!-- Inner structures - nucleus -->
+    <circle cx="220" cy="320" r="65" fill="none" stroke="#333" stroke-width="2.5"/>
+    <circle cx="210" cy="310" r="18" fill="#333" opacity=".7"/>
+    <!-- Mitochondria -->
+    <ellipse cx="370" cy="240" rx="40" ry="20" fill="none" stroke="#333" stroke-width="2" transform="rotate(-20,370,240)"/>
+    <path d="M340,235 C350,228 360,245 370,235 C380,228 390,245 395,238" fill="none" stroke="#333" stroke-width="1.5" transform="rotate(-20,370,240)"/>
+    <!-- ER wavy lines -->
+    <path d="M160,420 C180,410 200,430 220,420 C240,410 260,430 280,420 C300,410 320,430 340,420" fill="none" stroke="#333" stroke-width="1.5"/>
+    <path d="M160,445 C180,435 200,455 220,445 C240,435 260,455 280,445 C300,435 320,455 340,445" fill="none" stroke="#333" stroke-width="1.5"/>
+    <!-- Golgi apparatus -->
+    <path d="M320,480 C340,475 360,485 380,480 M320,495 C340,490 360,500 380,495 M320,510 C340,505 360,515 380,510" fill="none" stroke="#333" stroke-width="2"/>
+    <!-- Small dots (ribosomes) -->
+    <circle cx="180" cy="260" r="3" fill="#333"/><circle cx="300" cy="280" r="3" fill="#333"/>
+    <circle cx="150" cy="350" r="3" fill="#333"/><circle cx="350" cy="350" r="3" fill="#333"/>
+    <circle cx="200" cy="480" r="3" fill="#333"/><circle cx="280" cy="500" r="3" fill="#333"/>
+    <!-- Vacuoles -->
+    <ellipse cx="130" cy="290" rx="25" ry="15" fill="none" stroke="#333" stroke-width="1.5"/>
+    <ellipse cx="350" cy="420" rx="20" ry="12" fill="none" stroke="#333" stroke-width="1.5"/>
+  </g>
+
+  <!-- Labels with arrows -->
+  <g id="s3_labels" opacity="0">
+    <text x="40" y="170" font-family="'Cabin Sketch',cursive" font-size="16" fill="#222">Nucleus</text>
+    <text x="20" y="188" font-family="'Cabin Sketch',cursive" font-size="14" fill="#222">(Control Center)</text>
+    <path d="M100,192 L195,290" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+    
+    <text x="370" y="155" font-family="'Cabin Sketch',cursive" font-size="15" fill="#222">Mitochondria</text>
+    <text x="370" y="172" font-family="'Cabin Sketch',cursive" font-size="13" fill="#222">(Powerhouse)</text>
+    <path d="M400,178 L380,225" fill="none" stroke="#333" stroke-width="1.5"/>
+    
+    <text x="30" y="575" font-family="'Cabin Sketch',cursive" font-size="14" fill="#222">Endoplasmic</text>
+    <text x="40" y="592" font-family="'Cabin Sketch',cursive" font-size="14" fill="#222">Reticulum</text>
+    <path d="M120,560 L180,440" fill="none" stroke="#333" stroke-width="1.5"/>
+    
+    <text x="340" y="580" font-family="'Cabin Sketch',cursive" font-size="15" fill="#222">Golgi</text>
+    <text x="330" y="598" font-family="'Cabin Sketch',cursive" font-size="13" fill="#222">(Packaging)</text>
+    <path d="M350,565 L355,520" fill="none" stroke="#333" stroke-width="1.5"/>
+  </g>
+
+  <!-- "Like a Tiny City" -->
+  <g><clipPath id="c3a"><rect id="r3a" x="500" y="175" width="0" height="90"/></clipPath>
+  <text clip-path="url(#c3a)" x="530" y="220" font-family="'Cabin Sketch',cursive" font-size="52" font-weight="700" fill="#222">Like a</text>
+  <text clip-path="url(#c3a)" x="520" y="265" font-family="'Cabin Sketch',cursive" font-size="48" font-weight="700" fill="#cc3333">Tiny City</text></g>
+
+  <!-- City illustration (right side) -->
+  <g id="s3_city" opacity="0" transform="translate(780,140)">
+    <!-- City Hall building -->
+    <path d="M180,100 L180,200 L320,200 L320,100 L280,60 L250,30 L220,60 Z" fill="none" stroke="#333" stroke-width="2"/>
+    <!-- Spire -->
+    <path d="M250,30 L250,10 L252,5 L248,5 L250,10" fill="none" stroke="#333" stroke-width="1.5"/>
+    <!-- Windows -->
+    <rect x="200" y="120" width="25" height="35" fill="none" stroke="#333" stroke-width="1.2"/>
+    <rect x="240" y="120" width="25" height="35" fill="none" stroke="#333" stroke-width="1.2"/>
+    <rect x="280" y="120" width="25" height="35" fill="none" stroke="#333" stroke-width="1.2"/>
+    <!-- Columns -->
+    <line x1="210" y1="170" x2="210" y2="200" stroke="#333" stroke-width="2"/>
+    <line x1="250" y1="170" x2="250" y2="200" stroke="#333" stroke-width="2"/>
+    <line x1="290" y1="170" x2="290" y2="200" stroke="#333" stroke-width="2"/>
+    
+    <!-- Power plant (to the left) -->
+    <path d="M40,150 L40,200 L140,200 L140,150 Z" fill="none" stroke="#333" stroke-width="2"/>
+    <path d="M60,100 L60,150 L80,150 L80,100 Z" fill="none" stroke="#333" stroke-width="1.8"/>
+    <!-- Smoke -->
+    <path d="M70,100 C65,85 75,75 70,60 C65,50 80,40 75,30" fill="none" stroke="#555" stroke-width="1.5"/>
+
+    <!-- Factory -->
+    <path d="M-30,240 L-30,300 L120,300 L120,240 Z M0,200 L0,240 L30,240 L30,200Z M50,210 L50,240 L80,240 L80,210Z" fill="none" stroke="#333" stroke-width="2"/>
+    
+    <!-- Roads -->
+    <path d="M150,310 L350,310 M150,310 C130,330 100,350 80,360" fill="none" stroke="#333" stroke-width="2" stroke-dasharray="8,4"/>
+
+    <!-- Labels -->
+    <text x="170" y="55" font-family="'Cabin Sketch',cursive" font-size="15" fill="#222">City Hall</text>
+    <text x="155" y="70" font-family="'Cabin Sketch',cursive" font-size="12" fill="#222">(Administration)</text>
+    <text x="15" y="90" font-family="'Cabin Sketch',cursive" font-size="13" fill="#222">Power Plant</text>
+    <text x="20" y="105" font-family="'Cabin Sketch',cursive" font-size="11" fill="#222">(Energy)</text>
+    <text x="-25" y="320" font-family="'Cabin Sketch',cursive" font-size="14" fill="#222">Factory</text>
+    <text x="250" y="290" font-family="'Cabin Sketch',cursive" font-size="12" fill="#222">Roads &amp; Transport</text>
+    <text x="265" y="305" font-family="'Cabin Sketch',cursive" font-size="11" fill="#222">(Logistics)</text>
+  </g>
+
+  <!-- "Parts = Jobs" -->
+  <g><clipPath id="c3b"><rect id="r3b" x="480" y="440" width="0" height="50"/></clipPath>
+  <text clip-path="url(#c3b)" x="510" y="475" font-family="'Cabin Sketch',cursive" font-size="34" font-weight="700" fill="#222"><tspan fill="#cc3333" text-decoration="underline">Parts</tspan> = <tspan fill="#cc3333" text-decoration="underline">Jobs</tspan></text></g>
+
+  <!-- "Goal: Keep alive" -->
+  <g><clipPath id="c3c"><rect id="r3c" x="480" y="490" width="0" height="55"/></clipPath>
+  <text clip-path="url(#c3c)" x="510" y="530" font-family="'Cabin Sketch',cursive" font-size="30" font-weight="700" fill="#222">Goal: Keep alive!</text></g>
+</g>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SCENE 4: Cell Membrane (24-28s)                     -->
+<!-- ═══════════════════════════════════════════════════ -->
+<g id="scene4" class="scene">
+  <!-- Large cell with red membrane -->
+  <g id="s4_cell" opacity="0">
+    <!-- Red membrane border (thick) -->
+    <path d="M350,120 C520,80 620,150 630,300 C640,440 550,580 380,590 C210,600 100,500 90,350 C80,200 180,110 350,120Z"
+          fill="none" stroke="#cc3333" stroke-width="18" opacity=".8"/>
+    <!-- Inner lighter area -->
+    <path d="M350,140 C500,105 600,170 610,300 C618,425 535,555 380,565 C225,575 125,485 115,350 C105,220 200,130 350,140Z"
+          fill="#f8f4f0" stroke="#cc3333" stroke-width="3"/>
+    <!-- Inner organelles (simple sketches) -->
+    <ellipse cx="300" cy="350" rx="80" ry="70" fill="none" stroke="#555" stroke-width="1.5"/>
+    <circle cx="280" cy="340" r="15" fill="#555" opacity=".3"/>
+    <path d="M200,280 C220,275 240,290 260,280" fill="none" stroke="#555" stroke-width="1.5"/>
+    <path d="M400,250 C410,240 430,255 420,265 C410,275 400,260 410,250" fill="none" stroke="#555" stroke-width="1.5"/>
+    <path d="M250,450 C270,440 290,460 310,450 C330,440 350,460 370,450" fill="none" stroke="#555" stroke-width="1.2"/>
+  </g>
+
+  <!-- Label box "Cell Membrane" -->
+  <g id="s4_label" opacity="0">
+    <rect x="200" y="310" width="220" height="70" rx="4" fill="#fff" stroke="#333" stroke-width="2.5"/>
+    <text x="225" y="340" font-family="'Cabin Sketch',cursive" font-size="30" font-weight="700" fill="#cc3333">Cell</text>
+    <text x="210" y="370" font-family="'Cabin Sketch',cursive" font-size="30" font-weight="700" fill="#cc3333">Membrane</text>
+  </g>
+
+  <!-- Checkmarks and arrow -->
+  <g id="s4_checks" opacity="0">
+    <path d="M510,280 L520,295 L540,265" fill="none" stroke="#cc3333" stroke-width="3" stroke-linecap="round"/>
+    <path d="M510,340 L520,355 L540,325" fill="none" stroke="#cc3333" stroke-width="3" stroke-linecap="round"/>
+    <!-- Arrow pointing in -->
+    <path d="M580,300 L550,320 L560,310 L530,330" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>
+    <polygon points="525,335 535,325 540,338" fill="#333"/>
+  </g>
+
+  <!-- Right side description -->
+  <g><clipPath id="c4a"><rect id="r4a" x="650" y="180" width="0" height="350"/></clipPath>
+  <g clip-path="url(#c4a)">
+    <text x="680" y="230" font-family="'Cabin Sketch',cursive" font-size="28" font-weight="700" fill="#222">Protective barrier</text>
+    <text x="680" y="280" font-family="'Cabin Sketch',cursive" font-size="24" fill="#222">Controls what</text>
+    <text x="680" y="310" font-family="'Cabin Sketch',cursive" font-size="24" fill="#222">enters &amp; exits</text>
+    <text x="680" y="370" font-family="'Cabin Sketch',cursive" font-size="22" fill="#555">Like a city wall</text>
+    <text x="680" y="400" font-family="'Cabin Sketch',cursive" font-size="22" fill="#555">with guarded</text>
+    <text x="680" y="430" font-family="'Cabin Sketch',cursive" font-size="22" fill="#555">gates</text>
+  </g></g>
+</g>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SCENE 5: Nucleus = Control Center (28-37s)          -->
+<!-- ═══════════════════════════════════════════════════ -->
+<g id="scene5" class="scene">
+  <!-- Title -->
+  <g><clipPath id="c5t"><rect id="r5t" x="40" y="30" width="0" height="70"/></clipPath>
+  <text clip-path="url(#c5t)" x="60" y="82" font-family="'Permanent Marker',cursive" font-size="52" font-weight="700"><tspan fill="#cc3333">CONTROL</tspan><tspan fill="#222"> CENTER</tspan></text></g>
+
+  <!-- NUCLEUS label box -->
+  <g id="s5_nlabel" opacity="0">
+    <rect x="130" y="115" width="175" height="40" rx="3" fill="#fff" stroke="#333" stroke-width="2"/>
+    <line x1="135" y1="152" x2="298" y2="152" stroke="#cc3333" stroke-width="2"/>
+    <text x="145" y="145" font-family="'Cabin Sketch',cursive" font-size="28" font-weight="700" fill="#222">NUCLEUS</text>
+  </g>
+
+  <!-- Nucleus illustration (circle with chromosomes) -->
+  <g id="s5_nucleus" opacity="0">
+    <circle cx="270" cy="370" r="180" fill="none" stroke="#333" stroke-width="3"/>
+    <!-- Nuclear pores -->
+    <circle cx="120" cy="300" r="5" fill="none" stroke="#333" stroke-width="1.5"/>
+    <circle cx="110" cy="380" r="5" fill="none" stroke="#333" stroke-width="1.5"/>
+    <circle cx="140" cy="460" r="5" fill="none" stroke="#333" stroke-width="1.5"/>
+    <circle cx="390" cy="260" r="5" fill="none" stroke="#333" stroke-width="1.5"/>
+    <circle cx="420" cy="350" r="5" fill="none" stroke="#333" stroke-width="1.5"/>
+    <!-- Chromosomes (X shapes) -->
+    <path d="M220,320 L240,350 M240,320 L220,350" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+    <path d="M280,300 L300,330 M300,300 L280,330" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+    <path d="M330,340 L350,370 M350,340 L330,370" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+    <path d="M250,380 L270,410 M270,380 L250,410" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+    <!-- DNA helix -->
+    <path d="M190,400 C200,390 210,410 220,400 C230,390 240,410 250,400 C260,390 270,410 280,400"
+          fill="none" stroke="#333" stroke-width="2"/>
+  </g>
+
+  <!-- "CHROMOSOMES" label -->
+  <g><clipPath id="c5c"><rect id="r5c" x="395" y="255" width="0" height="35"/></clipPath>
+  <text clip-path="url(#c5c)" x="410" y="280" font-family="'Cabin Sketch',cursive" font-size="22" font-weight="700" fill="#222">CHROMOSOMES</text></g>
+
+  <!-- Equals sign -->
+  <g id="s5_eq" opacity="0">
+    <line x1="530" y1="340" x2="580" y2="340" stroke="#333" stroke-width="5" stroke-linecap="round"/>
+    <line x1="530" y1="360" x2="580" y2="360" stroke="#333" stroke-width="5" stroke-linecap="round"/>
+  </g>
+
+  <!-- City Hall -->
+  <g id="s5_cityhall" opacity="0" transform="translate(650,180)">
+    <!-- Building -->
+    <path d="M150,120 L150,250 L350,250 L350,120 L310,70 L250,25 L190,70 Z" fill="none" stroke="#333" stroke-width="2.5"/>
+    <!-- Clock tower -->
+    <path d="M240,25 L245,5 L255,5 L260,25" fill="none" stroke="#333" stroke-width="1.5"/>
+    <circle cx="250" cy="50" r="15" fill="none" stroke="#333" stroke-width="1.5"/>
+    <!-- Clock hands -->
+    <line x1="250" y1="50" x2="250" y2="40" stroke="#333" stroke-width="1.5"/>
+    <line x1="250" y1="50" x2="258" y2="53" stroke="#333" stroke-width="1.2"/>
+    <!-- Columns -->
+    <line x1="190" y1="175" x2="190" y2="250" stroke="#333" stroke-width="3"/>
+    <line x1="230" y1="175" x2="230" y2="250" stroke="#333" stroke-width="3"/>
+    <line x1="270" y1="175" x2="270" y2="250" stroke="#333" stroke-width="3"/>
+    <line x1="310" y1="175" x2="310" y2="250" stroke="#333" stroke-width="3"/>
+    <!-- Windows -->
+    <rect x="195" y="130" width="30" height="35" fill="none" stroke="#333" stroke-width="1.2"/>
+    <rect x="240" y="130" width="30" height="35" fill="none" stroke="#333" stroke-width="1.2"/>
+    <rect x="285" y="130" width="30" height="35" fill="none" stroke="#333" stroke-width="1.2"/>
+    <!-- "CITY HALL" sign -->
+    <text x="200" y="200" font-family="'Cabin Sketch',cursive" font-size="20" font-weight="700" fill="#333">CITY HALL</text>
+    <!-- Hatching -->
+    <path d="M160,140 L340,135 M165,160 L335,155 M170,180 L330,175 M175,200 L325,195 M180,220 L320,215 M185,240 L315,235" fill="none" stroke="#555" stroke-width=".4" opacity=".25"/>
+  </g>
+
+  <!-- Instructions scroll -->
+  <g id="s5_scroll" opacity="0">
+    <path d="M480,490 C470,480 470,470 480,465 L680,465 C690,470 690,480 680,490 L680,600 C690,610 690,620 680,625 L480,625 C470,620 470,610 480,600 Z"
+          fill="#f5f0e5" stroke="#333" stroke-width="2"/>
+    <text x="510" y="510" font-family="'Cabin Sketch',cursive" font-size="22" font-weight="700" fill="#cc3333">INSTRUCTIONS</text>
+    <line x1="500" y1="530" x2="660" y2="530" stroke="#999" stroke-width="1"/>
+    <line x1="500" y1="550" x2="660" y2="550" stroke="#999" stroke-width="1"/>
+    <line x1="500" y1="570" x2="640" y2="570" stroke="#999" stroke-width="1"/>
+    <line x1="500" y1="590" x2="620" y2="590" stroke="#999" stroke-width="1"/>
+  </g>
+</g>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SCENE 6: Mitochondria = Power Plant (37-45s)        -->
+<!-- ═══════════════════════════════════════════════════ -->
+<g id="scene6" class="scene">
+  <!-- Title -->
+  <g><clipPath id="c6t"><rect id="r6t" x="300" y="20" width="0" height="65"/></clipPath>
+  <text clip-path="url(#c6t)" x="340" y="68" font-family="'Permanent Marker',cursive" font-size="48" font-weight="700"><tspan fill="#222">The </tspan><tspan fill="#cc3333">Power</tspan><tspan fill="#222"> Plants</tspan></text></g>
+
+  <!-- Thought bubble "Cell's Battery" -->
+  <g id="s6_thought" opacity="0">
+    <path d="M220,100 C180,80 180,50 220,40 C230,20 270,15 290,35 C310,15 350,25 350,50 C380,45 390,70 370,85 C385,100 370,125 340,120 C330,140 290,145 270,130 C250,145 210,135 210,115 Z"
+          fill="#fff" stroke="#333" stroke-width="2"/>
+    <circle cx="225" cy="148" r="6" fill="#fff" stroke="#333" stroke-width="1.5"/>
+    <circle cx="215" cy="162" r="4" fill="#fff" stroke="#333" stroke-width="1.5"/>
+    <text x="225" y="82" font-family="'Cabin Sketch',cursive" font-size="20" font-weight="700" fill="#cc3333">Cell's</text>
+    <text x="220" y="108" font-family="'Cabin Sketch',cursive" font-size="22" font-weight="700" fill="#cc3333">Battery</text>
+  </g>
+
+  <!-- Mitochondria cross-section -->
+  <g id="s6_mito" opacity="0">
+    <!-- Outer membrane -->
+    <path d="M100,280 C60,250 50,200 80,170 C110,140 200,120 300,140 C400,160 460,210 450,280 C440,350 380,400 300,410 C220,420 140,390 110,350 C90,330 80,310 100,280Z"
+          fill="none" stroke="#333" stroke-width="3"/>
+    <!-- Inner membrane with cristae folds -->
+    <path d="M120,285 C100,265 95,220 115,195 C135,170 200,155 290,165 C380,175 430,215 425,275 C420,335 370,375 295,385 C220,395 155,370 130,340 C115,320 110,305 120,285Z"
+          fill="none" stroke="#333" stroke-width="2.5"/>
+    <!-- Cristae (zigzag inner folds) -->
+    <path d="M160,210 L180,260 L200,210 L220,260 L240,210 L260,260 L280,210 L300,260 L320,220"
+          fill="none" stroke="#333" stroke-width="2"/>
+    <path d="M150,290 L170,340 L190,290 L210,340 L230,290 L250,340 L270,290 L290,340 L310,300"
+          fill="none" stroke="#333" stroke-width="2"/>
+    <!-- DNA inside -->
+    <path d="M200,350 C210,340 220,360 230,350 C240,340 250,360 260,350" fill="none" stroke="#333" stroke-width="1.5"/>
+    <!-- Dots -->
+    <circle cx="350" cy="230" r="3" fill="#333"/><circle cx="360" cy="290" r="3" fill="#333"/>
+    <circle cx="160" cy="310" r="3" fill="#333"/><circle cx="340" cy="350" r="3" fill="#333"/>
+  </g>
+
+  <!-- Part labels -->
+  <g id="s6_partlabels" opacity="0">
+    <g><rect x="320" y="190" width="155" height="24" rx="3" fill="#f5f0e5" stroke="#333" stroke-width="1.5"/>
+    <text x="330" y="208" font-family="'Cabin Sketch',cursive" font-size="16" fill="#222">Outer Membrane</text>
+    <line x1="320" y1="202" x2="280" y2="170" stroke="#333" stroke-width="1"/></g>
+    
+    <g><rect x="345" y="235" width="155" height="24" rx="3" fill="#f5f0e5" stroke="#333" stroke-width="1.5"/>
+    <text x="355" y="253" font-family="'Cabin Sketch',cursive" font-size="16" fill="#222">Inner Membrane</text>
+    <line x1="345" y1="247" x2="310" y2="240" stroke="#333" stroke-width="1"/></g>
+    
+    <g><rect x="380" y="280" width="70" height="24" rx="3" fill="#f5f0e5" stroke="#333" stroke-width="1.5"/>
+    <text x="390" y="298" font-family="'Cabin Sketch',cursive" font-size="16" fill="#222">Matrix</text>
+    <line x1="380" y1="292" x2="330" y2="300" stroke="#333" stroke-width="1"/></g>
+
+    <g><rect x="50" y="425" width="130" height="40" rx="3" fill="#f5f0e5" stroke="#333" stroke-width="1.5"/>
+    <text x="65" y="443" font-family="'Cabin Sketch',cursive" font-size="14" fill="#222">Cristae</text>
+    <text x="60" y="460" font-family="'Cabin Sketch',cursive" font-size="13" fill="#222">(the zigzags)</text>
+    <line x1="130" y1="425" x2="220" y2="340" stroke="#333" stroke-width="1"/></g>
+  </g>
+
+  <!-- Power plant illustration (right) -->
+  <g id="s6_plant" opacity="0" transform="translate(620,130)">
+    <!-- Factory building -->
+    <path d="M100,250 L100,350 L400,350 L400,250 Z" fill="none" stroke="#333" stroke-width="2.5"/>
+    <!-- Smokestacks -->
+    <path d="M150,150 L150,250 L185,250 L185,150 Z M250,170 L250,250 L285,250 L285,170 Z" fill="none" stroke="#333" stroke-width="2"/>
+    <!-- Cooling tower -->
+    <path d="M340,180 C330,200 325,230 330,250 L380,250 C385,230 380,200 370,180 C365,170 345,170 340,180Z" fill="none" stroke="#333" stroke-width="2"/>
+    <!-- Smoke clouds -->
+    <path d="M155,150 C145,130 160,110 170,120 C175,100 200,105 195,125 C210,115 220,130 210,145"
+          fill="none" stroke="#555" stroke-width="1.5"/>
+    <!-- Gears -->
+    <circle cx="200" cy="300" r="20" fill="none" stroke="#333" stroke-width="2"/>
+    <circle cx="200" cy="300" r="5" fill="#333"/>
+    <circle cx="240" cy="310" r="15" fill="none" stroke="#333" stroke-width="1.5"/>
+    <!-- Lightning bolts -->
+    <path d="M420,170 L410,200 L420,195 L408,230" fill="none" stroke="#cc3333" stroke-width="3" stroke-linecap="round"/>
+    <path d="M450,150 L440,180 L450,175 L438,210" fill="none" stroke="#cc3333" stroke-width="3" stroke-linecap="round"/>
+    <!-- Label -->
+    <text x="110" y="175" font-family="'Cabin Sketch',cursive" font-size="22" font-weight="700" fill="#cc3333">Energy Production</text>
+    <text x="160" y="200" font-family="'Cabin Sketch',cursive" font-size="22" font-weight="700" fill="#cc3333">Center</text>
+  </g>
+</g>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SCENE 7: Ribosomes (45-53s)                         -->
+<!-- ═══════════════════════════════════════════════════ -->
+<g id="scene7" class="scene">
+  <!-- Title -->
+  <g><clipPath id="c7t"><rect id="r7t" x="250" y="15" width="0" height="70"/></clipPath>
+  <text clip-path="url(#c7t)" x="310" y="72" font-family="'Permanent Marker',cursive" font-size="60" font-weight="700" fill="#222">RIBOSOMES</text></g>
+
+  <!-- "TINY DOTS IN CELL" label -->
+  <g><clipPath id="c7a"><rect id="r7a" x="30" y="95" width="0" height="55"/></clipPath>
+  <text clip-path="url(#c7a)" x="40" y="118" font-family="'Cabin Sketch',cursive" font-size="22" font-weight="700" fill="#222">TINY <tspan fill="#cc3333">DOTS</tspan></text>
+  <text clip-path="url(#c7a)" x="40" y="142" font-family="'Cabin Sketch',cursive" font-size="22" font-weight="700" fill="#222">IN CELL</text></g>
+
+  <!-- Cell with dots -->
+  <g id="s7_cell" opacity="0">
+    <ellipse cx="230" cy="360" rx="195" ry="210" fill="none" stroke="#333" stroke-width="3"/>
+    <!-- Nucleus -->
+    <circle cx="200" cy="330" r="55" fill="none" stroke="#333" stroke-width="2"/>
+    <circle cx="190" cy="320" r="12" fill="#333" opacity=".5"/>
+    <!-- Many dots (ribosomes) -->
+    <g fill="#333">
+      <circle cx="120" cy="250" r="4"/><circle cx="150" cy="230" r="4"/><circle cx="180" cy="220" r="4"/>
+      <circle cx="260" cy="220" r="4"/><circle cx="290" cy="240" r="4"/><circle cx="320" cy="260" r="4"/>
+      <circle cx="340" cy="300" r="4"/><circle cx="350" cy="340" r="4"/><circle cx="340" cy="380" r="4"/>
+      <circle cx="320" cy="420" r="4"/><circle cx="280" cy="450" r="4"/><circle cx="240" cy="470" r="4"/>
+      <circle cx="190" cy="460" r="4"/><circle cx="150" cy="440" r="4"/><circle cx="120" cy="410" r="4"/>
+      <circle cx="100" cy="370" r="4"/><circle cx="90" cy="320" r="4"/><circle cx="100" cy="280" r="4"/>
+      <circle cx="200" cy="250" r="3"/><circle cx="300" cy="300" r="3"/><circle cx="280" cy="380" r="3"/>
+      <circle cx="170" cy="400" r="3"/><circle cx="250" cy="280" r="3"/><circle cx="330" cy="350" r="3"/>
+    </g>
+    <!-- Arrow pointing to dots -->
+    <path d="M120,175 L150,225" fill="none" stroke="#333" stroke-width="2"/>
+    <polygon points="148,220 155,230 145,228" fill="#333"/>
+  </g>
+
+  <!-- Factory illustration -->
+  <g id="s7_factory" opacity="0" transform="translate(660,100)">
+    <text x="60" y="20" font-family="'Cabin Sketch',cursive" font-size="22" font-weight="700" fill="#cc3333">FACTORY</text>
+    <text x="280" y="20" font-family="'Cabin Sketch',cursive" font-size="26" font-weight="700" fill="#222">ICON</text>
+    <!-- Factory building -->
+    <path d="M50,60 L50,180 L350,180 L350,60 Z" fill="none" stroke="#333" stroke-width="2.5"/>
+    <!-- Smokestack -->
+    <path d="M80,20 L80,60 L110,60 L110,20 Z M150,30 L150,60 L175,60 L175,30Z" fill="none" stroke="#333" stroke-width="2"/>
+    <!-- Smoke -->
+    <path d="M90,20 C85,5 100,-5 105,10 C110,-5 125,0 120,18" fill="none" stroke="#555" stroke-width="1.5"/>
+    <!-- PROTEIN FACTORY sign -->
+    <rect x="100" y="90" width="180" height="30" rx="3" fill="#fff" stroke="#333" stroke-width="1.5"/>
+    <text x="115" y="112" font-family="'Cabin Sketch',cursive" font-size="16" font-weight="700" fill="#333">PROTEIN FACTORY</text>
+    <!-- Conveyor belt -->
+    <path d="M50,180 L350,180 L370,200 L30,200Z" fill="none" stroke="#333" stroke-width="1.5"/>
+    <circle cx="80" cy="190" r="8" fill="none" stroke="#333" stroke-width="1.5"/>
+    <circle cx="150" cy="190" r="8" fill="none" stroke="#333" stroke-width="1.5"/>
+    <circle cx="220" cy="190" r="8" fill="none" stroke="#333" stroke-width="1.5"/>
+    <circle cx="290" cy="190" r="8" fill="none" stroke="#333" stroke-width="1.5"/>
+    <!-- Gears -->
+    <circle cx="300" cy="130" r="18" fill="none" stroke="#333" stroke-width="2"/>
+    <circle cx="300" cy="130" r="5" fill="#333"/>
+  </g>
+
+  <!-- Protein blocks -->
+  <g id="s7_blocks" opacity="0" transform="translate(440,400)">
+    <!-- Stacked blocks -->
+    <rect x="80" y="50" width="180" height="35" rx="3" fill="none" stroke="#333" stroke-width="2"/>
+    <rect x="60" y="85" width="220" height="35" rx="3" fill="none" stroke="#333" stroke-width="2"/>
+    <rect x="40" y="120" width="260" height="35" rx="3" fill="none" stroke="#333" stroke-width="2"/>
+    <rect x="20" y="155" width="300" height="35" rx="3" fill="none" stroke="#333" stroke-width="2"/>
+    <!-- Hatching on blocks -->
+    <path d="M90,55 L90,85 M120,55 L120,85 M150,55 L150,85 M180,55 L180,85 M210,55 L210,85 M240,55 L240,85"
+          fill="none" stroke="#555" stroke-width=".5" opacity=".3"/>
+    <!-- "PROTEINS" label -->
+    <rect x="100" y="92" width="140" height="25" rx="3" fill="#fff" stroke="#333" stroke-width="1.5"/>
+    <text x="115" y="112" font-family="'Cabin Sketch',cursive" font-size="18" font-weight="700" fill="#333">PROTEINS</text>
+    
+    <!-- Bottom label -->
+    <text x="20" y="215" font-family="'Cabin Sketch',cursive" font-size="18" font-weight="700" fill="#222"><tspan fill="#cc3333" text-decoration="underline">PROTEIN BLOCKS BUILDING</tspan></text>
+  </g>
+</g>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SCENE 8: Plant Cells Only (53-63s)                  -->
+<!-- ═══════════════════════════════════════════════════ -->
+<g id="scene8" class="scene">
+  <!-- Title -->
+  <g><clipPath id="c8t"><rect id="r8t" x="40" y="30" width="0" height="80"/></clipPath>
+  <text clip-path="url(#c8t)" x="60" y="90" font-family="'Permanent Marker',cursive" font-size="55" font-weight="700"><tspan fill="#222">Plant Cells </tspan><tspan fill="#cc3333" font-style="italic">Only</tspan></text></g>
+  
+  <!-- Underline -->
+  <line id="s8_ul" x1="55" y1="100" x2="520" y2="100" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Sun illustration -->
+  <g id="s8_sun" opacity="0" transform="translate(1000,60)">
+    <circle cx="100" cy="100" r="60" fill="none" stroke="#cc3333" stroke-width="3.5"/>
+    <!-- Sun rays -->
+    <path d="M100,30 C95,15 105,15 100,30 M160,55 C175,45 175,55 160,55 M170,115 C185,120 180,130 170,115 M100,170 C105,185 95,185 100,170 M35,135 C20,140 20,130 35,135 M35,65 C20,60 25,50 35,65"
+          fill="none" stroke="#cc3333" stroke-width="2.5"/>
+    <!-- Wavy rays -->
+    <path d="M130,50 C140,35 150,40 145,55 M155,80 C170,70 175,80 160,90" fill="none" stroke="#cc3333" stroke-width="2"/>
+  </g>
+
+  <!-- Solar panel illustration -->
+  <g id="s8_panel" opacity="0" transform="translate(680,180)">
+    <!-- Panel surface (angled) -->
+    <path d="M50,250 L100,80 L400,50 L380,250 Z" fill="none" stroke="#333" stroke-width="2.5"/>
+    <!-- Grid lines -->
+    <path d="M65,230 L110,100 M85,220 L125,105 M105,215 L145,95 M130,210 L170,90 M155,205 L200,85 
+            M180,200 L230,80 M210,195 L260,78 M240,190 L295,72 M270,185 L330,68 M305,180 L360,60
+            M340,175 L390,55"
+          fill="none" stroke="#333" stroke-width="1"/>
+    <path d="M70,140 L370,115 M60,190 L375,175 M75,105 L390,85"
+          fill="none" stroke="#333" stroke-width="1"/>
+    <!-- Stand -->
+    <rect x="200" y="255" width="20" height="30" fill="none" stroke="#333" stroke-width="2"/>
+    <path d="M180,285 L240,285" fill="none" stroke="#333" stroke-width="2"/>
+    <!-- Hatching on ground -->
+    <path d="M160,290 L260,290 M170,295 L250,295" fill="none" stroke="#555" stroke-width="1" opacity=".4"/>
+    <!-- Arrow from sun to panel -->
+    <path d="M250,30 L200,70 M280,15 L220,55 M310,5 L250,45" fill="none" stroke="#cc3333" stroke-width="2" stroke-linecap="round"/>
+    <polygon points="195,75 208,65 200,78" fill="#cc3333"/>
+    <polygon points="215,60 228,50 220,63" fill="#cc3333"/>
+  </g>
+
+  <!-- Text description -->
+  <g><clipPath id="c8a"><rect id="r8a" x="40" y="200" width="0" height="350"/></clipPath>
+  <g clip-path="url(#c8a)">
+    <text x="60" y="260" font-family="'Cabin Sketch',cursive" font-size="28" font-weight="700" fill="#222">Chloroplasts</text>
+    <text x="60" y="310" font-family="'Cabin Sketch',cursive" font-size="22" fill="#222">Convert sunlight</text>
+    <text x="60" y="340" font-family="'Cabin Sketch',cursive" font-size="22" fill="#222">into food energy</text>
+    <text x="60" y="400" font-family="'Cabin Sketch',cursive" font-size="20" fill="#555">Like solar panels</text>
+    <text x="60" y="430" font-family="'Cabin Sketch',cursive" font-size="20" fill="#555">for the city!</text>
+    <text x="60" y="490" font-family="'Cabin Sketch',cursive" font-size="22" font-weight="700" fill="#cc3333">Photosynthesis</text>
+  </g></g>
+</g>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCENE 9: Animal vs Plant Comparison (63-73s)            -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<g id="scene9" class="scene">
+  <!-- Gray background for this scene -->
+  <rect id="s9_bg" x="0" y="0" width="1280" height="714" fill="url(#bgGray)" opacity="0"/>
+  
+  <!-- Title -->
+  <g><clipPath id="c9t"><rect id="r9t" x="200" y="20" width="0" height="130"/></clipPath>
+  <text clip-path="url(#c9t)" x="300" y="82" font-family="'Permanent Marker','Cabin Sketch',cursive" font-size="52" font-weight="700"><tspan fill="#222">Let's </tspan><tspan fill="#cc3333">Compare</tspan></text>
+  <text clip-path="url(#c9t)" x="310" y="138" font-family="'Cabin Sketch',cursive" font-size="46" font-weight="700"><tspan fill="#222">Animal </tspan><tspan fill="#cc3333">vs</tspan><tspan fill="#222"> Plant</tspan></text></g>
+
+  <!-- "Both Have:" banner -->
+  <g id="s9_banner" opacity="0">
+    <path d="M350,180 C340,175 340,165 350,160 L700,160 C710,165 710,175 700,180 L700,195 C710,200 710,210 700,215 L350,215 C340,210 340,200 350,195Z"
+          fill="#e8e4de" stroke="#333" stroke-width="2"/>
+    <text x="440" y="198" font-family="'Cabin Sketch',cursive" font-size="32" font-weight="700" fill="#222">Both Have:</text>
+  </g>
+
+  <!-- Shared features list -->
+  <g id="s9_shared" opacity="0">
+    <!-- Divider line -->
+    <line x1="530" y1="225" x2="530" y2="600" stroke="#333" stroke-width="2"/>
+    
+    <!-- Items with decorative lines -->
+    <g>
+      <line x1="350" y1="260" x2="710" y2="260" stroke="#333" stroke-width="1.5"/>
+      <text x="430" y="258" font-family="'Cabin Sketch',cursive" font-size="28" font-weight="700" fill="#cc3333">Membranes</text>
+    </g>
+    <g>
+      <line x1="360" y1="330" x2="700" y2="330" stroke="#333" stroke-width="1.5"/>
+      <text x="460" y="328" font-family="'Cabin Sketch',cursive" font-size="28" font-weight="700" fill="#cc3333">Nuclei</text>
+    </g>
+    <g>
+      <line x1="370" y1="400" x2="690" y2="400" stroke="#333" stroke-width="1.5"/>
+      <text x="470" y="398" font-family="'Cabin Sketch',cursive" font-size="28" font-weight="700" fill="#cc3333">Mito</text>
+    </g>
+    <g>
+      <line x1="350" y1="470" x2="710" y2="470" stroke="#333" stroke-width="1.5"/>
+      <text x="420" y="468" font-family="'Cabin Sketch',cursive" font-size="26" font-weight="700" fill="#cc3333">Ribosomes</text>
+    </g>
+  </g>
+
+  <!-- "Plants Only:" bracket -->
+  <g id="s9_plants" opacity="0">
+    <text x="900" y="200" font-family="'Cabin Sketch',cursive" font-size="24" font-weight="700" fill="#222"><tspan fill="#cc3333">Plants Only:</tspan></text>
+    <!-- Bracket -->
+    <path d="M880,220 L870,220 L870,600 L880,600" fill="none" stroke="#333" stroke-width="2.5"/>
+    <!-- Items -->
+    <text x="900" y="310" font-family="'Cabin Sketch',cursive" font-size="22" fill="#fff">Cell Wall</text>
+    <text x="900" y="380" font-family="'Cabin Sketch',cursive" font-size="22" fill="#fff">Chloroplasts</text>
+    <text x="900" y="450" font-family="'Cabin Sketch',cursive" font-size="22" fill="#fff">Large Vacuole</text>
+  </g>
+</g>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCENE 10: Cell City Checklist (73-86s)                  -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<g id="scene10" class="scene">
+  <!-- Clipboard icon -->
+  <g id="s10_clip" opacity="0" transform="translate(220,15)">
+    <rect x="0" y="15" width="70" height="85" rx="5" fill="none" stroke="#333" stroke-width="2.5"/>
+    <rect x="15" y="5" width="40" height="18" rx="8" fill="none" stroke="#333" stroke-width="2"/>
+    <circle cx="35" cy="10" r="4" fill="none" stroke="#333" stroke-width="1.5"/>
+    <!-- Checklist lines -->
+    <path d="M12,42 L18,50 L28,35" fill="none" stroke="#333" stroke-width="2"/><line x1="35" y1="42" x2="58" y2="42" stroke="#333" stroke-width="1.5"/>
+    <rect x="12" y="55" width="12" height="10" fill="none" stroke="#333" stroke-width="1.2"/><line x1="35" y1="62" x2="58" y2="62" stroke="#333" stroke-width="1.5"/>
+    <rect x="12" y="75" width="12" height="10" fill="none" stroke="#333" stroke-width="1.2"/><line x1="35" y1="82" x2="58" y2="82" stroke="#333" stroke-width="1.5"/>
+    <!-- Pencil -->
+    <line x1="55" y1="20" x2="75" y2="0" stroke="#cc3333" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- Title -->
+  <g><clipPath id="c10t"><rect id="r10t" x="290" y="20" width="0" height="80"/></clipPath>
+  <text clip-path="url(#c10t)" x="310" y="82" font-family="'Cabin Sketch',cursive" font-size="60" font-weight="700" fill="#222">Cell City Checklist</text></g>
+
+  <!-- Checklist items -->
+  <!-- 1. Membrane = Gate -->
+  <g id="s10_item1" opacity="0">
+    <rect x="50" y="128" width="420" height="52" rx="5" fill="none" stroke="#333" stroke-width="2"/>
+    <path d="M68,148 L78,162 L98,138" fill="none" stroke="#333" stroke-width="4" stroke-linecap="round"/>
+    <text x="115" y="163" font-family="'Cabin Sketch',cursive" font-size="32" font-weight="700" fill="#222">Membrane = <tspan fill="#cc3333">Gate</tspan></text>
+  </g>
+
+  <!-- 2. Nucleus = Control Center -->
+  <g id="s10_item2" opacity="0">
+    <path d="M68,222 L78,236 L98,212" fill="none" stroke="#333" stroke-width="4" stroke-linecap="round"/>
+    <text x="115" y="237" font-family="'Cabin Sketch',cursive" font-size="30" font-weight="700" fill="#222">Nucleus = <tspan fill="#cc3333">Control Center</tspan></text>
+  </g>
+
+  <!-- 3. Mitochondria = Energy -->
+  <g id="s10_item3" opacity="0">
+    <path d="M68,296 L78,310 L98,286" fill="none" stroke="#333" stroke-width="4" stroke-linecap="round"/>
+    <text x="115" y="311" font-family="'Cabin Sketch',cursive" font-size="30" font-weight="700" fill="#222">Mitochondria = <tspan fill="#cc3333">Energy</tspan></text>
+  </g>
+
+  <!-- 4. Ribosomes = Proteins -->
+  <g id="s10_item4" opacity="0">
+    <path d="M68,370 L78,384 L98,360" fill="none" stroke="#333" stroke-width="4" stroke-linecap="round"/>
+    <text x="115" y="385" font-family="'Cabin Sketch',cursive" font-size="30" font-weight="700" fill="#222">Ribosomes = <tspan fill="#cc3333">Proteins</tspan></text>
+  </g>
+
+  <!-- 5. Chloroplasts = Food -->
+  <g id="s10_item5" opacity="0">
+    <path d="M68,444 L78,458 L98,434" fill="none" stroke="#333" stroke-width="4" stroke-linecap="round"/>
+    <text x="115" y="459" font-family="'Cabin Sketch',cursive" font-size="28" font-weight="700" fill="#222">Chloroplasts = <tspan fill="#cc3333">Food (Plants Only)</tspan></text>
+  </g>
+
+  <!-- Right side: city analogy mini illustrations -->
+  <g id="s10_cityIcons" opacity="0" transform="translate(580, 120)">
+    <!-- Gate/wall icon -->
+    <g>
+      <path d="M60,0 L60,60 L40,60 L40,30 L20,30 L20,0 Z M110,0 L110,60 L130,60 L130,30 L150,30 L150,0 Z M60,30 L110,30 M60,60 L110,60"
+            fill="none" stroke="#333" stroke-width="2"/>
+      <text x="55" y="80" font-family="'Cabin Sketch',cursive" font-size="12" fill="#222">GATE</text>
+    </g>
+    
+    <!-- Command hub icon -->
+    <g transform="translate(250, -10)">
+      <circle cx="80" cy="40" r="45" fill="none" stroke="#333" stroke-width="2"/>
+      <text x="38" y="30" font-family="'Cabin Sketch',cursive" font-size="10" fill="#222">CITY HALL</text>
+      <circle cx="80" cy="55" r="8" fill="#555" opacity=".3"/>
+      <text x="40" y="100" font-family="'Cabin Sketch',cursive" font-size="11" fill="#222">COMMAND HUB</text>
+    </g>
+    
+    <!-- Power station icon -->
+    <g transform="translate(100, 150)">
+      <path d="M20,40 L20,80 L120,80 L120,40 Z M40,10 L40,40 L60,40 L60,10 Z M80,20 L80,40 L100,40 L100,20Z"
+            fill="none" stroke="#333" stroke-width="1.8"/>
+      <text x="25" y="98" font-family="'Cabin Sketch',cursive" font-size="11" fill="#cc3333">POWERHOUSE</text>
+      <!-- Lightning -->
+      <path d="M130,25 L125,45 L135,40 L128,60" fill="none" stroke="#cc3333" stroke-width="2.5"/>
+    </g>
+    
+    <!-- Factory icon -->
+    <g transform="translate(30, 280)">
+      <path d="M20,30 L20,70 L140,70 L140,30 Z M30,0 L30,30 L50,30 L50,0Z" fill="none" stroke="#333" stroke-width="1.8"/>
+      <text x="30" y="60" font-family="'Cabin Sketch',cursive" font-size="11" fill="#222">FACTORY</text>
+      <text x="20" y="90" font-family="'Cabin Sketch',cursive" font-size="11" fill="#222">MANUFACTURING</text>
+    </g>
+
+    <!-- Solar/Food icon -->
+    <g transform="translate(200, 310)">
+      <circle cx="40" cy="20" r="20" fill="none" stroke="#cc3333" stroke-width="2"/>
+      <path d="M40,0 L40,-8 M60,10 L68,5 M55,35 L62,42 M25,35 L18,42 M20,10 L12,5" fill="none" stroke="#cc3333" stroke-width="1.5"/>
+      <text x="0" y="60" font-family="'Cabin Sketch',cursive" font-size="11" fill="#222">PHOTOSYNTHESIS</text>
+    </g>
+  </g>
+</g>
+
+<!-- Progress bar -->
+<rect x="0" y="710" width="1280" height="4" fill="#d5d0c8"/>
+<rect id="progBar" x="0" y="710" width="0" height="4" fill="#2b7ec2"/>
+</svg>
+</div>
+
+<div id="controls">
+  <button id="btnPlay">▶ Play</button>
+  <button id="btnReplay">↻ Replay</button>
+  <input type="range" id="seekBar" min="0" max="860" value="0" step="1"/>
+  <span id="timeDisp">0.0 / 86.0s</span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const TOTAL = 86;
+  const seekBar = document.getElementById('seekBar');
+  let isSeeking = false;
+
+  // ── Utilities ──
+  function initStroke(id) {
+    const el = document.getElementById(id);
+    if (!el || !el.getTotalLength) return;
+    const len = el.getTotalLength();
+    gsap.set(el, { strokeDasharray: len, strokeDashoffset: len });
+  }
+  function drawOn(id, dur) {
+    const el = document.getElementById(id);
+    if (!el || !el.getTotalLength) return gsap.to({}, {duration:.01});
+    const len = el.getTotalLength();
+    gsap.set(el, { strokeDasharray: len, strokeDashoffset: len });
+    return gsap.to(el, { strokeDashoffset: 0, duration: dur, ease: 'power1.inOut' });
+  }
+  function wipe(clipId, w, dur) {
+    return gsap.to('#' + clipId, { attr: { width: w }, duration: dur, ease: 'power1.inOut' });
+  }
+  function fadeIn(sel, dur, d) {
+    return gsap.to(sel, { opacity: 1, duration: dur || 0.5 });
+  }
+  function showScene(id) { gsap.set(id, { opacity: 1 }); }
+  function hideScene(id) { gsap.set(id, { opacity: 0 }); }
+
+  // ── Master Timeline ──
+  const tl = gsap.timeline({
+    paused: true,
+    onUpdate() {
+      const t = tl.time();
+      if (!isSeeking) seekBar.value = Math.round(t * 10);
+      document.getElementById('timeDisp').textContent = t.toFixed(1) + ' / ' + TOTAL + 's';
+      gsap.set('#progBar', { attr: { width: (t / TOTAL) * 1280 }});
+    }
+  });
+
+  // ════════════════════════════════════════
+  //  SCENE 1: Body = Trillions of Cells (0-7s)
+  // ════════════════════════════════════════
+  tl.call(() => showScene('#scene1'), null, 0);
+  tl.add(wipe('r1a', 250, 1.5), 0.2);
+  tl.add(wipe('r1b', 220, 1.2), 1.5);
+  tl.add(drawOn('s1_ul', 0.4), 2.5);
+  tl.add(wipe('r1c', 200, 1.0), 3.0);
+  tl.add(fadeIn('#s1_body', 1.5), 4.0);
+
+  // ════════════════════════════════════════
+  //  SCENE 2: Body→Organ→Tissue (7-13s)
+  // ════════════════════════════════════════
+  tl.call(() => { hideScene('#scene1'); showScene('#scene2'); }, null, 7.0);
+  tl.add(wipe('r2a', 250, 1.0), 7.2);
+  tl.add(fadeIn('#s2_body', 1.2), 7.5);
+  tl.add(fadeIn('#s2_mag', 0.5), 8.5);
+  tl.add(wipe('r2b', 200, 0.8), 9.0);
+  tl.add(fadeIn('#s2_arm', 1.0), 9.2);
+  tl.to('#s2_arrow1', { opacity: 1, duration: 0.4 }, 10.5);
+  tl.add(wipe('r2c', 150, 0.7), 10.8);
+  tl.add(fadeIn('#s2_tissue', 1.2), 11.0);
+
+  // ════════════════════════════════════════
+  //  SCENE 3: Cell = Tiny City (13-24s)
+  // ════════════════════════════════════════
+  tl.call(() => { hideScene('#scene2'); showScene('#scene3'); }, null, 13.0);
+  tl.add(fadeIn('#s3_cell', 2.0), 13.2);
+  tl.add(fadeIn('#s3_labels', 1.5), 14.5);
+  tl.add(wipe('r3a', 420, 1.5), 16.5);
+  tl.add(fadeIn('#s3_city', 2.5), 18.0);
+  tl.add(wipe('r3b', 300, 0.8), 21.0);
+  tl.add(wipe('r3c', 350, 0.8), 22.5);
+
+  // ════════════════════════════════════════
+  //  SCENE 4: Cell Membrane (24-28s)
+  // ════════════════════════════════════════
+  tl.call(() => { hideScene('#scene3'); showScene('#scene4'); }, null, 24.0);
+  tl.add(fadeIn('#s4_cell', 1.5), 24.2);
+  tl.add(fadeIn('#s4_label', 0.6), 25.5);
+  tl.add(fadeIn('#s4_checks', 0.5), 26.0);
+  tl.add(wipe('r4a', 550, 2.0), 26.0);
+
+  // ════════════════════════════════════════
+  //  SCENE 5: Nucleus (28-37s)
+  // ════════════════════════════════════════
+  tl.call(() => { hideScene('#scene4'); showScene('#scene5'); }, null, 28.0);
+  tl.add(wipe('r5t', 900, 1.5), 28.2);
+  tl.add(fadeIn('#s5_nlabel', 0.5), 29.5);
+  tl.add(fadeIn('#s5_nucleus', 2.0), 30.0);
+  tl.add(wipe('r5c', 250, 0.8), 31.5);
+  tl.add(fadeIn('#s5_eq', 0.3), 33.0);
+  tl.add(fadeIn('#s5_cityhall', 2.0), 33.5);
+  tl.add(fadeIn('#s5_scroll', 1.0), 35.5);
+
+  // ════════════════════════════════════════
+  //  SCENE 6: Mitochondria (37-45s)
+  // ════════════════════════════════════════
+  tl.call(() => { hideScene('#scene5'); showScene('#scene6'); }, null, 37.0);
+  tl.add(wipe('r6t', 750, 1.2), 37.2);
+  tl.add(fadeIn('#s6_thought', 0.8), 38.5);
+  tl.add(fadeIn('#s6_mito', 2.5), 39.0);
+  tl.add(fadeIn('#s6_partlabels', 1.0), 41.0);
+  tl.add(fadeIn('#s6_plant', 2.0), 42.0);
+
+  // ════════════════════════════════════════
+  //  SCENE 7: Ribosomes (45-53s)
+  // ════════════════════════════════════════
+  tl.call(() => { hideScene('#scene6'); showScene('#scene7'); }, null, 45.0);
+  tl.add(wipe('r7t', 750, 1.2), 45.2);
+  tl.add(wipe('r7a', 200, 0.8), 46.5);
+  tl.add(fadeIn('#s7_cell', 2.0), 47.0);
+  tl.add(fadeIn('#s7_factory', 2.0), 49.0);
+  tl.add(fadeIn('#s7_blocks', 1.5), 51.0);
+
+  // ════════════════════════════════════════
+  //  SCENE 8: Plant Cells Only (53-63s)
+  // ════════════════════════════════════════
+  tl.call(() => { hideScene('#scene7'); showScene('#scene8'); }, null, 53.0);
+  tl.add(wipe('r8t', 550, 1.5), 53.2);
+  tl.add(drawOn('s8_ul', 0.5), 54.5);
+  tl.add(fadeIn('#s8_sun', 1.2), 55.5);
+  tl.add(fadeIn('#s8_panel', 2.0), 57.0);
+  tl.add(wipe('r8a', 600, 3.0), 59.0);
+
+  // ════════════════════════════════════════
+  //  SCENE 9: Animal vs Plant (63-73s)
+  // ════════════════════════════════════════
+  tl.call(() => { hideScene('#scene8'); showScene('#scene9'); }, null, 63.0);
+  tl.to('#s9_bg', { opacity: 1, duration: 0.5 }, 63.0);
+  tl.add(wipe('r9t', 900, 2.0), 63.5);
+  tl.add(fadeIn('#s9_banner', 0.8), 65.5);
+  tl.add(fadeIn('#s9_shared', 2.5), 66.5);
+  tl.add(fadeIn('#s9_plants', 2.0), 70.0);
+
+  // ════════════════════════════════════════
+  //  SCENE 10: Cell City Checklist (73-86s)
+  // ════════════════════════════════════════
+  tl.call(() => { hideScene('#scene9'); showScene('#scene10'); gsap.set('#bgRect', { fill: 'url(#bg)' }); }, null, 73.0);
+  tl.add(fadeIn('#s10_clip', 0.6), 73.2);
+  tl.add(wipe('r10t', 700, 1.5), 73.5);
+  tl.add(fadeIn('#s10_item1', 0.8), 75.5);
+  tl.add(fadeIn('#s10_item2', 0.8), 77.5);
+  tl.add(fadeIn('#s10_item3', 0.8), 79.5);
+  tl.add(fadeIn('#s10_item4', 0.8), 81.0);
+  tl.add(fadeIn('#s10_item5', 0.8), 82.5);
+  tl.add(fadeIn('#s10_cityIcons', 2.0), 76.0);
+  // Hold
+  tl.to({}, { duration: 1 }, 85);
+
+  // ── Controls ──
+  document.getElementById('btnPlay').onclick = () => {
+    if (tl.isActive()) { tl.pause(); document.getElementById('btnPlay').textContent = '▶ Play'; }
+    else { tl.play(); document.getElementById('btnPlay').textContent = '⏸ Pause'; }
+  };
+  document.getElementById('btnReplay').onclick = () => {
+    tl.seek(0).pause();
+    // Reset all
+    document.querySelectorAll('.scene').forEach(s => gsap.set(s, { opacity: 0 }));
+    document.querySelectorAll('[id^="r"]').forEach(r => { if (r.tagName === 'rect' && r.id.match(/^r\d/)) r.setAttribute('width', '0'); });
+    gsap.set('#bgRect', { fill: 'url(#bg)' });
+    gsap.set('#s9_bg', { opacity: 0 });
+    tl.restart();
+    document.getElementById('btnPlay').textContent = '⏸ Pause';
+  };
+
+  seekBar.addEventListener('input', () => {
+    isSeeking = true;
+    tl.seek(seekBar.value / 10).pause();
+    document.getElementById('btnPlay').textContent = '▶ Play';
+    setTimeout(() => { isSeeking = false; }, 100);
+  });
+
+  // Auto-play
+  setTimeout(() => { tl.play(); document.getElementById('btnPlay').textContent = '⏸ Pause'; }, 800);
+});
+</script>
+</body>
+</html>

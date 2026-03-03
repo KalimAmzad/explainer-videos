@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The ABC of AI — Whiteboard Explainer</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@400;700&family=Caveat:wght@400;700&family=Permanent+Marker&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}
+.wrap{width:100vw;max-width:1280px;aspect-ratio:16/9;position:relative;border-radius:6px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.6)}
+#board{width:100%;height:100%;display:block}
+.scene{opacity:0}
+#controls{margin-top:10px;display:flex;gap:10px;align-items:center}
+#controls button{padding:7px 18px;background:#2b7ec2;color:#fff;border:none;border-radius:5px;font-size:13px;cursor:pointer;transition:background 0.2s}
+#controls button:hover{background:#1e5fa0}
+#timeDisp{color:#888;font:13px/1 monospace;min-width:90px}
+#seekBar{width:300px;cursor:pointer;accent-color:#2b7ec2}
+</style>
+</head>
+<body>
+<div class="wrap">
+<svg id="board" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2=".04" y2="1">
+    <stop offset="0%" stop-color="#f5f3ef"/>
+    <stop offset="100%" stop-color="#edeae4"/>
+  </linearGradient>
+
+  <!-- ═══ SCENE 1 CLIP PATHS ═══ -->
+  <clipPath id="cp_s1_title"><rect id="cr_s1_title" x="100" y="100" width="0" height="110"/></clipPath>
+  <clipPath id="cp_s1_sub"><rect id="cr_s1_sub" x="240" y="230" width="0" height="60"/></clipPath>
+  <clipPath id="cp_s1_la"><rect id="cr_s1_la" x="110" y="420" width="0" height="120"/></clipPath>
+  <clipPath id="cp_s1_lb"><rect id="cr_s1_lb" x="470" y="420" width="0" height="120"/></clipPath>
+  <clipPath id="cp_s1_lc"><rect id="cr_s1_lc" x="830" y="420" width="0" height="120"/></clipPath>
+
+  <!-- ═══ SCENE 2 CLIP PATHS ═══ -->
+  <clipPath id="cp_s2_bigA"><rect id="cr_s2_bigA" x="50" y="40" width="0" height="140"/></clipPath>
+  <clipPath id="cp_s2_word"><rect id="cr_s2_word" x="50" y="180" width="0" height="65"/></clipPath>
+  <clipPath id="cp_s2_def"><rect id="cr_s2_def" x="50" y="280" width="0" height="55"/></clipPath>
+  <clipPath id="cp_s2_ana"><rect id="cr_s2_ana" x="50" y="370" width="0" height="50"/></clipPath>
+  <clipPath id="cp_s2_ex"><rect id="cr_s2_ex" x="50" y="490" width="0" height="50"/></clipPath>
+
+  <!-- ═══ SCENE 3 CLIP PATHS ═══ -->
+  <clipPath id="cp_s3_bigB"><rect id="cr_s3_bigB" x="50" y="40" width="0" height="140"/></clipPath>
+  <clipPath id="cp_s3_word"><rect id="cr_s3_word" x="50" y="180" width="0" height="65"/></clipPath>
+  <clipPath id="cp_s3_def"><rect id="cr_s3_def" x="50" y="280" width="0" height="55"/></clipPath>
+  <clipPath id="cp_s3_ana"><rect id="cr_s3_ana" x="50" y="380" width="0" height="50"/></clipPath>
+  <clipPath id="cp_s3_count"><rect id="cr_s3_count" x="680" y="500" width="0" height="60"/></clipPath>
+
+  <!-- ═══ SCENE 4 CLIP PATHS ═══ -->
+  <clipPath id="cp_s4_bigC"><rect id="cr_s4_bigC" x="50" y="40" width="0" height="130"/></clipPath>
+  <clipPath id="cp_s4_word"><rect id="cr_s4_word" x="50" y="160" width="0" height="55"/></clipPath>
+  <clipPath id="cp_s4_step1"><rect id="cr_s4_step1" x="50" y="540" width="0" height="50"/></clipPath>
+  <clipPath id="cp_s4_step2"><rect id="cr_s4_step2" x="435" y="540" width="0" height="50"/></clipPath>
+  <clipPath id="cp_s4_step3"><rect id="cr_s4_step3" x="830" y="540" width="0" height="50"/></clipPath>
+  <clipPath id="cp_s4_dog"><rect id="cr_s4_dog" x="880" y="350" width="0" height="60"/></clipPath>
+  <clipPath id="cp_s4_bot"><rect id="cr_s4_bot" x="150" y="620" width="0" height="50"/></clipPath>
+
+  <!-- ═══ SCENE 5 CLIP PATHS ═══ -->
+  <clipPath id="cp_s5_title"><rect id="cr_s5_title" x="200" y="30" width="0" height="70"/></clipPath>
+  <clipPath id="cp_s5_data"><rect id="cr_s5_data" x="60" y="380" width="0" height="55"/></clipPath>
+  <clipPath id="cp_s5_learn"><rect id="cr_s5_learn" x="415" y="380" width="0" height="55"/></clipPath>
+  <clipPath id="cp_s5_ai"><rect id="cr_s5_ai" x="830" y="380" width="0" height="55"/></clipPath>
+  <clipPath id="cp_s5_sum"><rect id="cr_s5_sum" x="150" y="540" width="0" height="55"/></clipPath>
+
+  <!-- ═══ SCENE 6 CLIP PATHS ═══ -->
+  <clipPath id="cp_s6_title"><rect id="cr_s6_title" x="250" y="25" width="0" height="70"/></clipPath>
+  <clipPath id="cp_s6_rowa"><rect id="cr_s6_rowa" x="200" y="130" width="0" height="100"/></clipPath>
+  <clipPath id="cp_s6_rowb"><rect id="cr_s6_rowb" x="200" y="300" width="0" height="100"/></clipPath>
+  <clipPath id="cp_s6_rowc"><rect id="cr_s6_rowc" x="200" y="460" width="0" height="100"/></clipPath>
+  <clipPath id="cp_s6_footer"><rect id="cr_s6_footer" x="200" y="610" width="0" height="60"/></clipPath>
+</defs>
+
+<!-- Background -->
+<rect width="1280" height="720" fill="url(#bg)"/>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  SCENE 1: Title Card  (0s — 10s)                      -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<g id="scene1" class="scene">
+  <!-- Title -->
+  <g clip-path="url(#cp_s1_title)">
+    <text x="640" y="190" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="76" font-weight="700" fill="#2b7ec2" letter-spacing="3">
+      The ABC of AI
+    </text>
+  </g>
+
+  <!-- Title underline (hand-drawn wavy) -->
+  <path id="s1_ul" d="M250,210 C370,220 510,205 640,215 C770,225 910,205 1030,215"
+        fill="none" stroke="#2b7ec2" stroke-width="3.5" stroke-linecap="round"/>
+
+  <!-- Subtitle -->
+  <g clip-path="url(#cp_s1_sub)">
+    <text x="640" y="275" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="38" fill="#555" letter-spacing="1">
+      What is Artificial Intelligence?
+    </text>
+  </g>
+
+  <!-- A letter -->
+  <g clip-path="url(#cp_s1_la)">
+    <text x="220" y="520" text-anchor="middle" font-family="'Permanent Marker',cursive"
+          font-size="96" fill="#1e8c5a">A</text>
+  </g>
+  <!-- B letter -->
+  <g clip-path="url(#cp_s1_lb)">
+    <text x="580" y="520" text-anchor="middle" font-family="'Permanent Marker',cursive"
+          font-size="96" fill="#cc7722">B</text>
+  </g>
+  <!-- C letter -->
+  <g clip-path="url(#cp_s1_lc)">
+    <text x="940" y="520" text-anchor="middle" font-family="'Permanent Marker',cursive"
+          font-size="96" fill="#8844aa">C</text>
+  </g>
+
+  <!-- Decorative dots between letters -->
+  <circle id="s1_dot1" cx="400" cy="490" r="5" fill="#888" opacity="0"/>
+  <circle id="s1_dot2" cx="760" cy="490" r="5" fill="#888" opacity="0"/>
+</g>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  SCENE 2: A = Artificial Intelligence  (10s — 28s)     -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<g id="scene2" class="scene">
+  <!-- Big A -->
+  <g clip-path="url(#cp_s2_bigA)">
+    <text x="70" y="160" font-family="'Permanent Marker',cursive"
+          font-size="120" fill="#1e8c5a">A</text>
+  </g>
+
+  <!-- = Artificial Intelligence -->
+  <g clip-path="url(#cp_s2_word)">
+    <text x="70" y="235" font-family="'Cabin Sketch',cursive"
+          font-size="48" font-weight="700" fill="#1e8c5a" letter-spacing="1">= Artificial Intelligence</text>
+  </g>
+
+  <!-- Green underline -->
+  <path id="s2_ul" d="M70,250 C180,258 340,245 530,255" fill="none" stroke="#1e8c5a" stroke-width="3.5" stroke-linecap="round"/>
+
+  <!-- Definition -->
+  <g clip-path="url(#cp_s2_def)">
+    <text x="70" y="325" font-family="'Cabin Sketch',cursive"
+          font-size="38" fill="#333" letter-spacing="1">
+      Computers that can <tspan fill="#cc3333" font-weight="700">think</tspan> and <tspan fill="#cc3333" font-weight="700">learn</tspan>
+    </text>
+  </g>
+
+  <!-- Analogy -->
+  <g clip-path="url(#cp_s2_ana)">
+    <text x="70" y="410" font-family="'Caveat',cursive"
+          font-size="32" fill="#666">Like a smart helper that improves with practice</text>
+  </g>
+
+  <!-- Example "Hey Siri!" -->
+  <g clip-path="url(#cp_s2_ex)">
+    <text x="70" y="530" font-family="'Cabin Sketch',cursive"
+          font-size="32" fill="#888">Example: "Hey Siri, what's the weather?"</text>
+  </g>
+
+  <!-- ── ROBOT ILLUSTRATION (right side) ── -->
+  <!-- Robot head outline (stroke draw-on) -->
+  <path id="s2_robot_head" d="M830,120 C828,115 835,108 870,105 L980,105 C1015,108 1022,115 1020,120 L1020,220 C1022,225 1015,232 980,235 L870,235 C835,232 828,225 830,220Z"
+        fill="none" stroke="#1e8c5a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Robot eyes (stroke draw-on) -->
+  <circle id="s2_eye_l" cx="885" cy="170" r="22" fill="none" stroke="#333" stroke-width="2.5"/>
+  <circle id="s2_eye_r" cx="965" cy="170" r="22" fill="none" stroke="#333" stroke-width="2.5"/>
+
+  <!-- Eye pupils -->
+  <circle id="s2_pupil_l" cx="890" cy="168" r="8" fill="#1e8c5a" opacity="0"/>
+  <circle id="s2_pupil_r" cx="970" cy="168" r="8" fill="#1e8c5a" opacity="0"/>
+
+  <!-- Robot mouth -->
+  <path id="s2_mouth" d="M880,205 L890,210 L900,205 L910,210 L920,205 L930,210 L940,205 L950,210 L960,205"
+        fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Antenna -->
+  <path id="s2_antenna" d="M925,105 L925,65" fill="none" stroke="#1e8c5a" stroke-width="3" stroke-linecap="round"/>
+  <circle id="s2_antenna_ball" cx="925" cy="55" r="10" fill="none" stroke="#1e8c5a" stroke-width="2.5"/>
+
+  <!-- Signal arcs -->
+  <path id="s2_signal1" d="M900,50 C900,32 950,32 950,50" fill="none" stroke="#1e8c5a" stroke-width="2" opacity=".6"/>
+  <path id="s2_signal2" d="M888,42 C888,18 962,18 962,42" fill="none" stroke="#1e8c5a" stroke-width="1.5" opacity=".4"/>
+
+  <!-- Robot body (stroke draw-on) -->
+  <path id="s2_robot_body" d="M850,245 L850,430 C850,440 860,445 870,445 L980,445 C990,445 1000,440 1000,430 L1000,245"
+        fill="none" stroke="#1e8c5a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Body hatching lines -->
+  <g id="s2_hatching" opacity="0">
+    <path d="M865,270 L985,265" stroke="#555" stroke-width=".8" opacity=".35"/>
+    <path d="M865,295 L985,290" stroke="#555" stroke-width=".8" opacity=".35"/>
+    <path d="M865,320 L985,315" stroke="#555" stroke-width=".8" opacity=".35"/>
+    <path d="M865,345 L985,340" stroke="#555" stroke-width=".8" opacity=".35"/>
+    <path d="M865,370 L985,365" stroke="#555" stroke-width=".8" opacity=".35"/>
+    <path d="M865,395 L985,390" stroke="#555" stroke-width=".8" opacity=".35"/>
+    <path d="M865,420 L985,415" stroke="#555" stroke-width=".8" opacity=".35"/>
+    <!-- Cross-hatching -->
+    <path d="M870,265 L870,430" stroke="#555" stroke-width=".5" opacity=".2"/>
+    <path d="M910,265 L910,430" stroke="#555" stroke-width=".5" opacity=".2"/>
+    <path d="M950,265 L950,430" stroke="#555" stroke-width=".5" opacity=".2"/>
+    <path d="M985,265 L985,430" stroke="#555" stroke-width=".5" opacity=".2"/>
+  </g>
+
+  <!-- Robot arms -->
+  <path id="s2_arm_l" d="M850,290 L810,330 L790,310" fill="none" stroke="#1e8c5a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path id="s2_arm_r" d="M1000,290 L1040,330 L1060,310" fill="none" stroke="#1e8c5a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Robot legs -->
+  <path id="s2_leg_l" d="M885,445 L885,510 L865,520" fill="none" stroke="#1e8c5a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path id="s2_leg_r" d="M965,445 L965,510 L985,520" fill="none" stroke="#1e8c5a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Chest circle/heart -->
+  <circle id="s2_heart" cx="925" cy="330" r="25" fill="none" stroke="#cc3333" stroke-width="2.5"/>
+  <path id="s2_heartbeat" d="M905,330 L915,330 L920,315 L925,345 L930,315 L935,330 L945,330"
+        fill="none" stroke="#cc3333" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Thought bubble -->
+  <circle id="s2_bubble1" cx="800" cy="180" r="6" fill="none" stroke="#888" stroke-width="2"/>
+  <circle id="s2_bubble2" cx="775" cy="145" r="10" fill="none" stroke="#888" stroke-width="2"/>
+  <ellipse id="s2_bubble3" cx="720" cy="95" rx="65" ry="40" fill="none" stroke="#888" stroke-width="2.5"/>
+
+  <!-- Lightbulb inside bubble -->
+  <g id="s2_bulb" opacity="0">
+    <path d="M705,80 C705,64 720,58 725,70 C730,58 745,64 745,80 C745,92 733,100 733,108 L717,108 C717,100 705,92 705,80Z"
+          fill="none" stroke="#cc7722" stroke-width="2.5"/>
+    <path d="M720,108 L720,115 M730,108 L730,115" fill="none" stroke="#cc7722" stroke-width="2"/>
+    <!-- Light rays -->
+    <path d="M695,68 L685,60 M755,68 L765,60 M690,90 L678,92 M760,90 L772,92 M725,55 L725,45"
+          fill="none" stroke="#cc7722" stroke-width="1.5" opacity=".5"/>
+  </g>
+
+  <!-- Ground line -->
+  <path id="s2_ground" d="M820,530 L1040,530" fill="none" stroke="#555" stroke-width="2" stroke-dasharray="6,4"/>
+</g>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  SCENE 3: B = Big Data  (28s — 48s)                   -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<g id="scene3" class="scene">
+  <!-- Big B -->
+  <g clip-path="url(#cp_s3_bigB)">
+    <text x="70" y="160" font-family="'Permanent Marker',cursive"
+          font-size="120" fill="#cc7722">B</text>
+  </g>
+
+  <!-- = Big Data -->
+  <g clip-path="url(#cp_s3_word)">
+    <text x="70" y="235" font-family="'Cabin Sketch',cursive"
+          font-size="48" font-weight="700" fill="#cc7722" letter-spacing="1">= Big Data</text>
+  </g>
+
+  <!-- Orange underline -->
+  <path id="s3_ul" d="M70,248 C150,256 260,242 380,252" fill="none" stroke="#cc7722" stroke-width="3.5" stroke-linecap="round"/>
+
+  <!-- Definition -->
+  <g clip-path="url(#cp_s3_def)">
+    <text x="70" y="325" font-family="'Cabin Sketch',cursive"
+          font-size="38" fill="#333" letter-spacing="1">
+      AI needs <tspan fill="#cc3333" font-weight="700">millions</tspan> of examples
+    </text>
+  </g>
+
+  <!-- Analogy -->
+  <g clip-path="url(#cp_s3_ana)">
+    <text x="70" y="420" font-family="'Caveat',cursive"
+          font-size="32" fill="#666">Like seeing 1 million dog photos to know "dog"</text>
+  </g>
+
+  <!-- ── PHOTO STACK + DOG (right side) ── -->
+
+  <!-- Photo frame 1 (back, tilted) -->
+  <path id="s3_photo1" d="M680,130 L920,125 L925,310 L685,315Z" fill="none" stroke="#cc7722" stroke-width="2.5" stroke-linejoin="round"/>
+
+  <!-- Photo frame 2 (middle) -->
+  <path id="s3_photo2" d="M700,145 L935,150 L932,330 L697,325Z" fill="none" stroke="#cc7722" stroke-width="2.5" stroke-linejoin="round"/>
+
+  <!-- Photo frame 3 (front) -->
+  <path id="s3_photo3" d="M715,165 L950,160 L955,345 L720,350Z" fill="none" stroke="#cc7722" stroke-width="3" stroke-linejoin="round"/>
+
+  <!-- Inner photo area -->
+  <rect id="s3_photo_inner" x="730" y="178" width="210" height="150" fill="#f8f4ee" opacity="0"/>
+
+  <!-- DOG illustration (inside front photo) — bigger, more detail -->
+  <g id="s3_dog_group" opacity="0">
+    <!-- Dog head -->
+    <path id="s3_dog_head" d="M810,210 C800,200 795,190 800,180 C805,170 820,168 830,175 C840,168 855,170 860,180 C865,190 860,200 850,210"
+          fill="none" stroke="#cc7722" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Ears -->
+    <path id="s3_dog_earL" d="M805,185 L790,165 L800,180" fill="none" stroke="#cc7722" stroke-width="2.5" stroke-linecap="round"/>
+    <path id="s3_dog_earR" d="M855,185 L870,165 L860,180" fill="none" stroke="#cc7722" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Eye -->
+    <circle cx="822" cy="195" r="4" fill="#cc7722"/>
+    <circle cx="845" cy="195" r="4" fill="#cc7722"/>
+    <!-- Nose -->
+    <ellipse cx="833" cy="208" rx="6" ry="4" fill="#cc7722" opacity=".6"/>
+    <!-- Body -->
+    <path id="s3_dog_body" d="M815,212 C800,225 790,250 795,280 L800,300 L870,300 L875,280 C880,250 870,225 855,212"
+          fill="none" stroke="#cc7722" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Legs -->
+    <path id="s3_dog_legs" d="M802,300 L802,330 M820,300 L820,330 M850,300 L850,330 M868,300 L868,330"
+          fill="none" stroke="#cc7722" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Tail -->
+    <path id="s3_dog_tail" d="M870,225 C885,215 895,200 892,185"
+          fill="none" stroke="#cc7722" stroke-width="3" stroke-linecap="round"/>
+    <!-- Body hatching -->
+    <path d="M805,230 L860,228 M805,250 L862,248 M800,270 L870,268 M798,290 L872,288"
+          stroke="#555" stroke-width=".7" opacity=".3"/>
+  </g>
+
+  <!-- Paw prints (drawn on) -->
+  <path id="s3_paw1" d="M680,380 C678,375 682,370 685,375 M690,373 C692,368 697,370 695,375 M678,368 C675,363 680,360 682,365 M695,365 C698,360 702,363 700,368"
+        fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round"/>
+  <path id="s3_paw2" d="M960,140 C958,135 962,130 965,135 M970,133 C972,128 977,130 975,135 M958,128 C955,123 960,120 962,125 M975,125 C978,120 982,123 980,128"
+        fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round"/>
+  <path id="s3_paw3" d="M990,380 C988,375 992,370 995,375 M1000,373 C1002,368 1007,370 1005,375 M988,368 C985,363 990,360 992,365 M1005,365 C1008,360 1012,363 1010,368"
+        fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Data dots streaming upward -->
+  <g id="s3_datadots" opacity="0">
+    <rect x="700" y="370" width="8" height="8" rx="1" fill="#cc7722" opacity=".3" transform="rotate(15,704,374)"/>
+    <rect x="740" y="395" width="6" height="6" rx="1" fill="#cc7722" opacity=".25" transform="rotate(-10,743,398)"/>
+    <rect x="920" y="360" width="7" height="7" rx="1" fill="#cc7722" opacity=".3" transform="rotate(8,923,363)"/>
+    <rect x="960" y="385" width="5" height="5" rx="1" fill="#cc7722" opacity=".2" transform="rotate(-5,962,387)"/>
+    <rect x="830" y="400" width="9" height="9" rx="1" fill="#cc7722" opacity=".2" transform="rotate(20,834,404)"/>
+    <circle cx="770" cy="410" r="4" fill="#cc7722" opacity=".2"/>
+    <circle cx="890" cy="375" r="3" fill="#cc7722" opacity=".25"/>
+    <circle cx="850" cy="420" r="5" fill="#cc7722" opacity=".15"/>
+  </g>
+
+  <!-- 1,000,000+ counter -->
+  <g clip-path="url(#cp_s3_count)">
+    <text x="700" y="545" font-family="'Permanent Marker',cursive"
+          font-size="48" fill="#cc7722">1,000,000+</text>
+  </g>
+</g>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  SCENE 4: C = Computer Learning  (48s — 68s)          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<g id="scene4" class="scene">
+  <!-- Big C -->
+  <g clip-path="url(#cp_s4_bigC)">
+    <text x="70" y="150" font-family="'Permanent Marker',cursive"
+          font-size="110" fill="#8844aa">C</text>
+  </g>
+
+  <!-- = Computer Learning -->
+  <g clip-path="url(#cp_s4_word)">
+    <text x="70" y="205" font-family="'Cabin Sketch',cursive"
+          font-size="42" font-weight="700" fill="#8844aa" letter-spacing="1">= Computer Learning</text>
+  </g>
+
+  <!-- Purple underline -->
+  <path id="s4_ul" d="M70,215 C200,222 380,210 530,220" fill="none" stroke="#8844aa" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- ── 3-STEP FLOW ── -->
+
+  <!-- Step 1: Photos box outline (stroke draw-on) -->
+  <path id="s4_box1" d="M70,270 L370,270 L370,520 L70,520Z" fill="none" stroke="#8844aa" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- Step 1 content: mini photo stack -->
+  <g id="s4_photos" opacity="0">
+    <rect x="110" y="310" width="80" height="60" rx="4" fill="#f5f0e5" stroke="#888" stroke-width="2"/>
+    <path d="M120,350 L140,330 L160,345 L180,325" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round"/>
+    <rect x="140" y="330" width="80" height="60" rx="4" fill="#f5f0e5" stroke="#888" stroke-width="2"/>
+    <path d="M150,370 L170,350 L190,365 L210,345" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round"/>
+    <rect x="170" y="350" width="80" height="60" rx="4" fill="#fff" stroke="#cc7722" stroke-width="2.5"/>
+    <path d="M180,390 L200,370 L220,385 L240,365" fill="none" stroke="#cc7722" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- Labels -->
+    <text x="115" y="395" font-family="'Cabin Sketch',cursive" font-size="24" fill="#888">dog</text>
+    <text x="260" y="420" font-family="'Cabin Sketch',cursive" font-size="24" fill="#888">cat</text>
+    <text x="115" y="470" font-family="'Cabin Sketch',cursive" font-size="24" fill="#888">dog</text>
+    <text x="260" y="490" font-family="'Cabin Sketch',cursive" font-size="24" fill="#888">dog</text>
+  </g>
+
+  <!-- Step 1 label -->
+  <g clip-path="url(#cp_s4_step1)">
+    <text x="220" y="575" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="32" font-weight="700" fill="#8844aa">Show Examples</text>
+  </g>
+
+  <!-- Arrow 1 (thick, hand-drawn style) -->
+  <path id="s4_arrow1" d="M385,395 C400,390 420,395 440,395" fill="none" stroke="#8844aa" stroke-width="4" stroke-linecap="round"/>
+  <path id="s4_arrowhead1" d="M435,385 L455,395 L435,405" fill="none" stroke="#8844aa" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Step 2: Brain box outline -->
+  <path id="s4_box2" d="M465,270 L755,270 L755,520 L465,520Z" fill="none" stroke="#8844aa" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- Step 2 content: brain/gear -->
+  <g id="s4_brain" opacity="0">
+    <!-- Brain outline -->
+    <path d="M570,330 C550,320 540,340 550,355 C540,365 545,385 560,390 C555,405 570,420 590,415 C600,425 620,425 630,415 C650,420 665,405 660,390 C675,385 680,365 670,355 C680,340 670,320 650,330 C645,315 620,310 610,320 C600,310 575,315 570,330Z"
+          fill="none" stroke="#8844aa" stroke-width="2.5" stroke-linejoin="round"/>
+    <!-- Brain squiggles -->
+    <path d="M570,350 C580,345 585,355 575,360 C585,365 590,355 595,360"
+          fill="none" stroke="#8844aa" stroke-width="1.5" opacity=".5"/>
+    <path d="M620,345 C625,340 635,345 630,355 C640,350 645,360 635,365"
+          fill="none" stroke="#8844aa" stroke-width="1.5" opacity=".5"/>
+    <path d="M595,375 C600,370 610,375 605,385 C615,380 620,390 610,395"
+          fill="none" stroke="#8844aa" stroke-width="1.5" opacity=".5"/>
+    <!-- Gear teeth around brain -->
+    <path d="M610,305 L610,295 M610,425 L610,435 M535,370 L525,370 M685,370 L695,370 M555,325 L548,318 M665,415 L672,422 M665,325 L672,318 M555,415 L548,422"
+          fill="none" stroke="#8844aa" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Small sparks -->
+    <path d="M555,310 L548,302" stroke="#cc7722" stroke-width="2" stroke-linecap="round"/>
+    <path d="M670,308 L678,300" stroke="#cc7722" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Step 2 label -->
+  <g clip-path="url(#cp_s4_step2)">
+    <text x="610" y="575" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="32" font-weight="700" fill="#8844aa">Find Patterns</text>
+  </g>
+
+  <!-- Arrow 2 -->
+  <path id="s4_arrow2" d="M770,395 C785,390 805,395 825,395" fill="none" stroke="#8844aa" stroke-width="4" stroke-linecap="round"/>
+  <path id="s4_arrowhead2" d="M820,385 L840,395 L820,405" fill="none" stroke="#8844aa" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Step 3: Result box outline -->
+  <path id="s4_box3" d="M855,270 L1150,270 L1150,520 L855,520Z" fill="none" stroke="#8844aa" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- Step 3 content: checkmark + DOG! -->
+  <g id="s4_check" opacity="0">
+    <!-- Big checkmark -->
+    <path d="M950,340 L980,380 L1060,290" fill="none" stroke="#1e8c5a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g clip-path="url(#cp_s4_dog)">
+    <text x="1000" y="400" text-anchor="middle" font-family="'Permanent Marker',cursive"
+          font-size="52" fill="#1e8c5a">DOG!</text>
+  </g>
+
+  <!-- Step 3 label -->
+  <g clip-path="url(#cp_s4_step3)">
+    <text x="1000" y="575" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="32" font-weight="700" fill="#8844aa">Make Predictions</text>
+  </g>
+
+  <!-- Bottom text -->
+  <g clip-path="url(#cp_s4_bot)">
+    <text x="640" y="660" text-anchor="middle" font-family="'Caveat',cursive"
+          font-size="32" fill="#666">Practice, practice, practice — just like learning to read!</text>
+  </g>
+</g>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  SCENE 5: Putting It Together  (68s — 80s)            -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<g id="scene5" class="scene">
+  <!-- Title -->
+  <g clip-path="url(#cp_s5_title)">
+    <text x="640" y="85" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="52" font-weight="700" fill="#2b7ec2" letter-spacing="1">Putting It All Together</text>
+  </g>
+
+  <!-- Title underline -->
+  <path id="s5_ul" d="M300,100 Q640,112 980,100" fill="none" stroke="#2b7ec2" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Box 1: Big Data (orange) -->
+  <path id="s5_box1" d="M60,140 L360,140 L360,370 L60,370Z" fill="none" stroke="#cc7722" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- Data icon inside -->
+  <g id="s5_icon1" opacity="0">
+    <rect x="140" y="180" width="60" height="42" rx="4" fill="#f5f0e5" stroke="#cc7722" stroke-width="2" transform="rotate(-5,170,201)"/>
+    <rect x="155" y="195" width="60" height="42" rx="4" fill="#f5f0e5" stroke="#cc7722" stroke-width="2" transform="rotate(-2,185,216)"/>
+    <rect x="170" y="210" width="60" height="42" rx="4" fill="#fff" stroke="#cc7722" stroke-width="2.5"/>
+    <text x="185" y="237" font-family="'Cabin Sketch',cursive" font-size="20" fill="#cc7722">data</text>
+  </g>
+  <g clip-path="url(#cp_s5_data)">
+    <text x="210" y="420" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="36" font-weight="700" fill="#cc7722">Big Data</text>
+  </g>
+
+  <!-- Arrow 1 -->
+  <path id="s5_arrow1" d="M375,255 C395,250 415,255 440,255" fill="none" stroke="#555" stroke-width="4" stroke-linecap="round"/>
+  <path id="s5_arrowhead1" d="M435,245 L455,255 L435,265" fill="none" stroke="#555" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Box 2: Computer Learning (purple) -->
+  <path id="s5_box2" d="M460,140 L760,140 L760,370 L460,370Z" fill="none" stroke="#8844aa" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- Brain icon inside -->
+  <g id="s5_icon2" opacity="0">
+    <circle cx="610" cy="230" r="40" fill="none" stroke="#8844aa" stroke-width="2.5"/>
+    <path d="M610,187 L610,180 M610,273 L610,280 M567,230 L560,230 M653,230 L660,230"
+          fill="none" stroke="#8844aa" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M590,215 C595,208 605,212 600,220" fill="none" stroke="#8844aa" stroke-width="1.5" opacity=".6"/>
+    <path d="M620,240 C625,233 635,237 630,245" fill="none" stroke="#8844aa" stroke-width="1.5" opacity=".6"/>
+  </g>
+  <g clip-path="url(#cp_s5_learn)">
+    <text x="610" y="420" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="32" font-weight="700" fill="#8844aa">Learning</text>
+  </g>
+
+  <!-- Arrow 2 -->
+  <path id="s5_arrow2" d="M775,255 C795,250 815,255 840,255" fill="none" stroke="#555" stroke-width="4" stroke-linecap="round"/>
+  <path id="s5_arrowhead2" d="M835,245 L855,255 L835,265" fill="none" stroke="#555" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Box 3: AI! (green) -->
+  <path id="s5_box3" d="M860,140 L1160,140 L1160,370 L860,370Z" fill="none" stroke="#1e8c5a" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- Robot icon inside -->
+  <g id="s5_icon3" opacity="0">
+    <rect x="975" y="180" width="70" height="50" rx="8" fill="none" stroke="#1e8c5a" stroke-width="2.5"/>
+    <circle cx="998" cy="202" r="7" fill="#1e8c5a" opacity=".5"/>
+    <circle cx="1028" cy="202" r="7" fill="#1e8c5a" opacity=".5"/>
+    <line x1="1010" y1="175" x2="1010" y2="162" stroke="#1e8c5a" stroke-width="2"/>
+    <circle cx="1010" cy="158" r="5" fill="none" stroke="#1e8c5a" stroke-width="1.5"/>
+    <rect x="982" y="236" width="55" height="40" rx="5" fill="none" stroke="#1e8c5a" stroke-width="2.5"/>
+  </g>
+  <g clip-path="url(#cp_s5_ai)">
+    <text x="1010" y="420" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="40" font-weight="700" fill="#1e8c5a">AI!</text>
+  </g>
+
+  <!-- Sparkles -->
+  <g id="s5_sparkles" opacity="0">
+    <path d="M1170,130 L1175,118 L1180,130 L1192,125 L1180,130 L1175,142 L1170,130 L1158,125Z" fill="#cc7722" opacity=".6"/>
+    <path d="M855,125 L858,116 L861,125 L870,121 L861,125 L858,134 L855,125 L846,121Z" fill="#1e8c5a" opacity=".5"/>
+    <path d="M1180,370 L1183,361 L1186,370 L1195,366 L1186,370 L1183,379 L1180,370 L1171,366Z" fill="#8844aa" opacity=".5"/>
+  </g>
+
+  <!-- Summary -->
+  <g clip-path="url(#cp_s5_sum)">
+    <text x="640" y="580" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="38" fill="#333" letter-spacing="1">Data + Learning = <tspan fill="#1e8c5a" font-weight="700">AI!</tspan></text>
+  </g>
+</g>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  SCENE 6: Recap  (80s — 90s)                          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<g id="scene6" class="scene">
+  <!-- Title -->
+  <g clip-path="url(#cp_s6_title)">
+    <text x="640" y="78" text-anchor="middle" font-family="'Cabin Sketch',cursive"
+          font-size="52" font-weight="700" fill="#2b7ec2" letter-spacing="1">Remember the ABC!</text>
+  </g>
+
+  <!-- Title underline -->
+  <path id="s6_ul" d="M320,92 Q640,104 960,92" fill="none" stroke="#2b7ec2" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Row A -->
+  <g clip-path="url(#cp_s6_rowa)">
+    <text x="210" y="175" font-family="'Cabin Sketch',cursive" font-size="40" font-weight="700" fill="#333" letter-spacing="1">
+      <tspan fill="#1e8c5a" font-size="48">A</tspan> = Artificial Intelligence
+    </text>
+    <text x="210" y="218" font-family="'Cabin Sketch',cursive" font-size="30" fill="#666">
+      Smart computers that learn
+    </text>
+  </g>
+  <!-- Checkmark A -->
+  <path id="s6_checkA" d="M1080,160 L1100,185 L1140,140" fill="none" stroke="#1e8c5a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Row B -->
+  <g clip-path="url(#cp_s6_rowb)">
+    <text x="210" y="345" font-family="'Cabin Sketch',cursive" font-size="40" font-weight="700" fill="#333" letter-spacing="1">
+      <tspan fill="#cc7722" font-size="48">B</tspan> = Big Data
+    </text>
+    <text x="210" y="388" font-family="'Cabin Sketch',cursive" font-size="30" fill="#666">
+      Millions of examples to learn from
+    </text>
+  </g>
+  <!-- Checkmark B -->
+  <path id="s6_checkB" d="M1080,330 L1100,355 L1140,310" fill="none" stroke="#cc7722" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Row C -->
+  <g clip-path="url(#cp_s6_rowc)">
+    <text x="210" y="505" font-family="'Cabin Sketch',cursive" font-size="40" font-weight="700" fill="#333" letter-spacing="1">
+      <tspan fill="#8844aa" font-size="48">C</tspan> = Computer Learning
+    </text>
+    <text x="210" y="548" font-family="'Cabin Sketch',cursive" font-size="30" fill="#666">
+      Practice makes AI smarter
+    </text>
+  </g>
+  <!-- Checkmark C -->
+  <path id="s6_checkC" d="M1080,490 L1100,515 L1140,470" fill="none" stroke="#8844aa" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Footer -->
+  <g clip-path="url(#cp_s6_footer)">
+    <text x="640" y="655" text-anchor="middle" font-family="'Permanent Marker',cursive"
+          font-size="40" fill="#cc3333">Now YOU know the ABC of AI!</text>
+  </g>
+
+  <!-- Wavy underline -->
+  <path id="s6_wavyline" d="M280,668 C340,658 400,678 460,668 C520,658 580,678 640,668 C700,658 760,678 820,668 C880,658 920,678 1000,668"
+        fill="none" stroke="#cc3333" stroke-width="3" stroke-linecap="round"/>
+</g>
+
+<!-- Progress bar -->
+<rect x="0" y="716" width="1280" height="4" fill="#ddd8d0"/>
+<rect id="progBar" x="0" y="716" width="0" height="4" fill="#2b7ec2"/>
+</svg>
+</div>
+
+<div id="controls">
+  <button id="btnPlay">&#9654; Play</button>
+  <button id="btnReplay">&#8635; Replay</button>
+  <input type="range" id="seekBar" min="0" max="90000" value="0" step="100"/>
+  <span id="timeDisp">0.0 / 90.0s</span>
+</div>
+
+<!-- Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/DrawSVGPlugin.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.min.js"></script>
+<script>
+if (typeof DrawSVGPlugin !== 'undefined') gsap.registerPlugin(DrawSVGPlugin);
+
+document.addEventListener('DOMContentLoaded', () => {
+  const TOTAL = 90;
+  const board = document.getElementById('board');
+  const seekBar = document.getElementById('seekBar');
+  const timeDisp = document.getElementById('timeDisp');
+  const btnPlay = document.getElementById('btnPlay');
+  const progBar = document.getElementById('progBar');
+  let isSeeking = false;
+
+  // ── Rough.js Setup ──
+  const rc = rough.svg(board);
+
+  // ── Utility Functions ──
+  function drawOn(el, dur, ease) {
+    if (typeof el === 'string') el = document.getElementById(el);
+    if (!el) return gsap.to({}, { duration: 0.01 });
+    if (typeof DrawSVGPlugin !== 'undefined') {
+      return gsap.fromTo(el, { drawSVG: '0%' }, { drawSVG: '100%', duration: dur, ease: ease || 'power1.inOut' });
+    }
+    const len = el.getTotalLength ? el.getTotalLength() : 500;
+    return gsap.fromTo(el,
+      { strokeDasharray: len, strokeDashoffset: len },
+      { strokeDashoffset: 0, duration: dur, ease: ease || 'power1.inOut' }
+    );
+  }
+
+  function wipe(id, w, dur, ease) {
+    return gsap.to('#' + id, { attr: { width: w }, duration: dur, ease: ease || 'power1.inOut' });
+  }
+
+  function fadeIn(sel, dur) {
+    return gsap.to(sel, { opacity: 1, duration: dur || 1.5, ease: 'power2.out' });
+  }
+
+  function showScene(sel) { gsap.set(sel, { opacity: 1 }); }
+  function hideScene(sel) { gsap.set(sel, { opacity: 0 }); }
+
+  function addRoughShape(shape, id, parentId) {
+    shape.setAttribute('opacity', '0');
+    shape.id = id;
+    document.getElementById(parentId).appendChild(shape);
+    return shape;
+  }
+
+  // ── Rough.js Shapes ──
+
+  // Scene 1: ABC letter blocks
+  const hachureOpts = (color, fillColor) => ({
+    roughness: 1.8, stroke: color, strokeWidth: 3.5,
+    fill: fillColor, fillStyle: 'hachure', hachureGap: 8, bowing: 2
+  });
+  addRoughShape(rc.rectangle(130, 400, 180, 170, hachureOpts('#1e8c5a', 'rgba(30,140,90,0.06)')), 'rough_s1_a', 'scene1');
+  addRoughShape(rc.rectangle(490, 400, 180, 170, hachureOpts('#cc7722', 'rgba(204,119,34,0.06)')), 'rough_s1_b', 'scene1');
+  addRoughShape(rc.rectangle(850, 400, 180, 170, hachureOpts('#8844aa', 'rgba(136,68,170,0.06)')), 'rough_s1_c', 'scene1');
+
+  // Scene 6: Letter circles
+  const circleOpts = (color) => ({ roughness: 1.8, stroke: color, strokeWidth: 3.5 });
+  addRoughShape(rc.circle(130, 180, 90, circleOpts('#1e8c5a')), 'rough_s6_a', 'scene6');
+  addRoughShape(rc.circle(130, 345, 90, circleOpts('#cc7722')), 'rough_s6_b', 'scene6');
+  addRoughShape(rc.circle(130, 505, 90, circleOpts('#8844aa')), 'rough_s6_c', 'scene6');
+
+  // ── Master Timeline ──
+  const tl = gsap.timeline({
+    paused: true,
+    onUpdate() {
+      const t = tl.time();
+      if (!isSeeking) seekBar.value = Math.round(t * 1000);
+      timeDisp.textContent = t.toFixed(1) + ' / ' + TOTAL + 's';
+      gsap.set(progBar, { attr: { width: (t / TOTAL) * 1280 } });
+    }
+  });
+
+  // ═══════════════════════════════════════════
+  //  SCENE 1: Title Card  (0s → 10s)
+  // ═══════════════════════════════════════════
+  tl.call(() => showScene('#scene1'), null, 0);
+
+  // 0.3s — Title wipes in (1.8s)
+  tl.add(wipe('cr_s1_title', 1080, 1.8), 0.3);
+
+  // 2.5s — Underline draws on (0.8s)
+  tl.add(drawOn('s1_ul', 0.8), 2.5);
+
+  // 3.8s — Subtitle wipes in (1.5s)
+  tl.add(wipe('cr_s1_sub', 800, 1.5), 3.8);
+
+  // 5.8s — A block Rough.js fades in (1.0s) + letter wipes
+  tl.add(fadeIn('#rough_s1_a', 1.0), 5.8);
+  tl.add(wipe('cr_s1_la', 180, 0.8), 6.0);
+
+  // 7.0s — B block
+  tl.add(fadeIn('#rough_s1_b', 1.0), 7.0);
+  tl.add(wipe('cr_s1_lb', 180, 0.8), 7.2);
+  tl.to('#s1_dot1', { opacity: 1, duration: 0.3 }, 7.0);
+
+  // 8.2s — C block
+  tl.add(fadeIn('#rough_s1_c', 1.0), 8.2);
+  tl.add(wipe('cr_s1_lc', 180, 0.8), 8.4);
+  tl.to('#s1_dot2', { opacity: 1, duration: 0.3 }, 8.2);
+
+  // ═══════════════════════════════════════════
+  //  SCENE 2: A = Artificial Intelligence  (10s → 28s)
+  // ═══════════════════════════════════════════
+  tl.call(() => { hideScene('#scene1'); showScene('#scene2'); }, null, 10.0);
+
+  // 10.3s — Big A wipes in (1.0s)
+  tl.add(wipe('cr_s2_bigA', 160, 1.0), 10.3);
+
+  // 11.5s — "= Artificial Intelligence" wipes in (1.5s)
+  tl.add(wipe('cr_s2_word', 600, 1.5), 11.5);
+
+  // 13.5s — Green underline draws on (0.8s)
+  tl.add(drawOn('s2_ul', 0.8), 13.5);
+
+  // 14.8s — Definition wipes in (1.5s)
+  tl.add(wipe('cr_s2_def', 600, 1.5), 14.8);
+
+  // 16.8s — Robot head draws on stroke-by-stroke (1.2s)
+  tl.add(drawOn('s2_robot_head', 1.2), 16.8);
+
+  // 18.2s — Robot eyes draw on (0.8s each, staggered)
+  tl.add(drawOn('s2_eye_l', 0.8), 18.2);
+  tl.add(drawOn('s2_eye_r', 0.8), 18.5);
+
+  // 19.4s — Pupils appear
+  tl.to('#s2_pupil_l', { opacity: 1, duration: 0.3 }, 19.4);
+  tl.to('#s2_pupil_r', { opacity: 1, duration: 0.3 }, 19.5);
+
+  // 19.8s — Mouth draws on (0.6s)
+  tl.add(drawOn('s2_mouth', 0.6), 19.8);
+
+  // 20.5s — Antenna draws on (0.6s) + ball (0.6s)
+  tl.add(drawOn('s2_antenna', 0.6), 20.5);
+  tl.add(drawOn('s2_antenna_ball', 0.6), 21.0);
+
+  // 21.8s — Signal arcs draw on (0.6s each)
+  tl.add(drawOn('s2_signal1', 0.6), 21.8);
+  tl.add(drawOn('s2_signal2', 0.6), 22.2);
+
+  // 22.8s — Robot body draws on (1.2s)
+  tl.add(drawOn('s2_robot_body', 1.2), 22.8);
+
+  // 24.0s — Hatching fades in slowly (1.5s)
+  tl.add(fadeIn('#s2_hatching', 1.5), 24.0);
+
+  // 24.5s — Arms draw on (0.6s each)
+  tl.add(drawOn('s2_arm_l', 0.6), 24.5);
+  tl.add(drawOn('s2_arm_r', 0.6), 24.8);
+
+  // 25.0s — Analogy text wipes in (1.2s)
+  tl.add(wipe('cr_s2_ana', 600, 1.2), 25.0);
+
+  // 25.2s — Legs draw on (0.6s each)
+  tl.add(drawOn('s2_leg_l', 0.6), 25.2);
+  tl.add(drawOn('s2_leg_r', 0.6), 25.5);
+
+  // 25.5s — Heart circle + heartbeat draw on (0.8s)
+  tl.add(drawOn('s2_heart', 0.8), 25.5);
+  tl.add(drawOn('s2_heartbeat', 0.6), 26.0);
+
+  // 26.5s — Ground line draws on (0.6s)
+  tl.add(drawOn('s2_ground', 0.6), 26.5);
+
+  // 26.5s — Thought bubbles draw on (0.5s each, staggered)
+  tl.add(drawOn('s2_bubble1', 0.5), 26.5);
+  tl.add(drawOn('s2_bubble2', 0.6), 26.8);
+
+  // 27.0s — Example text wipes in (1.0s)
+  tl.add(wipe('cr_s2_ex', 600, 1.0), 27.0);
+
+  // 27.2s — Third thought bubble (0.8s)
+  tl.add(drawOn('s2_bubble3', 0.8), 27.2);
+
+  // 27.5s — Lightbulb fades in (0.8s)
+  tl.add(fadeIn('#s2_bulb', 0.8), 27.5);
+
+  // ═══════════════════════════════════════════
+  //  SCENE 3: B = Big Data  (28s → 48s)
+  // ═══════════════════════════════════════════
+  tl.call(() => { hideScene('#scene2'); showScene('#scene3'); }, null, 28.0);
+
+  // 28.3s — Big B wipes in (1.0s)
+  tl.add(wipe('cr_s3_bigB', 140, 1.0), 28.3);
+
+  // 29.5s — "= Big Data" wipes in (1.2s)
+  tl.add(wipe('cr_s3_word', 380, 1.2), 29.5);
+
+  // 31.0s — Orange underline draws on (0.8s)
+  tl.add(drawOn('s3_ul', 0.8), 31.0);
+
+  // 32.2s — Definition wipes in (1.5s)
+  tl.add(wipe('cr_s3_def', 600, 1.5), 32.2);
+
+  // 34.2s — Photo frame 1 draws on (1.0s)
+  tl.add(drawOn('s3_photo1', 1.0), 34.2);
+
+  // 35.5s — Photo frame 2 draws on (1.0s)
+  tl.add(drawOn('s3_photo2', 1.0), 35.5);
+
+  // 36.8s — Photo frame 3 draws on (1.0s)
+  tl.add(drawOn('s3_photo3', 1.0), 36.8);
+
+  // 38.0s — Inner photo area + dog fades in (2.0s)
+  tl.to('#s3_photo_inner', { opacity: 1, duration: 0.5 }, 38.0);
+  tl.add(fadeIn('#s3_dog_group', 2.0), 38.2);
+
+  // 40.5s — Paw prints draw on (0.8s each staggered)
+  tl.add(drawOn('s3_paw1', 0.8), 40.5);
+  tl.add(drawOn('s3_paw2', 0.8), 41.0);
+  tl.add(drawOn('s3_paw3', 0.8), 41.5);
+
+  // 42.5s — Data dots fade in (1.5s)
+  tl.add(fadeIn('#s3_datadots', 1.5), 42.5);
+
+  // 44.0s — Analogy wipes in (1.5s)
+  tl.add(wipe('cr_s3_ana', 600, 1.5), 44.0);
+
+  // 46.0s — "1,000,000+" wipes in (1.2s)
+  tl.add(wipe('cr_s3_count', 400, 1.2), 46.0);
+
+  // ═══════════════════════════════════════════
+  //  SCENE 4: C = Computer Learning  (48s → 68s)
+  // ═══════════════════════════════════════════
+  tl.call(() => { hideScene('#scene3'); showScene('#scene4'); }, null, 48.0);
+
+  // 48.3s — Big C wipes in (1.0s)
+  tl.add(wipe('cr_s4_bigC', 130, 1.0), 48.3);
+
+  // 49.5s — "= Computer Learning" wipes in (1.2s)
+  tl.add(wipe('cr_s4_word', 500, 1.2), 49.5);
+
+  // 51.0s — Purple underline draws on (0.8s)
+  tl.add(drawOn('s4_ul', 0.8), 51.0);
+
+  // 52.2s — Box 1 draws on (1.2s)
+  tl.add(drawOn('s4_box1', 1.2), 52.2);
+
+  // 53.5s — Photos inside fade in (1.5s)
+  tl.add(fadeIn('#s4_photos', 1.5), 53.5);
+
+  // 55.0s — "Show Examples" label wipes in (0.8s)
+  tl.add(wipe('cr_s4_step1', 300, 0.8), 55.0);
+
+  // 56.0s — Arrow 1 draws on (0.8s) + arrowhead (0.6s)
+  tl.add(drawOn('s4_arrow1', 0.8), 56.0);
+  tl.add(drawOn('s4_arrowhead1', 0.6), 56.6);
+
+  // 57.5s — Box 2 draws on (1.2s)
+  tl.add(drawOn('s4_box2', 1.2), 57.5);
+
+  // 58.8s — Brain icon fades in (2.0s)
+  tl.add(fadeIn('#s4_brain', 2.0), 58.8);
+
+  // 60.8s — "Find Patterns" label wipes in (0.8s)
+  tl.add(wipe('cr_s4_step2', 290, 0.8), 60.8);
+
+  // 62.0s — Arrow 2 draws on (0.8s) + arrowhead (0.6s)
+  tl.add(drawOn('s4_arrow2', 0.8), 62.0);
+  tl.add(drawOn('s4_arrowhead2', 0.6), 62.6);
+
+  // 63.5s — Box 3 draws on (1.2s)
+  tl.add(drawOn('s4_box3', 1.2), 63.5);
+
+  // 64.8s — Checkmark fades in (1.5s)
+  tl.add(fadeIn('#s4_check', 1.5), 64.8);
+
+  // 65.5s — "DOG!" wipes in (0.8s)
+  tl.add(wipe('cr_s4_dog', 200, 0.8), 65.5);
+
+  // 66.5s — "Make Predictions" label wipes in (0.8s)
+  tl.add(wipe('cr_s4_step3', 300, 0.8), 66.5);
+
+  // 67.0s — Bottom text wipes in (1.0s)
+  tl.add(wipe('cr_s4_bot', 960, 1.0), 67.0);
+
+  // ═══════════════════════════════════════════
+  //  SCENE 5: Putting It Together  (68s → 80s)
+  // ═══════════════════════════════════════════
+  tl.call(() => { hideScene('#scene4'); showScene('#scene5'); }, null, 68.0);
+
+  // 68.3s — Title wipes in (1.5s)
+  tl.add(wipe('cr_s5_title', 880, 1.5), 68.3);
+
+  // 70.0s — Title underline draws on (0.6s)
+  tl.add(drawOn('s5_ul', 0.6), 70.0);
+
+  // 70.8s — Box 1 draws on (1.0s)
+  tl.add(drawOn('s5_box1', 1.0), 70.8);
+  tl.add(fadeIn('#s5_icon1', 1.5), 71.5);
+  tl.add(wipe('cr_s5_data', 300, 0.8), 72.5);
+
+  // 73.5s — Arrow 1 draws on (0.8s) + head (0.5s)
+  tl.add(drawOn('s5_arrow1', 0.8), 73.5);
+  tl.add(drawOn('s5_arrowhead1', 0.5), 74.0);
+
+  // 74.5s — Box 2 draws on (1.0s)
+  tl.add(drawOn('s5_box2', 1.0), 74.5);
+  tl.add(fadeIn('#s5_icon2', 1.5), 75.2);
+  tl.add(wipe('cr_s5_learn', 340, 0.8), 76.0);
+
+  // 76.8s — Arrow 2 draws on (0.8s) + head (0.5s)
+  tl.add(drawOn('s5_arrow2', 0.8), 76.8);
+  tl.add(drawOn('s5_arrowhead2', 0.5), 77.3);
+
+  // 77.8s — Box 3 draws on (1.0s)
+  tl.add(drawOn('s5_box3', 1.0), 77.8);
+  tl.add(fadeIn('#s5_icon3', 1.5), 78.5);
+  tl.add(wipe('cr_s5_ai', 330, 0.8), 79.0);
+
+  // 79.2s — Sparkles fade in (0.5s)
+  tl.add(fadeIn('#s5_sparkles', 0.5), 79.2);
+
+  // 79.0s — Summary wipes in (1.0s)
+  tl.add(wipe('cr_s5_sum', 980, 1.0), 79.0);
+
+  // ═══════════════════════════════════════════
+  //  SCENE 6: Recap  (80s → 90s)
+  // ═══════════════════════════════════════════
+  tl.call(() => { hideScene('#scene5'); showScene('#scene6'); }, null, 80.0);
+
+  // 80.3s — Title wipes in (1.2s)
+  tl.add(wipe('cr_s6_title', 780, 1.2), 80.3);
+
+  // 81.6s — Underline draws on (0.5s)
+  tl.add(drawOn('s6_ul', 0.5), 81.6);
+
+  // 82.2s — Row A: circle + text + checkmark drawn on
+  tl.add(fadeIn('#rough_s6_a', 0.8), 82.2);
+  tl.add(wipe('cr_s6_rowa', 900, 1.0), 82.5);
+  tl.add(drawOn('s6_checkA', 0.6), 83.3);
+
+  // 84.0s — Row B
+  tl.add(fadeIn('#rough_s6_b', 0.8), 84.0);
+  tl.add(wipe('cr_s6_rowb', 900, 1.0), 84.3);
+  tl.add(drawOn('s6_checkB', 0.6), 85.1);
+
+  // 85.8s — Row C
+  tl.add(fadeIn('#rough_s6_c', 0.8), 85.8);
+  tl.add(wipe('cr_s6_rowc', 900, 1.0), 86.1);
+  tl.add(drawOn('s6_checkC', 0.6), 86.9);
+
+  // 87.5s — Footer wipes in (1.0s)
+  tl.add(wipe('cr_s6_footer', 880, 1.0), 87.5);
+
+  // 88.5s — Wavy underline draws on (0.8s)
+  tl.add(drawOn('s6_wavyline', 0.8), 88.5);
+
+  // Hold final frame
+  tl.to({}, { duration: 0.5 }, TOTAL - 0.5);
+
+  // ── Controls ──
+  btnPlay.addEventListener('click', () => {
+    if (tl.isActive()) {
+      tl.pause();
+      btnPlay.textContent = '\u25B6 Play';
+    } else {
+      tl.play();
+      btnPlay.textContent = '\u23F8 Pause';
+    }
+  });
+
+  document.getElementById('btnReplay').addEventListener('click', () => {
+    document.querySelectorAll('.scene').forEach(s => gsap.set(s, { opacity: 0 }));
+    document.querySelectorAll('[id^="cr_"]').forEach(r => r.setAttribute('width', '0'));
+    gsap.set(progBar, { attr: { width: 0 } });
+    tl.restart();
+    btnPlay.textContent = '\u23F8 Pause';
+  });
+
+  seekBar.addEventListener('input', () => {
+    isSeeking = true;
+    tl.seek(seekBar.value / 1000).pause();
+    btnPlay.textContent = '\u25B6 Play';
+  });
+  seekBar.addEventListener('change', () => { isSeeking = false; });
+
+  // Auto-play after fonts load
+  document.fonts.ready.then(() => {
+    tl.play();
+    btnPlay.textContent = '\u23F8 Pause';
+  });
+});
+</script>
+</body>
+</html>
