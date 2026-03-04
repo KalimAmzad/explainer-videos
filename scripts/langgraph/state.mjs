@@ -51,6 +51,10 @@ export const VideoGraphState = Annotation.Root({
   reviewedHtml: Annotation({ reducer: replace, default: () => '' }),
   reviewNotes:  Annotation({ reducer: replace, default: () => [] }),
 
+  // ── Quality Review Feedback Loop ──
+  reviewIteration: Annotation({ reducer: replace, default: () => 0 }),
+  reviewCorrections: Annotation({ reducer: replace, default: () => [] }),
+
   // ── Metadata ──
   errors:      Annotation({ reducer: (prev, v) => [...prev, ...v], default: () => [] }),
   currentStep: Annotation({ reducer: replace, default: () => '' }),

@@ -42,13 +42,26 @@ function stripStars(s) {
 }
 
 export async function animationNode(state) {
+  const iteration = state.reviewIteration || 0;
+
   console.log('\n══════════════════════════════════════');
-  console.log('  Node 4: Animation & Sequencing');
+  console.log(`  Node 4: Animation & Sequencing${iteration > 0 ? ` (correction pass ${iteration})` : ''}`);
   console.log('══════════════════════════════════════');
 
-  const { blueprint, decomposedAssets } = state;
+  const { blueprint, decomposedAssets, reviewCorrections } = state;
   const scenes = blueprint.scenes;
   const computedScenes = [];
+
+  // Build correction lookup from quality review feedback
+  const corrections = {};
+  if (reviewCorrections?.length > 0) {
+    console.log(`  Applying ${reviewCorrections.length} corrections from quality review:`);
+    for (const corr of reviewCorrections) {
+      if (!corrections[corr.scene_number]) corrections[corr.scene_number] = [];
+      corrections[corr.scene_number].push(corr);
+      console.log(`    Scene ${corr.scene_number} [${corr.category}]: ${corr.correction}`);
+    }
+  }
 
   // ── Step 1: Layout computation (from 03-process-assets) ──
   for (let i = 0; i < scenes.length; i++) {
@@ -67,6 +80,40 @@ export async function animationNode(state) {
     const titleFontSize = titlePos.fontSize || layout.title.fontSize;
     const titleAnchor = titlePos.anchor || layout.title.anchor || 'start';
     const titleClipWidth = estimateTextWidth(cleanTitle, titleFontSize);
+
+    // Apply corrections from quality review if available
+    const sceneCorrections = corrections[scene.scene_number] || [];
+    for (const corr of sceneCorrections) {
+      if (corr.category === 'off_canvas' || corr.category === 'misalignment' || corr.category === 'overlap') {
+        // Parse coordinate corrections from the correction text
+        const posMatch = corr.correction.match(/(?:move|set)\s+(?:illustration|illust)\w*\s+to\s+x=(\d+),?\s*y=(\d+)/i);
+        if (posMatch) {
+          illustPos.x = parseInt(posMatch[1]);
+          illustPos.y = parseInt(posMatch[2]);
+          console.log(`    Corrected illustration position to (${illustPos.x}, ${illustPos.y})`);
+        }
+        const sizeMatch = corr.correction.match(/(?:width|w)=(\d+),?\s*(?:height|h)=(\d+)/i);
+        if (sizeMatch) {
+          illustPos.width = parseInt(sizeMatch[1]);
+          illustPos.w = parseInt(sizeMatch[1]);
+          illustPos.height = parseInt(sizeMatch[2]);
+          illustPos.h = parseInt(sizeMatch[2]);
+          console.log(`    Corrected illustration size to ${illustPos.width}x${illustPos.height}`);
+        }
+        const titleMatch = corr.correction.match(/(?:move|set)\s+title\s+to\s+x=(\d+),?\s*y=(\d+)/i);
+        if (titleMatch) {
+          titlePos.x = parseInt(titleMatch[1]);
+          titlePos.y = parseInt(titleMatch[2]);
+          console.log(`    Corrected title position to (${titlePos.x}, ${titlePos.y})`);
+        }
+        const bodyMatch = corr.correction.match(/(?:move|set)\s+body\s+to\s+x=(\d+),?\s*y=(\d+)/i);
+        if (bodyMatch) {
+          bodyPos.x = parseInt(bodyMatch[1]);
+          bodyPos.y = parseInt(bodyMatch[2]);
+          console.log(`    Corrected body position to (${bodyPos.x}, ${bodyPos.y})`);
+        }
+      }
+    }
 
     const computed = {
       sceneId,

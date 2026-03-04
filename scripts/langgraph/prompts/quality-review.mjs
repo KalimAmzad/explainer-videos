@@ -1,24 +1,32 @@
 /**
- * System prompt for the Quality Review agent.
- * Reviews generated HTML and provides actionable search/replace fixes.
+ * Prompts and schemas for the Quality Review agent.
+ *
+ * Two-phase review:
+ * 1. Structural review → returns corrections for layout/animation nodes to re-process
+ * 2. HTML-level fixes → search/replace on the final HTML for minor issues
+ *
+ * If structural issues are found, the graph loops back to animation node.
+ * If only minor/no issues, fixes are applied directly and pipeline ends.
  */
 
 /**
  * Build the quality review prompt.
- * Splits HTML into reviewable chunks if needed.
  */
-export function buildQualityReviewPrompt({ html, blueprint }) {
+export function buildQualityReviewPrompt({ html, blueprint, iteration }) {
   const sceneCount = blueprint.scenes.length;
   const duration = blueprint.total_duration;
 
-  // Build scene summary for cross-reference
   const sceneSummary = blueprint.scenes.map(s => {
     const veCount = s.visual_elements?.length || 0;
-    return `  Scene ${s.scene_number}: "${s.title}" (${s.time_start}-${s.time_end}s, ${s.layout}, ${veCount} visual elements, color: ${s.concept_color})`;
+    return `  Scene ${s.scene_number}: "${s.title}" (${s.time_start}-${s.time_end}s, layout: ${s.layout}, ${veCount} visual elements, color: ${s.concept_color})`;
   }).join('\n');
 
-  return `You are an expert quality reviewer for professional whiteboard explainer video HTML files. These are self-contained HTML files with inline SVG (1280x720 viewBox), GSAP animations, and Rough.js hand-drawn shapes.
+  const iterNote = iteration > 0
+    ? `\n\nNOTE: This is review iteration ${iteration + 1}. Previous reviews found issues that were corrected. Focus on verifying the fixes were applied correctly and finding any remaining issues.\n`
+    : '';
 
+  return `You are an expert quality reviewer for professional whiteboard explainer video HTML files (VideoScribe/Doodly style). These are self-contained HTML files with inline SVG (1280x720 viewBox), GSAP animations, and Rough.js hand-drawn shapes.
+${iterNote}
 ## Video Specifications
 Topic: ${blueprint.topic}
 Scenes: ${sceneCount}
@@ -27,44 +35,30 @@ Duration: ${duration}s
 ### Scene Reference:
 ${sceneSummary}
 
-## Review and Fix These Categories
+## Review Categories
 
-### 1. Layout & Positioning (CRITICAL)
-- Elements outside canvas bounds (must be within 0-1280 x 0-720)
-- Overlapping text or illustrations at same coordinates
-- Text clipped by canvas edges (needs margin of at least 20px from edges)
-- Illustrations positioned where they overlap text
-- Fix: Adjust x, y, width, height attributes in SVG elements
+### STRUCTURAL Issues (require re-processing by animation node)
+These cannot be fixed with simple search/replace — they need layout recomputation:
 
-### 2. Animation & Sequencing (CRITICAL)
-- Missing animations (elements that appear instantly without gsap.fromTo)
-- Timing gaps > 3s with nothing animating
-- Animations that extend beyond scene time boundaries
-- clipPath rects that don't match text dimensions
-- Fix: Adjust timeline timestamps, add missing fromTo calls
+1. **Overlapping content** — text overlapping illustrations, or elements at same coordinates
+   → Correction: specify which scene, which elements overlap, and suggested new positions
+2. **Off-canvas elements** — content outside 0-1280 x 0-720 bounds
+   → Correction: specify which elements and what coordinates they should move to
+3. **Timing problems** — dead gaps > 3s, animations extending past scene end time, wrong sequencing
+   → Correction: specify which scene, what the timing issue is, and suggested fix
+4. **Missing scene content** — scenes with no visible illustration or animation
+   → Correction: specify which scene is missing content
+5. **Layout misalignment** — title/body/illustration positions that don't match the intended layout
+   → Correction: specify the correct positions for the misaligned elements
 
-### 3. Scene Transitions (CRITICAL)
-- Scenes not properly hidden (opacity must start at 0 for non-first scenes)
-- Missing scene show/hide logic in timeline
-- Fix: Add opacity:0 to initial state, add showScene/hideScene calls
+### HTML-LEVEL Issues (fixable with search/replace)
+These are minor fixes applied directly to the HTML string:
 
-### 4. Asset Integration (WARNING)
-- SVG paths with empty d="" attributes
-- Missing illustrations (referenced in animation but not in SVG)
-- Broken clip-path references (id mismatch between def and use)
-- Fix: Remove broken references or fix id mismatches
-
-### 5. Seek Bar Compatibility (WARNING)
-- Animations using gsap.to() instead of gsap.fromTo() (breaks scrubbing)
-- Missing initial state in fromTo calls
-- Fix: Convert to() calls to fromTo() with proper initial values
-
-### 6. Script & Font Loading (CRITICAL)
-- Missing or incorrect GSAP CDN URLs (must be 3.14.2)
-- Missing DrawSVGPlugin script
-- Missing Google Fonts import
-- Missing Rough.js script
-- DO NOT add scripts that are already present. Only fix if actually missing.
+6. **Clip-path mismatches** — rect width/x doesn't match text dimensions
+7. **Missing opacity:0** — scene groups that should start hidden
+8. **Color inconsistencies** — wrong hex colors for concept-coded elements
+9. **Script/font loading** — missing CDN URLs (but NEVER add duplicates)
+10. **Seek bar compatibility** — gsap.to() that should be gsap.fromTo()
 
 ## HTML to Review:
 
@@ -74,19 +68,29 @@ ${html}
 
 ## Output Instructions
 
-1. List ALL issues found with severity and category
-2. For each fixable issue, provide an EXACT search/replace pair:
-   - "search": The EXACT string to find in the HTML (must be unique and present)
-   - "replace": The corrected string
-3. Be CONSERVATIVE — only fix actual bugs, not style preferences
-4. NEVER add new script tags if the scripts are already loaded
-5. NEVER change the animation library versions
-6. Rate overall quality: "excellent" | "good" | "needs_fixes" | "poor"`;
+Return a JSON object with:
+
+1. **issues**: All issues found (severity: "critical" | "warning" | "info")
+2. **overall_quality**: "excellent" | "good" | "needs_fixes" | "poor"
+3. **structural_corrections**: Array of corrections that require re-processing (layout/animation changes). Each correction has:
+   - "scene_number": which scene is affected
+   - "category": "overlap" | "off_canvas" | "timing" | "missing_content" | "misalignment"
+   - "description": what's wrong
+   - "correction": specific fix instruction (e.g., "move illustration to x=600, y=100" or "extend scene 3 animation to fill gap from 25s to 28s")
+4. **html_fixes**: Array of direct search/replace fixes for minor HTML issues
+5. **needs_reprocessing**: boolean — true if structural_corrections is non-empty
+6. **summary**: brief overall assessment
+
+IMPORTANT:
+- Be CONSERVATIVE — only flag actual bugs, not style preferences
+- NEVER add script tags that are already present
+- NEVER change library versions
+- structural_corrections should only contain issues that genuinely need layout recomputation
+- If the HTML looks good, set needs_reprocessing=false and overall_quality="good" or "excellent"`;
 }
 
 /**
- * Gemini response schema for the review output.
- * Uses Gemini's OBJECT/ARRAY/STRING type format.
+ * Response schema for the quality review.
  */
 export const QUALITY_REVIEW_SCHEMA = {
   type: 'OBJECT',
@@ -99,26 +103,38 @@ export const QUALITY_REVIEW_SCHEMA = {
           severity: { type: 'STRING' },
           category: { type: 'STRING' },
           description: { type: 'STRING' },
-          fix_suggestion: { type: 'STRING' },
         },
         required: ['severity', 'category', 'description'],
       },
     },
     overall_quality: { type: 'STRING' },
-    fixes_applied: {
+    structural_corrections: {
+      type: 'ARRAY',
+      items: {
+        type: 'OBJECT',
+        properties: {
+          scene_number: { type: 'INTEGER' },
+          category: { type: 'STRING' },
+          description: { type: 'STRING' },
+          correction: { type: 'STRING' },
+        },
+        required: ['scene_number', 'category', 'description', 'correction'],
+      },
+    },
+    html_fixes: {
       type: 'ARRAY',
       items: {
         type: 'OBJECT',
         properties: {
           description: { type: 'STRING' },
-          category: { type: 'STRING' },
           search: { type: 'STRING' },
           replace: { type: 'STRING' },
         },
         required: ['description', 'search', 'replace'],
       },
     },
+    needs_reprocessing: { type: 'BOOLEAN' },
     summary: { type: 'STRING' },
   },
-  required: ['issues', 'overall_quality', 'fixes_applied', 'summary'],
+  required: ['issues', 'overall_quality', 'structural_corrections', 'html_fixes', 'needs_reprocessing', 'summary'],
 };
