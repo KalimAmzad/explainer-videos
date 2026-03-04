@@ -2,8 +2,11 @@
  * Gemini API client using @google/genai SDK.
  * Provides callGeminiJSON, callGeminiImage, callGeminiVision
  * with support for latest Gemini models (3.1, 3.0, 2.5, etc.)
+ *
+ * All calls are wrapped with LangSmith traceable() for full observability.
  */
 import { GoogleGenAI } from '@google/genai';
+import { traceable } from 'langsmith/traceable';
 import { KEYS, PATHS } from '../config.mjs';
 
 const ai = new GoogleGenAI({ apiKey: KEYS.gemini });
@@ -13,7 +16,7 @@ export const rootDir = PATHS.root;
 /**
  * Generate structured JSON from a text prompt.
  */
-export async function callGeminiJSON(model, prompt, schema) {
+export const callGeminiJSON = traceable(async function callGeminiJSON(model, prompt, schema) {
   const response = await ai.models.generateContent({
     model,
     contents: prompt,
@@ -24,13 +27,17 @@ export async function callGeminiJSON(model, prompt, schema) {
   });
   const text = response.text;
   if (!text) throw new Error('No text in Gemini response');
+  const usage = response.usageMetadata;
+  if (usage) {
+    console.log(`    [Gemini ${model}] ${usage.promptTokenCount || 0} in / ${usage.candidatesTokenCount || 0} out`);
+  }
   return JSON.parse(text);
-}
+}, { run_type: 'llm', name: 'gemini_json' });
 
 /**
  * Generate an image using Gemini multimodal output.
  */
-export async function callGeminiImage(model, prompt) {
+export const callGeminiImage = traceable(async function callGeminiImage(model, prompt) {
   const response = await ai.models.generateContent({
     model,
     contents: prompt,
@@ -52,16 +59,21 @@ export async function callGeminiImage(model, prompt) {
     throw new Error(`No image returned. Text: ${textResponse.slice(0, 200)}`);
   }
 
+  const usage = response.usageMetadata;
+  if (usage) {
+    console.log(`    [Gemini ${model} image] ${usage.promptTokenCount || 0} in / ${usage.candidatesTokenCount || 0} out`);
+  }
+
   return {
     buffer: Buffer.from(imageData.data, 'base64'),
     text: textResponse,
   };
-}
+}, { run_type: 'llm', name: 'gemini_image' });
 
 /**
  * Analyze an image with Gemini Vision, optionally with structured output.
  */
-export async function callGeminiVision(model, imageBuffer, mimeType, prompt, schema) {
+export const callGeminiVision = traceable(async function callGeminiVision(model, imageBuffer, mimeType, prompt, schema) {
   const contents = [
     {
       inlineData: { mimeType, data: imageBuffer.toString('base64') },
@@ -81,5 +93,9 @@ export async function callGeminiVision(model, imageBuffer, mimeType, prompt, sch
 
   const text = response.text;
   if (!text) throw new Error('No text in vision response');
+  const usage = response.usageMetadata;
+  if (usage) {
+    console.log(`    [Gemini ${model} vision] ${usage.promptTokenCount || 0} in / ${usage.candidatesTokenCount || 0} out`);
+  }
   return schema ? JSON.parse(text) : text;
-}
+}, { run_type: 'llm', name: 'gemini_vision' });

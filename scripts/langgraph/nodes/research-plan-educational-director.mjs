@@ -4,13 +4,15 @@
  * and comprehensive video blueprint generation.
  */
 import Anthropic from '@anthropic-ai/sdk';
+import { traceable } from 'langsmith/traceable';
 import { MODELS, KEYS } from '../config.mjs';
 import { buildResearchPlanPrompt, BLUEPRINT_JSON_SCHEMA } from '../prompts/research-plan.mjs';
 
 /**
  * Call Claude with structured JSON output via the Anthropic SDK.
+ * Wrapped with LangSmith traceable for full observability.
  */
-async function callClaudeStructured(prompt, schema, model) {
+const callClaudeStructured = traceable(async function callClaudeStructured(prompt, schema, model) {
   const client = new Anthropic({ apiKey: KEYS.anthropic });
 
   const response = await client.messages.create({
@@ -38,7 +40,7 @@ async function callClaudeStructured(prompt, schema, model) {
   }
 
   return JSON.parse(text);
-}
+}, { run_type: 'llm', name: 'claude_research' });
 
 /**
  * Research & Plan Educational Director node.
@@ -85,6 +87,13 @@ export async function researchPlanNode(state) {
 
     for (const ve of (scene.visual_elements || [])) {
       console.log(`        [${ve.type}] ${ve.id}: "${(ve.description || '').slice(0, 60)}..." (${ve.source_preference})`);
+    }
+  }
+
+  // Ensure scene_number is set (Claude may omit it)
+  for (let i = 0; i < blueprint.scenes.length; i++) {
+    if (!blueprint.scenes[i].scene_number) {
+      blueprint.scenes[i].scene_number = i + 1;
     }
   }
 

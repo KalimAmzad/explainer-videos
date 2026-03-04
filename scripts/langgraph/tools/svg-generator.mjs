@@ -5,9 +5,12 @@
  */
 import { tool } from '@langchain/core/tools';
 import { z } from 'zod';
+import fs from 'fs';
+import path from 'path';
 import sharp from 'sharp';
 import { createRequire } from 'module';
 import { storeAsset } from '../lib/asset-store.mjs';
+import { PATHS } from '../config.mjs';
 
 const require = createRequire(import.meta.url);
 const potrace = require('potrace');
@@ -71,6 +74,21 @@ Style: BLACK INK on PURE WHITE background. Khan Academy whiteboard style.
       const meta = await sharp(buffer).metadata();
 
       console.log(`  [SVG Gen] Vectorized: ${pathD.length} chars path (${meta.width}x${meta.height})`);
+
+      // Save debug assets to disk (PNG + SVG) for manual review
+      try {
+        const assetsDir = path.join(PATHS.output, '_debug-assets');
+        fs.mkdirSync(assetsDir, { recursive: true });
+        const prefix = `scene${sceneNumber}_${Date.now()}`;
+        fs.writeFileSync(path.join(assetsDir, `${prefix}.png`), buffer);
+        fs.writeFileSync(path.join(assetsDir, `${prefix}_edges.png`), edges);
+        const svgFull = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${meta.width} ${meta.height}"><path d="${pathD}" fill="none" stroke="#333" stroke-width="2"/></svg>`;
+        fs.writeFileSync(path.join(assetsDir, `${prefix}.svg`), svgFull);
+        console.log(`  [SVG Gen] Debug assets saved: ${assetsDir}/${prefix}.*`);
+      } catch (e) {
+        // Non-critical, don't fail pipeline
+        console.warn(`  [SVG Gen] Debug save failed: ${e.message}`);
+      }
 
       // Store heavy data in asset store (NOT in LLM messages)
       storeAsset(sceneNumber, {

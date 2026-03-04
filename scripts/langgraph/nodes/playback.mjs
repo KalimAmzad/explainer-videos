@@ -186,7 +186,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function wipe(crId, targetWidth, dur, ease) {
-    return gsap.to('#' + crId, {
+    return gsap.fromTo('#' + crId, {
+      attr: { width: 0 }
+    }, {
       attr: { width: targetWidth },
       duration: dur,
       ease: ease || 'power1.inOut'
@@ -273,11 +275,28 @@ ${timelineCode}
   function doReplay() {
     document.querySelectorAll('.scene').forEach(s => gsap.set(s, { opacity: 0 }));
     document.querySelectorAll('[id^="cr_"]').forEach(r => r.setAttribute('width', '0'));
-    document.querySelectorAll('[id$="_illust"], [id$="_underline"]').forEach(el => {
+    document.querySelectorAll('[id$="_illust"]').forEach(el => {
       if (el.getTotalLength) {
         const len = el.getTotalLength();
         gsap.set(el, { strokeDasharray: len, strokeDashoffset: len, opacity: 0 });
       }
+    });
+    document.querySelectorAll('[id$="_underline"]').forEach(el => {
+      if (el.getTotalLength) {
+        const len = el.getTotalLength();
+        gsap.set(el, { strokeDasharray: len, strokeDashoffset: len });
+      }
+    });
+    // Reset arrow lines
+    document.querySelectorAll('[id$="_arrow"]').forEach(el => {
+      if (el.getTotalLength) {
+        const len = el.getTotalLength();
+        gsap.set(el, { strokeDasharray: len, strokeDashoffset: len, opacity: 1 });
+      }
+    });
+    // Reset Rough.js decorations
+    document.querySelectorAll('[id^="rough_"]').forEach(el => {
+      gsap.set(el, { opacity: 0 });
     });
     document.querySelectorAll('.illust-el').forEach(g => {
       gsap.set(g, { opacity: 0 });

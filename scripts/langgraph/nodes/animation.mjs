@@ -27,6 +27,16 @@ const LAYOUTS = {
     body: { x: 640, y: 130, fontSize: 26, lineHeight: 38, anchor: 'middle', maxWidth: 800 },
     illustration: { x: 60, y: 200, w: 1160, h: 460 },
   },
+  infographic_grid: {
+    title: { x: 640, y: 55, fontSize: 44, fontWeight: '700', anchor: 'middle', maxWidth: 900 },
+    body: { x: 640, y: 100, fontSize: 22, lineHeight: 28, anchor: 'middle', maxWidth: 900 },
+    illustration: { x: 40, y: 140, w: 1200, h: 540 },
+  },
+  process_flow: {
+    title: { x: 640, y: 60, fontSize: 48, fontWeight: '700', anchor: 'middle', maxWidth: 900 },
+    body: { x: 640, y: 120, fontSize: 24, lineHeight: 34, anchor: 'middle', maxWidth: 800 },
+    illustration: { x: 60, y: 180, w: 1160, h: 480 },
+  },
 };
 
 function estimateTextWidth(text, fontSize) {
@@ -309,7 +319,7 @@ export async function animationNode(state) {
     for (const lb of c.labels) {
       // Arrow line if arrow_to is specified
       if (lb.arrowTo) {
-        sceneSvg += `  <line x1="${lb.x}" y1="${lb.y}" x2="${lb.arrowTo.x}" y2="${lb.arrowTo.y}" stroke="${lb.fill}" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>\n`;
+        sceneSvg += `  <line id="${lb.id}_arrow" x1="${lb.x}" y1="${lb.y}" x2="${lb.arrowTo.x}" y2="${lb.arrowTo.y}" stroke="${lb.fill}" stroke-width="1.5" stroke-linecap="round" opacity="0"/>\n`;
       }
       sceneSvg += `  <g clip-path="url(#${lb.clipId})">\n`;
       sceneSvg += `    <text x="${lb.x}" y="${lb.y}" font-family="${lb.font}" font-size="${lb.fontSize}" fill="${lb.fill}" text-anchor="${lb.anchor}">${esc(lb.text)}</text>\n`;
@@ -320,63 +330,110 @@ export async function animationNode(state) {
   }
 
   // ── Step 4: Build GSAP timeline code ──
+  // Strategy: count animation items per scene, then distribute them evenly across
+  // the scene's time window (time_start → time_end) with proportional durations.
   let timelineCode = '';
   for (let i = 0; i < computedScenes.length; i++) {
     const c = computedScenes[i];
     const scene = scenes[i];
     const sceneId = c.sceneId;
     const t0 = scene.time_start;
+    const tEnd = scene.time_end;
+    const sceneDuration = tEnd - t0;
     const prevId = scene.scene_number > 1 ? `scene${scene.scene_number - 1}` : null;
 
-    timelineCode += `\n  // Scene ${scene.scene_number}: ${scene.title} (${t0}s)\n`;
+    timelineCode += `\n  // Scene ${scene.scene_number}: ${scene.title} (${t0}-${tEnd}s)\n`;
 
     if (prevId) {
       timelineCode += `  tl.set('#${prevId}', { opacity: 0 }, ${t0.toFixed(1)});\n`;
     }
     timelineCode += `  tl.set('#${sceneId}', { opacity: 1 }, ${t0.toFixed(1)});\n`;
 
-    let t = t0 + 0.3;
+    // Count animation items to distribute timing
+    const hasElements = c.elements?.length > 0;
+    const hasIllust = !hasElements && (c.asset?.type === 'custom_sketch' || c.asset?.type === 'icons8_sketchy');
+    const itemCount = 1 /* title */ + 1 /* underline */ + c.bodyLines.length
+      + (hasElements ? c.elements.length : hasIllust ? 1 : 0)
+      + c.labels.length;
+
+    // Allocate proportional time budgets (percentages of scene duration)
+    const titlePct = 0.12;
+    const underlinePct = 0.03;
+    const bodyPct = 0.25;
+    const illustPct = 0.35;
+    const labelPct = 0.20;
+    const gapPct = 0.05; // breathing room
+
+    const titleDur = Math.max(1.0, sceneDuration * titlePct);
+    const underlineDur = Math.max(0.3, sceneDuration * underlinePct);
+    const bodyPerLine = c.bodyLines.length > 0 ? Math.max(0.5, (sceneDuration * bodyPct) / c.bodyLines.length) : 0;
+    const labelPerItem = c.labels.length > 0 ? Math.max(0.4, (sceneDuration * labelPct) / c.labels.length) : 0;
+
+    // Use scene's animation_sequence if available for custom timing
+    let t = t0 + sceneDuration * 0.02; // small initial gap
 
     // Title wipe
-    timelineCode += `  tl.add(wipe('${c.title.clipRectId}', ${c.title.clipWidth.toFixed(0)}, 1.3), ${t.toFixed(1)});\n`;
-    t += 1.5;
+    timelineCode += `  tl.add(wipe('${c.title.clipRectId}', ${c.title.clipWidth.toFixed(0)}, ${titleDur.toFixed(1)}), ${t.toFixed(1)});\n`;
+    t += titleDur + 0.2;
 
     // Underline draw-on
-    timelineCode += `  tl.add(drawOn('${sceneId}_underline', 0.4), ${t.toFixed(1)});\n`;
-    t += 0.5;
+    timelineCode += `  tl.add(drawOn('${sceneId}_underline', ${underlineDur.toFixed(1)}), ${t.toFixed(1)});\n`;
+    t += underlineDur + 0.2;
 
     // Body text wipes
     for (const bl of c.bodyLines) {
-      timelineCode += `  tl.add(wipe('${bl.clipRectId}', ${bl.clipWidth.toFixed(0)}, 0.8), ${t.toFixed(1)});\n`;
-      t += 0.7;
+      timelineCode += `  tl.add(wipe('${bl.clipRectId}', ${bl.clipWidth.toFixed(0)}, ${bodyPerLine.toFixed(1)}), ${t.toFixed(1)});\n`;
+      t += bodyPerLine * 0.85; // overlap slightly for flow
     }
 
-    // Illustration
-    if (c.elements?.length > 0) {
+    // Illustration — use remaining time proportionally
+    const illustTimeAvailable = Math.max(1.0, tEnd - t - (c.labels.length * labelPerItem * 0.8) - 0.5);
+    if (hasElements) {
       const categoryWeights = { main_subject: 3, secondary_subject: 2, detail: 1, annotation: 1, connector: 0.5 };
-      const totalIllustTime = Math.min(6.0, (scene.time_end - t0) * 0.45);
       const totalWeight = c.elements.reduce((sum, el) => sum + (categoryWeights[el.category] || 1), 0);
 
       for (let j = 0; j < c.elements.length; j++) {
         const el = c.elements[j];
         const elId = `${sceneId}_el${j}`;
-        const dur = Math.max(0.3, ((categoryWeights[el.category] || 1) / totalWeight) * totalIllustTime);
+        const dur = Math.max(0.5, ((categoryWeights[el.category] || 1) / totalWeight) * illustTimeAvailable);
 
         timelineCode += `  gsap.set('#${elId}', { opacity: 1 });\n`;
         timelineCode += `  tl.add(drawOnGroup('${elId}', ${dur.toFixed(1)}), ${t.toFixed(1)});\n`;
-        t += dur * 0.65;
+        t += dur * 0.7;
       }
-    } else if (c.asset?.type === 'custom_sketch' || c.asset?.type === 'icons8_sketchy') {
-      const drawDur = Math.min(4.0, (scene.time_end - t0) * 0.4);
+    } else if (hasIllust) {
+      const drawDur = Math.min(illustTimeAvailable, sceneDuration * 0.35);
       timelineCode += `  gsap.set('#${sceneId}_illust', { opacity: 1 });\n`;
       timelineCode += `  tl.add(drawOn('${sceneId}_illust', ${drawDur.toFixed(1)}), ${t.toFixed(1)});\n`;
-      t += drawDur * 0.8;
+      t += drawDur * 0.85;
     }
 
-    // Labels
-    for (const lb of c.labels) {
-      timelineCode += `  tl.add(wipe('${lb.clipRectId}', ${lb.clipWidth.toFixed(0)}, 0.5), ${t.toFixed(1)});\n`;
-      t += 0.4;
+    // Labels — distribute across remaining time (reserve some for decorations)
+    const decoCount = c.decorations?.length || 0;
+    const decoTime = decoCount * 0.4;
+    if (c.labels.length > 0) {
+      const remainingTime = Math.max(c.labels.length * 0.4, tEnd - t - 0.3 - decoTime);
+      const labelDur = Math.max(0.4, remainingTime / c.labels.length * 0.7);
+      const labelGap = Math.max(0.3, remainingTime / c.labels.length);
+
+      for (const lb of c.labels) {
+        // Arrow line draw-on (before label text)
+        if (lb.arrowTo) {
+          timelineCode += `  tl.add(drawOn('${lb.id}_arrow', 0.3), ${t.toFixed(1)});\n`;
+        }
+        timelineCode += `  tl.add(wipe('${lb.clipRectId}', ${lb.clipWidth.toFixed(0)}, ${labelDur.toFixed(1)}), ${(t + 0.1).toFixed(1)});\n`;
+        t += labelGap;
+      }
+    }
+
+    // Rough.js decorations — fade in at the end
+    if (decoCount > 0) {
+      for (let j = 0; j < c.decorations.length; j++) {
+        const dec = c.decorations[j];
+        const decId = `rough_${sceneId}_${dec.type}${j}`;
+        timelineCode += `  tl.to('#${decId}', { opacity: 1, duration: 0.4 }, ${t.toFixed(1)});\n`;
+        t += 0.3;
+      }
     }
   }
 
