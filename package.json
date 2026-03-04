@@ -1,5 +1,17 @@
 {
+  "name": "whiteboard-explainer-videos",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Khan Academy-style animated whiteboard explainer videos as self-contained HTML files",
+  "scripts": {
+    "pipeline": "node scripts/pipeline/run-pipeline.mjs",
+    "capture": "node scripts/capture-video.mjs"
+  },
   "dependencies": {
-    "@playwright/test": "^1.58.2"
+    "@playwright/test": "^1.58.2",
+    "potrace": "^2.1.8",
+    "sharp": "^0.34.5",
+    "svg2roughjs": "^3.2.2"
   }
 }

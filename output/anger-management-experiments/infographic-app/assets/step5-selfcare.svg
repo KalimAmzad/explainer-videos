@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200">
+  <!-- Person running + clock + moon + wellness icons -->
+
+  <!-- Runner -->
+  <g class="outlines" fill="none" stroke="#333" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Head -->
+    <circle class="stroke-path" cx="120" cy="40" r="18"/>
+    <!-- Hair (short, bouncing) -->
+    <path class="stroke-path" d="M104,34 C102,22 112,16 122,14 C132,14 140,20 138,32"/>
+    <!-- Eye -->
+    <circle class="stroke-path" cx="128" cy="38" r="2"/>
+    <!-- Smile -->
+    <path class="stroke-path" d="M122,48 C125,50 130,50 132,48"/>
+    <!-- Neck -->
+    <path class="stroke-path" d="M115,56 L112,64 M125,56 L128,64"/>
+    <!-- Torso (leaning forward, running pose) -->
+    <path class="stroke-path" d="M100,72 C108,66 118,62 128,66 L140,72 L138,115 L98,115 Z"/>
+    <!-- Left arm (back swing) -->
+    <path class="stroke-path" d="M100,78 L80,65 L72,58"/>
+    <path class="stroke-path" d="M72,58 C70,56 72,54 74,56 L78,60"/>
+    <!-- Right arm (forward swing) -->
+    <path class="stroke-path" d="M138,78 L158,90 L165,95"/>
+    <path class="stroke-path" d="M165,95 C167,97 165,99 163,97 L160,93"/>
+    <!-- Left leg (back, extended) -->
+    <path class="stroke-path" d="M105,115 L82,145 L68,168"/>
+    <path class="stroke-path" d="M68,168 L58,170 L65,172"/>
+    <!-- Right leg (forward, bent) -->
+    <path class="stroke-path" d="M130,115 L148,140 L155,165"/>
+    <path class="stroke-path" d="M155,165 L162,168 L155,170"/>
+  </g>
+
+  <!-- Runner fills -->
+  <g class="fill-shape" opacity="0">
+    <circle cx="120" cy="40" r="17" fill="#8d6344" opacity="0.6"/>
+    <path d="M104,34 C102,22 112,16 122,14 C132,14 140,20 138,32Z" fill="#2a2a2a" opacity="0.5"/>
+    <path d="M100,72 C108,66 118,62 128,66 L140,72 L138,115 L98,115 Z" fill="#3a9e6e" opacity="0.4"/>
+  </g>
+
+  <!-- Motion lines (speed) -->
+  <g class="outlines" fill="none" stroke="#999" stroke-width="1.5" stroke-linecap="round">
+    <path class="stroke-path" d="M55,80 L35,80"/>
+    <path class="stroke-path" d="M55,90 L30,90"/>
+    <path class="stroke-path" d="M55,100 L38,100"/>
+  </g>
+
+  <!-- Clock icon (top-right) -->
+  <g class="outlines" fill="none" stroke="#2b7ec2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle class="stroke-path" cx="220" cy="42" r="22"/>
+    <!-- Clock hands -->
+    <path class="stroke-path" d="M220,42 L220,28"/>
+    <path class="stroke-path" d="M220,42 L232,48"/>
+    <!-- Clock ticks -->
+    <path class="stroke-path" d="M220,22 L220,24 M220,60 L220,62 M200,42 L202,42 M240,42 L242,42"/>
+  </g>
+
+  <!-- Moon icon (bottom-right) -->
+  <g class="outlines" fill="none" stroke="#7a5bad" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path class="stroke-path" d="M225,110 C215,100 215,82 225,72 C210,75 200,88 200,100 C200,115 212,125 228,125 C235,125 242,122 245,118 C238,122 230,118 225,110Z"/>
+    <!-- Stars near moon -->
+    <path class="stroke-path" d="M250,80 L252,85 L257,85 L253,88 L255,93 L250,90 L245,93 L247,88 L243,85 L248,85Z"/>
+    <circle class="stroke-path" cx="262" cy="95" r="1.5"/>
+    <circle class="stroke-path" cx="240" cy="72" r="1.5"/>
+  </g>
+
+  <!-- Heart icon (wellness, bottom-center) -->
+  <g class="outlines" fill="none" stroke="#cc3333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path class="stroke-path" d="M215,150 C210,142 198,140 195,148 C192,155 195,162 215,178 C235,162 238,155 235,148 C232,140 220,142 215,150Z"/>
+  </g>
+</svg>

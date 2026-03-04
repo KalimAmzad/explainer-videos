@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anger Management for Corporate Leaders — Whiteboard Explainer</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+<svg id="board" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+<defs>
+  <!-- Background gradient -->
+  <linearGradient id="bg" x1="0" y1="0" x2=".04" y2="1">
+    <stop offset="0%" stop-color="#f5f3ef"/>
+    <stop offset="100%" stop-color="#edeae4"/>
+  </linearGradient>
+
+  <!-- Arrow marker for connecting arrows -->
+  <marker id="arrowTeal" viewBox="0 0 10 10" refX="9" refY="5"
+          markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 z" fill="#1a6b6a"/>
+  </marker>
+
+  <!-- ═══ CLIP PATHS FOR TEXT REVEALS ═══ -->
+
+  <!-- Banner title -->
+  <clipPath id="cp_banner_title"><rect id="cr_banner_title" x="140" y="5" width="0" height="55"/></clipPath>
+
+  <!-- Step 1 title -->
+  <clipPath id="cp_s1_title"><rect id="cr_s1_title" x="78" y="75" width="0" height="35"/></clipPath>
+
+  <!-- Step 2 title -->
+  <clipPath id="cp_s2_title"><rect id="cr_s2_title" x="488" y="75" width="0" height="35"/></clipPath>
+
+  <!-- Step 3 title -->
+  <clipPath id="cp_s3_title"><rect id="cr_s3_title" x="288" y="383" width="0" height="35"/></clipPath>
+
+  <!-- Step 4 title -->
+  <clipPath id="cp_s4_title"><rect id="cr_s4_title" x="908" y="75" width="0" height="35"/></clipPath>
+
+  <!-- Step 5 title -->
+  <clipPath id="cp_s5_title"><rect id="cr_s5_title" x="708" y="383" width="0" height="35"/></clipPath>
+</defs>
+
+<!-- Background -->
+<rect width="1280" height="720" fill="url(#bg)"/>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  BANNER                                         -->
+<!-- ═══════════════════════════════════════════════ -->
+<g id="g_banner" class="scene">
+  <!-- Rough.js banner bg injected here -->
+
+  <!-- Title text -->
+  <g clip-path="url(#cp_banner_title)">
+    <text x="640" y="40" font-family="'Cabin Sketch', cursive"
+          font-size="32" font-weight="700" fill="#ffffff"
+          text-anchor="middle">
+      ANGER MANAGEMENT FOR CORPORATE LEADERS
+    </text>
+  </g>
+</g>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  STEP 1: RECOGNIZE TRIGGERS (top-left)          -->
+<!-- ═══════════════════════════════════════════════ -->
+<g id="g_step1" class="scene">
+  <!-- Rough.js box + badge injected here -->
+
+  <!-- Badge number -->
+  <text id="badge_num_1" x="45" y="94" font-family="'Cabin Sketch', cursive"
+        font-size="22" font-weight="700" fill="#ffffff"
+        text-anchor="middle" opacity="0">1</text>
+
+  <!-- Step title -->
+  <g clip-path="url(#cp_s1_title)">
+    <text x="80" y="100" font-family="'Cabin Sketch', cursive"
+          font-size="22" font-weight="700" fill="#2a2a2a">
+      RECOGNIZE TRIGGERS
+    </text>
+  </g>
+
+  <!-- Illustration placeholder (SVG injected here) -->
+  <g id="illust_step1" class="scene"></g>
+</g>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  STEP 2: PAUSE & BREATHE (top-center)           -->
+<!-- ═══════════════════════════════════════════════ -->
+<g id="g_step2" class="scene">
+  <text id="badge_num_2" x="455" y="94" font-family="'Cabin Sketch', cursive"
+        font-size="22" font-weight="700" fill="#ffffff"
+        text-anchor="middle" opacity="0">2</text>
+
+  <g clip-path="url(#cp_s2_title)">
+    <text x="490" y="100" font-family="'Cabin Sketch', cursive"
+          font-size="22" font-weight="700" fill="#2a2a2a">
+      PAUSE &amp; BREATHE
+    </text>
+  </g>
+
+  <g id="illust_step2" class="scene"></g>
+</g>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  STEP 3: REFRAME THE SITUATION (center)         -->
+<!-- ═══════════════════════════════════════════════ -->
+<g id="g_step3" class="scene">
+  <text id="badge_num_3" x="255" y="402" font-family="'Cabin Sketch', cursive"
+        font-size="22" font-weight="700" fill="#ffffff"
+        text-anchor="middle" opacity="0">3</text>
+
+  <g clip-path="url(#cp_s3_title)">
+    <text x="290" y="408" font-family="'Cabin Sketch', cursive"
+          font-size="22" font-weight="700" fill="#2a2a2a">
+      REFRAME THE SITUATION
+    </text>
+  </g>
+
+  <g id="illust_step3" class="scene"></g>
+</g>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  STEP 4: COMMUNICATE ASSERTIVELY (top-right)    -->
+<!-- ═══════════════════════════════════════════════ -->
+<g id="g_step4" class="scene">
+  <text id="badge_num_4" x="875" y="94" font-family="'Cabin Sketch', cursive"
+        font-size="22" font-weight="700" fill="#ffffff"
+        text-anchor="middle" opacity="0">4</text>
+
+  <g clip-path="url(#cp_s4_title)">
+    <text x="910" y="100" font-family="'Cabin Sketch', cursive"
+          font-size="22" font-weight="700" fill="#2a2a2a">
+      COMMUNICATE ASSERTIVELY
+    </text>
+  </g>
+
+  <g id="illust_step4" class="scene"></g>
+</g>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  STEP 5: PRACTICE SELF-CARE (bottom-right)      -->
+<!-- ═══════════════════════════════════════════════ -->
+<g id="g_step5" class="scene">
+  <text id="badge_num_5" x="675" y="402" font-family="'Cabin Sketch', cursive"
+        font-size="22" font-weight="700" fill="#ffffff"
+        text-anchor="middle" opacity="0">5</text>
+
+  <g clip-path="url(#cp_s5_title)">
+    <text x="710" y="408" font-family="'Cabin Sketch', cursive"
+          font-size="22" font-weight="700" fill="#2a2a2a">
+      PRACTICE SELF-CARE
+    </text>
+  </g>
+
+  <g id="illust_step5" class="scene"></g>
+</g>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  CONNECTING ARROWS                               -->
+<!-- ═══════════════════════════════════════════════ -->
+<g id="g_arrows" fill="none" stroke="#1a6b6a" stroke-width="3" stroke-linecap="round">
+  <!-- Arrow 1→2 -->
+  <path id="arrow_1_2" d="M400,210 C415,195 425,195 440,210" marker-end="url(#arrowTeal)"/>
+  <!-- Arrow 2→3 -->
+  <path id="arrow_2_3" d="M580,352 C565,368 500,378 450,395" marker-end="url(#arrowTeal)"/>
+  <!-- Arrow 3→4 -->
+  <path id="arrow_3_4" d="M610,480 C680,430 790,310 860,220" marker-end="url(#arrowTeal)"/>
+  <!-- Arrow 4→5 -->
+  <path id="arrow_4_5" d="M1000,352 C985,370 870,388 830,405" marker-end="url(#arrowTeal)"/>
+</g>
+
+<!-- Progress bar -->
+<rect x="0" y="716" width="1280" height="4" fill="#ddd8d0"/>
+<rect id="progBar" x="0" y="716" width="0" height="4" fill="#1a6b6a"/>
+</svg>
+</div>
+
+<div id="controls">
+  <button id="btnPlay">&#9654; Play</button>
+  <button id="btnReplay">&#8635; Replay</button>
+  <input type="range" id="seekBar" min="0" max="55000" value="0" step="100"/>
+  <span id="timeDisp">0.0 / 55s</span>
+</div>
+
+<!-- Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/DrawSVGPlugin.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.min.js"></script>
+
+<!-- App modules -->
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

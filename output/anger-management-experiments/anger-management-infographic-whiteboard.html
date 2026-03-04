@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anger Management for Corporate Leaders — Whiteboard Explainer</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@400;700&family=Caveat:wght@400;700&family=Patrick+Hand&family=Permanent+Marker&display=swap');
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: #111;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-height: 100vh; overflow: hidden;
+}
+.wrap {
+  width: 100vw; max-width: 1280px;
+  aspect-ratio: 16/9; position: relative;
+  border-radius: 6px; overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,.6);
+}
+#board { width: 100%; height: 100%; display: block; }
+#controls {
+  margin-top: 10px; display: flex; gap: 10px; align-items: center;
+}
+#controls button {
+  padding: 7px 18px; background: #1a6b6a; color: #fff;
+  border: none; border-radius: 5px; font-size: 13px; cursor: pointer;
+  transition: background 0.2s; font-family: 'Patrick Hand', cursive;
+}
+#controls button:hover { background: #14524f; }
+#timeDisp { color: #888; font: 13px/1 monospace; min-width: 110px; }
+#seekBar { width: 360px; cursor: pointer; accent-color: #1a6b6a; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<svg id="board" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2=".04" y2="1">
+    <stop offset="0%" stop-color="#f5f3ef"/>
+    <stop offset="100%" stop-color="#edeae4"/>
+  </linearGradient>
+
+  <!-- Arrow marker -->
+  <marker id="arrowTeal" viewBox="0 0 10 10" refX="9" refY="5"
+          markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 z" fill="#1a6b6a"/>
+  </marker>
+
+  <!-- ═══ CLIP PATHS FOR TEXT REVEALS ═══ -->
+  <clipPath id="cp_banner"><rect id="cr_banner" x="140" y="5" width="0" height="55"/></clipPath>
+  <clipPath id="cp_s1"><rect id="cr_s1" x="78" y="78" width="0" height="32"/></clipPath>
+  <clipPath id="cp_s2"><rect id="cr_s2" x="488" y="78" width="0" height="32"/></clipPath>
+  <clipPath id="cp_s3"><rect id="cr_s3" x="288" y="386" width="0" height="32"/></clipPath>
+  <clipPath id="cp_s4"><rect id="cr_s4" x="908" y="78" width="0" height="32"/></clipPath>
+  <clipPath id="cp_s5"><rect id="cr_s5" x="708" y="386" width="0" height="32"/></clipPath>
+</defs>
+
+<!-- Background -->
+<rect width="1280" height="720" fill="url(#bg)"/>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  BANNER                                         -->
+<!-- ═══════════════════════════════════════════════ -->
+<g id="g_banner" opacity="0">
+  <!-- Rough.js banner injected here at runtime -->
+  <g clip-path="url(#cp_banner)">
+    <text x="640" y="40" font-family="'Cabin Sketch',cursive"
+          font-size="30" font-weight="700" fill="#fff" text-anchor="middle">
+      ANGER MANAGEMENT FOR CORPORATE LEADERS
+    </text>
+  </g>
+</g>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  STEP 1: RECOGNIZE TRIGGERS  (top-left)         -->
+<!-- ═══════════════════════════════════════════════ -->
+<g id="g_step1" opacity="0">
+  <!-- badge number -->
+  <text id="badge1" x="45" y="94" font-family="'Cabin Sketch',cursive"
+        font-size="22" font-weight="700" fill="#fff" text-anchor="middle" opacity="0">1</text>
+
+  <g clip-path="url(#cp_s1)">
+    <text x="80" y="100" font-family="'Cabin Sketch',cursive"
+          font-size="22" font-weight="700" fill="#2a2a2a">RECOGNIZE TRIGGERS</text>
+  </g>
+
+  <!-- Brain illustration -->
+  <g id="s1_illust" opacity="0" transform="translate(80,115) scale(0.95)">
+    <!-- Brain outlines -->
+    <g id="s1_outlines" fill="none" stroke="#333" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path id="s1_p1" d="M100,55 C95,30 115,15 135,18 C148,8 168,12 172,28"/>
+      <path id="s1_p2" d="M172,28 C188,18 205,25 205,45 C215,52 215,68 205,78"/>
+      <path id="s1_p3" d="M205,78 C210,90 200,100 188,100 C185,108 170,112 160,105"/>
+      <path id="s1_p4" d="M160,105 C150,112 135,108 130,100 C118,102 108,92 110,80"/>
+      <path id="s1_p5" d="M110,80 C95,75 90,60 100,55"/>
+      <path id="s1_p6" d="M135,30 C140,45 155,50 170,40"/>
+      <path id="s1_p7" d="M115,55 C125,60 140,58 150,65 C160,58 175,60 185,55"/>
+      <path id="s1_p8" d="M125,80 C135,75 145,78 155,85 C165,78 178,80 185,85"/>
+      <path id="s1_p9" d="M145,105 L145,125 C145,135 155,135 155,125 L155,105"/>
+    </g>
+    <!-- Brain fill -->
+    <g id="s1_fill" opacity="0">
+      <path d="M100,55 C95,30 115,15 135,18 C148,8 168,12 172,28 C188,18 205,25 205,45 C215,52 215,68 205,78 C210,90 200,100 188,100 C185,108 170,112 160,105 C150,112 135,108 130,100 C118,102 108,92 110,80 C95,75 90,60 100,55Z" fill="#e8a0a8" opacity="0.45"/>
+    </g>
+    <!-- Lightning bolts -->
+    <g id="s1_bolts" fill="none" stroke="#d4a020" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+      <path id="s1_b1" d="M220,25 L210,45 L220,45 L208,68"/>
+      <path id="s1_b2" d="M232,55 L224,72 L232,72 L222,92"/>
+      <path id="s1_b3" d="M75,30 L85,48 L75,48 L88,68"/>
+    </g>
+    <!-- Trigger icons -->
+    <g id="s1_icons" fill="none" stroke="#d4762c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Angry face -->
+      <circle id="s1_i1" cx="155" cy="158" r="14"/>
+      <path id="s1_i2" d="M148,153 L153,156 M162,153 L157,156"/>
+      <path id="s1_i3" d="M149,166 C152,161 158,161 161,166"/>
+      <!-- Exclamation -->
+      <path id="s1_i4" d="M50,105 L50,128"/>
+      <circle id="s1_i5" cx="50" cy="135" r="2.5"/>
+      <!-- Gear -->
+      <circle id="s1_i6" cx="248" cy="112" r="10"/>
+      <path id="s1_i7" d="M248,98 L248,102 M248,122 L248,126 M234,112 L238,112 M258,112 L262,112"/>
+    </g>
+  </g>
+</g>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  STEP 2: PAUSE & BREATHE  (top-center)          -->
+<!-- ═══════════════════════════════════════════════ -->
+<g id="g_step2" opacity="0">
+  <text id="badge2" x="455" y="94" font-family="'Cabin Sketch',cursive"
+        font-size="22" font-weight="700" fill="#fff" text-anchor="middle" opacity="0">2</text>
+
+  <g clip-path="url(#cp_s2)">
+    <text x="490" y="100" font-family="'Cabin Sketch',cursive"
+          font-size="22" font-weight="700" fill="#2a2a2a">PAUSE &amp; BREATHE</text>
+  </g>
+
+  <!-- Meditator illustration -->
+  <g id="s2_illust" opacity="0" transform="translate(475,110) scale(0.88)">
+    <!-- Person outlines -->
+    <g id="s2_outlines" fill="none" stroke="#333" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <circle id="s2_p1" cx="145" cy="38" r="22"/>
+      <!-- Hair bun -->
+      <path id="s2_p2" d="M130,22 C128,10 140,5 148,5 C156,5 165,10 162,22"/>
+      <circle id="s2_p3" cx="146" cy="8" r="8"/>
+      <!-- Eyes closed -->
+      <path id="s2_p4" d="M135,36 C137,38 140,38 142,36"/>
+      <path id="s2_p5" d="M148,36 C150,38 153,38 155,36"/>
+      <!-- Smile -->
+      <path id="s2_p6" d="M140,46 C143,49 147,49 150,46"/>
+      <!-- Neck -->
+      <path id="s2_p7" d="M140,58 L140,68 M150,58 L150,68"/>
+      <!-- Torso -->
+      <path id="s2_p8" d="M118,72 C125,68 135,66 145,66 C155,66 165,68 172,72 L175,112 C175,117 170,120 165,120 L125,120 C120,120 115,117 115,112 Z"/>
+      <!-- Arms -->
+      <path id="s2_p9" d="M118,80 C105,85 90,95 82,108 C80,112 82,115 86,115"/>
+      <path id="s2_p10" d="M172,80 C185,85 200,95 208,108 C210,112 208,115 204,115"/>
+      <!-- Legs lotus -->
+      <path id="s2_p11" d="M125,120 C120,127 100,140 95,147 C90,152 95,157 102,152 L130,137"/>
+      <path id="s2_p12" d="M165,120 C170,127 190,140 195,147 C200,152 195,157 188,152 L160,137"/>
+      <path id="s2_p13" d="M102,152 C110,150 125,147 145,147 C165,147 180,150 188,152"/>
+      <!-- Hands -->
+      <circle id="s2_p14" cx="86" cy="115" r="5"/>
+      <circle id="s2_p15" cx="204" cy="115" r="5"/>
+    </g>
+    <!-- Fills -->
+    <g id="s2_fill" opacity="0">
+      <circle cx="145" cy="38" r="21" fill="#8d6344" opacity="0.65"/>
+      <path d="M130,22 C128,10 140,5 148,5 C156,5 165,10 162,22 Z" fill="#2a2a2a" opacity="0.55"/>
+      <circle cx="146" cy="8" r="7" fill="#2a2a2a" opacity="0.55"/>
+      <path d="M118,72 C125,68 135,66 145,66 C155,66 165,68 172,72 L175,112 C175,117 170,120 165,120 L125,120 C120,120 115,117 115,112 Z" fill="#1a6b6a" opacity="0.45"/>
+      <circle cx="86" cy="115" r="4" fill="#8d6344" opacity="0.5"/>
+      <circle cx="204" cy="115" r="4" fill="#8d6344" opacity="0.5"/>
+    </g>
+    <!-- Thought bubbles -->
+    <g id="s2_bubbles" fill="none" stroke="#1a6b6a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle id="s2_b1" cx="55" cy="25" r="18"/>
+      <circle id="s2_b2" cx="73" cy="42" r="4"/>
+      <circle id="s2_b3" cx="80" cy="50" r="2.5"/>
+      <!-- Gear icon -->
+      <circle id="s2_b4" cx="55" cy="25" r="7"/>
+      <path id="s2_b5" d="M55,15 L55,18 M55,32 L55,35 M45,25 L48,25 M62,25 L65,25"/>
+      <!-- Right bubble -->
+      <circle id="s2_b6" cx="235" cy="25" r="18"/>
+      <circle id="s2_b7" cx="217" cy="42" r="4"/>
+      <circle id="s2_b8" cx="210" cy="50" r="2.5"/>
+      <!-- Mini brain -->
+      <path id="s2_b9" d="M228,19 C226,16 229,14 232,15 C235,14 238,16 237,19 C239,20 239,24 237,26 C238,28 237,30 234,29 C232,31 230,31 228,29 C225,30 224,28 225,26 C223,24 223,20 228,19Z"/>
+    </g>
+  </g>
+</g>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  STEP 3: REFRAME THE SITUATION  (center-left)   -->
+<!-- ═══════════════════════════════════════════════ -->
+<g id="g_step3" opacity="0">
+  <text id="badge3" x="255" y="402" font-family="'Cabin Sketch',cursive"
+        font-size="22" font-weight="700" fill="#fff" text-anchor="middle" opacity="0">3</text>
+
+  <g clip-path="url(#cp_s3)">
+    <text x="290" y="408" font-family="'Cabin Sketch',cursive"
+          font-size="22" font-weight="700" fill="#2a2a2a">REFRAME THE SITUATION</text>
+  </g>
+
+  <!-- Reframer illustration -->
+  <g id="s3_illust" opacity="0" transform="translate(300,430) scale(0.82)">
+    <!-- Person outlines -->
+    <g id="s3_outlines" fill="none" stroke="#333" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path id="s3_p1" d="M120,50 C120,28 138,15 155,15 C172,15 185,28 185,50 C185,65 175,78 160,82 L148,82 C133,78 120,65 120,50Z"/>
+      <!-- Hair -->
+      <path id="s3_p2" d="M125,42 C120,22 135,10 155,10 C170,10 182,18 185,35"/>
+      <path id="s3_p3" d="M155,10 C158,2 168,0 172,5 C178,2 183,6 180,12"/>
+      <!-- Face -->
+      <circle id="s3_p4" cx="162" cy="45" r="3"/>
+      <path id="s3_p5" d="M155,45 C157,42 163,42 165,45"/>
+      <path id="s3_p6" d="M154,38 C158,36 164,36 168,38"/>
+      <path id="s3_p7" d="M170,48 C173,52 172,58 168,60"/>
+      <path id="s3_p8" d="M158,66 C162,68 166,67 168,65"/>
+      <!-- Neck + body -->
+      <path id="s3_p9" d="M148,82 L145,100 M160,82 L162,100"/>
+      <path id="s3_p10" d="M115,108 C125,100 140,96 153,96 C166,96 178,100 190,108 L192,165 L112,165 Z"/>
+      <!-- Thinking hand -->
+      <path id="s3_p11" d="M182,108 C190,100 195,90 192,80 L188,75"/>
+      <path id="s3_p12" d="M188,75 C185,73 182,75 183,78 L185,82"/>
+    </g>
+    <!-- Fills -->
+    <g id="s3_fill" opacity="0">
+      <path d="M120,50 C120,28 138,15 155,15 C172,15 185,28 185,50 C185,65 175,78 160,82 L148,82 C133,78 120,65 120,50Z" fill="#8d6344" opacity="0.6"/>
+      <path d="M125,42 C120,22 135,10 155,10 C170,10 182,18 185,35 L185,50 C185,28 172,15 155,15 C138,15 120,28 120,50 L120,42Z" fill="#2a2a2a" opacity="0.55"/>
+      <path d="M115,108 C125,100 140,96 153,96 C166,96 178,100 190,108 L192,165 L112,165 Z" fill="#1a6b6a" opacity="0.45"/>
+    </g>
+    <!-- Thought bubbles: negative (red X) and positive (green check) -->
+    <g id="s3_bubbles" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Negative thought (red) -->
+      <ellipse id="s3_b1" cx="55" cy="38" rx="32" ry="22" stroke="#cc3333"/>
+      <circle id="s3_b2" cx="82" cy="58" r="4" stroke="#cc3333"/>
+      <circle id="s3_b3" cx="90" cy="65" r="2.5" stroke="#cc3333"/>
+      <path id="s3_b4" d="M44,28 L66,48 M66,28 L44,48" stroke="#cc3333"/>
+      <!-- Positive thought (green) -->
+      <ellipse id="s3_b5" cx="55" cy="128" rx="32" ry="22" stroke="#3a9e6e"/>
+      <circle id="s3_b6" cx="82" cy="110" r="4" stroke="#3a9e6e"/>
+      <circle id="s3_b7" cx="90" cy="103" r="2.5" stroke="#3a9e6e"/>
+      <path id="s3_b8" d="M42,128 L52,140 L70,118" stroke="#3a9e6e"/>
+      <!-- Arrow between bubbles -->
+      <path id="s3_b9" d="M55,63 C55,78 55,100 55,103" stroke="#7a5bad" stroke-width="2"/>
+      <path id="s3_b10" d="M50,98 L55,106 L60,98" stroke="#7a5bad" stroke-width="2"/>
+    </g>
+  </g>
+</g>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  STEP 4: COMMUNICATE ASSERTIVELY  (top-right)   -->
+<!-- ═══════════════════════════════════════════════ -->
+<g id="g_step4" opacity="0">
+  <text id="badge4" x="875" y="94" font-family="'Cabin Sketch',cursive"
+        font-size="22" font-weight="700" fill="#fff" text-anchor="middle" opacity="0">4</text>
+
+  <g clip-path="url(#cp_s4)">
+    <text x="910" y="100" font-family="'Cabin Sketch',cursive"
+          font-size="22" font-weight="700" fill="#2a2a2a">COMMUNICATE ASSERTIVELY</text>
+  </g>
+
+  <!-- Two people conversation illustration -->
+  <g id="s4_illust" opacity="0" transform="translate(895,108) scale(0.78)">
+    <!-- Person A (left) outlines -->
+    <g id="s4_outlines" fill="none" stroke="#333" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <circle id="s4_p1" cx="85" cy="80" r="22"/>
+      <path id="s4_p2" d="M65,72 C63,58 75,50 88,50 C100,50 108,58 106,72"/>
+      <circle id="s4_p3" cx="93" cy="76" r="2.5"/>
+      <path id="s4_p4" d="M88,70 L98,69"/>
+      <path id="s4_p5" d="M88,90 C92,94 96,94 98,90"/>
+      <path id="s4_p6" d="M80,100 L78,112 M90,100 L92,112"/>
+      <path id="s4_p7" d="M52,120 C60,112 72,108 85,108 C98,108 108,112 118,120 L120,180 L50,180 Z"/>
+      <path id="s4_p8" d="M118,125 L135,110 L140,105"/>
+      <!-- Person B (right) -->
+      <circle id="s4_p9" cx="215" cy="80" r="22"/>
+      <path id="s4_p10" d="M195,72 C193,55 205,45 218,45 C230,45 240,55 238,72"/>
+      <path id="s4_p11" d="M195,72 L192,95 M238,72 L240,95"/>
+      <circle id="s4_p12" cx="207" cy="76" r="2.5"/>
+      <path id="s4_p13" d="M202,69 L212,70"/>
+      <path id="s4_p14" d="M205,90 C208,93 212,93 215,90"/>
+      <path id="s4_p15" d="M210,100 L208,112 M220,100 L222,112"/>
+      <path id="s4_p16" d="M180,120 C188,112 200,108 215,108 C228,108 238,112 248,120 L250,180 L178,180 Z"/>
+    </g>
+    <!-- Fills -->
+    <g id="s4_fill" opacity="0">
+      <circle cx="85" cy="80" r="21" fill="#8d6344" opacity="0.6"/>
+      <path d="M65,72 C63,58 75,50 88,50 C100,50 108,58 106,72Z" fill="#2a2a2a" opacity="0.5"/>
+      <path d="M52,120 C60,112 72,108 85,108 C98,108 108,112 118,120 L120,180 L50,180 Z" fill="#2b7ec2" opacity="0.4"/>
+      <circle cx="215" cy="80" r="21" fill="#c49a6c" opacity="0.6"/>
+      <path d="M195,72 C193,55 205,45 218,45 C230,45 240,55 238,72 L240,95 L192,95Z" fill="#2a2a2a" opacity="0.5"/>
+      <path d="M180,120 C188,112 200,108 215,108 C228,108 238,112 248,120 L250,180 L178,180 Z" fill="#1a6b6a" opacity="0.4"/>
+    </g>
+    <!-- Speech bubbles -->
+    <g id="s4_bubbles" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path id="s4_b1" stroke="#d4762c" d="M115,40 L185,40 C190,40 192,44 192,48 L192,58 C192,62 190,64 185,64 L130,64 L120,74 L124,64 L115,64 C110,64 108,62 108,58 L108,48 C108,44 110,40 115,40Z"/>
+      <path id="s4_b2" stroke="#d4762c" d="M118,50 L182,50 M118,57 L168,57"/>
+      <path id="s4_b3" stroke="#1a6b6a" d="M150,5 L240,5 C245,5 248,9 248,13 L248,26 C248,30 245,32 240,32 L168,32 L175,42 L170,32 L150,32 C145,32 143,30 143,26 L143,13 C143,9 145,5 150,5Z"/>
+      <path id="s4_b4" stroke="#1a6b6a" d="M155,15 L238,15 M155,24 L218,24"/>
+      <ellipse id="s4_b5" stroke="#d4762c" cx="148" cy="82" rx="16" ry="9"/>
+    </g>
+  </g>
+</g>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  STEP 5: PRACTICE SELF-CARE  (bottom-right)     -->
+<!-- ═══════════════════════════════════════════════ -->
+<g id="g_step5" opacity="0">
+  <text id="badge5" x="675" y="402" font-family="'Cabin Sketch',cursive"
+        font-size="22" font-weight="700" fill="#fff" text-anchor="middle" opacity="0">5</text>
+
+  <g clip-path="url(#cp_s5)">
+    <text x="710" y="408" font-family="'Cabin Sketch',cursive"
+          font-size="22" font-weight="700" fill="#2a2a2a">PRACTICE SELF-CARE</text>
+  </g>
+
+  <!-- Self-care illustration -->
+  <g id="s5_illust" opacity="0" transform="translate(700,425) scale(0.82)">
+    <!-- Runner outlines -->
+    <g id="s5_outlines" fill="none" stroke="#333" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <circle id="s5_p1" cx="120" cy="40" r="18"/>
+      <path id="s5_p2" d="M104,34 C102,22 112,16 122,14 C132,14 140,20 138,32"/>
+      <circle id="s5_p3" cx="128" cy="38" r="2"/>
+      <path id="s5_p4" d="M122,48 C125,50 130,50 132,48"/>
+      <path id="s5_p5" d="M115,56 L112,64 M125,56 L128,64"/>
+      <path id="s5_p6" d="M100,72 C108,66 118,62 128,66 L140,72 L138,118 L98,118 Z"/>
+      <!-- Arms -->
+      <path id="s5_p7" d="M100,78 L80,65 L72,58"/>
+      <path id="s5_p8" d="M138,78 L158,90 L165,95"/>
+      <!-- Legs -->
+      <path id="s5_p9" d="M105,118 L82,148 L68,172"/>
+      <path id="s5_p10" d="M68,172 L58,174 L65,176"/>
+      <path id="s5_p11" d="M130,118 L148,143 L155,168"/>
+      <path id="s5_p12" d="M155,168 L162,171 L155,174"/>
+    </g>
+    <!-- Fills -->
+    <g id="s5_fill" opacity="0">
+      <circle cx="120" cy="40" r="17" fill="#8d6344" opacity="0.6"/>
+      <path d="M104,34 C102,22 112,16 122,14 C132,14 140,20 138,32Z" fill="#2a2a2a" opacity="0.5"/>
+      <path d="M100,72 C108,66 118,62 128,66 L140,72 L138,118 L98,118 Z" fill="#3a9e6e" opacity="0.4"/>
+    </g>
+    <!-- Speed lines -->
+    <g id="s5_speed" fill="none" stroke="#999" stroke-width="1.5" stroke-linecap="round">
+      <path id="s5_sp1" d="M55,80 L35,80"/>
+      <path id="s5_sp2" d="M55,90 L28,90"/>
+      <path id="s5_sp3" d="M55,100 L38,100"/>
+    </g>
+    <!-- Icons: clock, moon, heart -->
+    <g id="s5_icons" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Clock -->
+      <circle id="s5_i1" cx="222" cy="40" r="22" stroke="#2b7ec2" stroke-width="2"/>
+      <path id="s5_i2" d="M222,40 L222,26" stroke="#2b7ec2" stroke-width="2"/>
+      <path id="s5_i3" d="M222,40 L234,46" stroke="#2b7ec2" stroke-width="2"/>
+      <path id="s5_i4" d="M222,20 L222,22 M222,58 L222,60 M202,40 L204,40 M242,40 L244,40" stroke="#2b7ec2" stroke-width="1.5"/>
+      <!-- Moon -->
+      <path id="s5_i5" d="M228,108 C218,98 218,80 228,70 C213,73 203,86 203,98 C203,113 215,123 230,123 C237,123 244,120 248,116 C241,120 233,116 228,108Z" stroke="#7a5bad" stroke-width="2"/>
+      <!-- Stars -->
+      <path id="s5_i6" d="M252,78 L254,83 L259,83 L255,86 L257,91 L252,88 L247,91 L249,86 L245,83 L250,83Z" stroke="#7a5bad" stroke-width="1.5"/>
+      <circle id="s5_i7" cx="264" cy="93" r="1.5" stroke="#7a5bad" stroke-width="1.2"/>
+      <!-- Heart -->
+      <path id="s5_i8" d="M218,155 C213,147 201,145 198,153 C195,160 198,167 218,183 C238,167 241,160 238,153 C235,145 223,147 218,155Z" stroke="#cc3333" stroke-width="2"/>
+    </g>
+  </g>
+</g>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  CONNECTING ARROWS                               -->
+<!-- ═══════════════════════════════════════════════ -->
+<g id="g_arrows" fill="none" stroke="#1a6b6a" stroke-width="3" stroke-linecap="round">
+  <path id="arrow_1_2" d="M400,212 C412,196 428,196 440,212" marker-end="url(#arrowTeal)"/>
+  <path id="arrow_2_3" d="M580,352 C568,368 498,378 450,395" marker-end="url(#arrowTeal)"/>
+  <path id="arrow_3_4" d="M610,500 C680,445 790,310 860,220" marker-end="url(#arrowTeal)"/>
+  <path id="arrow_4_5" d="M1000,352 C988,372 870,390 830,408" marker-end="url(#arrowTeal)"/>
+</g>
+
+<!-- Progress bar -->
+<rect x="0" y="716" width="1280" height="4" fill="#ddd8d0"/>
+<rect id="progBar" x="0" y="716" width="0" height="4" fill="#1a6b6a"/>
+</svg>
+</div>
+
+<div id="controls">
+  <button id="btnPlay">&#9654; Play</button>
+  <button id="btnReplay">&#8635; Replay</button>
+  <input type="range" id="seekBar" min="0" max="55000" value="0" step="100"/>
+  <span id="timeDisp">0.0 / 55s</span>
+</div>
+
+<!-- Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/DrawSVGPlugin.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.min.js"></script>
+<script>
+if (typeof DrawSVGPlugin !== 'undefined') gsap.registerPlugin(DrawSVGPlugin);
+
+document.addEventListener('DOMContentLoaded', () => {
+  const TOTAL = 55;
+  const board = document.getElementById('board');
+  const seekBar = document.getElementById('seekBar');
+  const timeDisp = document.getElementById('timeDisp');
+  const btnPlay = document.getElementById('btnPlay');
+  let isSeeking = false;
+
+  // ── Rough.js Setup ──
+  const rc = rough.svg(board);
+
+  // ── Utility Functions ──
+
+  function drawOn(el, dur, ease) {
+    if (typeof el === 'string') el = document.getElementById(el);
+    if (!el) return gsap.to({}, { duration: 0.01 });
+    if (typeof DrawSVGPlugin !== 'undefined') {
+      return gsap.fromTo(el, { drawSVG: '0%' }, { drawSVG: '100%', duration: dur, ease: ease || 'power1.inOut' });
+    }
+    const len = el.getTotalLength ? el.getTotalLength() : 500;
+    return gsap.fromTo(el, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration: dur, ease: ease || 'power1.inOut' });
+  }
+
+  function staggerDraw(ids, dur, stag, ease) {
+    const tl2 = gsap.timeline();
+    ids.forEach((id, i) => { tl2.add(drawOn(id, dur, ease), i * (stag || 0.12)); });
+    return tl2;
+  }
+
+  function wipe(clipRectId, targetWidth, dur, ease) {
+    return gsap.fromTo('#' + clipRectId,
+      { attr: { width: 0 } },
+      { attr: { width: targetWidth }, duration: dur, ease: ease || 'power1.inOut' });
+  }
+
+  function fadeIn(sel, dur) {
+    return gsap.fromTo(sel, { opacity: 0 }, { opacity: 1, duration: dur || 0.5, ease: 'power2.out' });
+  }
+
+  function show(sel) { gsap.set(sel, { opacity: 1 }); }
+
+  // ── Generate Rough.js Shapes ──
+
+  // Banner background
+  const bannerBg = rc.rectangle(0, 0, 1280, 58, {
+    roughness: 0.6, stroke: '#15585a', strokeWidth: 1.5,
+    fill: '#1a6b6a', fillStyle: 'solid', bowing: 0.8
+  });
+  bannerBg.id = 'rough_banner';
+  bannerBg.setAttribute('opacity', '0');
+  document.getElementById('g_banner').insertBefore(bannerBg, document.getElementById('g_banner').firstChild);
+
+  // Step boxes and badges
+  const stepBoxes = [
+    { x: 30,  y: 72,  w: 370, h: 280 },
+    { x: 440, y: 72,  w: 370, h: 280 },
+    { x: 240, y: 380, w: 370, h: 280 },
+    { x: 860, y: 72,  w: 380, h: 280 },
+    { x: 660, y: 380, w: 380, h: 280 },
+  ];
+
+  stepBoxes.forEach((b, i) => {
+    const n = i + 1;
+    const box = rc.rectangle(b.x, b.y, b.w, b.h, {
+      roughness: 1.5, stroke: '#c0bdb5', strokeWidth: 1.5,
+      fill: 'rgba(255,255,255,0.35)', fillStyle: 'solid', bowing: 2
+    });
+    box.id = 'rough_box_' + n;
+    box.setAttribute('opacity', '0');
+    const gStep = document.getElementById('g_step' + n);
+    gStep.insertBefore(box, gStep.firstChild);
+
+    const badge = rc.circle(b.x + 15, b.y + 16, 34, {
+      roughness: 1, stroke: '#c06020', strokeWidth: 2,
+      fill: '#d4762c', fillStyle: 'solid', bowing: 1
+    });
+    badge.id = 'rough_badge_' + n;
+    badge.setAttribute('opacity', '0');
+    gStep.appendChild(badge);
+  });
+
+  // ── Master Timeline ──
+  const tl = gsap.timeline({
+    paused: true,
+    onUpdate() {
+      const t = tl.time();
+      if (!isSeeking) seekBar.value = Math.round(t * 1000);
+      timeDisp.textContent = t.toFixed(1) + ' / ' + TOTAL + 's';
+      gsap.set('#progBar', { attr: { width: (t / TOTAL) * 1280 } });
+    }
+  });
+
+  // ═══════════════════════════════════════════
+  //  BANNER  (0s → 4s)
+  // ═══════════════════════════════════════════
+  tl.call(() => show('#g_banner'), null, 0);
+  tl.add(fadeIn('#rough_banner', 0.8), 0.2);    // 0.2-1.0s banner bg
+  tl.add(wipe('cr_banner', 1000, 1.5), 1.2);    // 1.2-2.7s title text
+
+  // ═══════════════════════════════════════════
+  //  STEP 1: RECOGNIZE TRIGGERS  (5s → 14s)
+  // ═══════════════════════════════════════════
+  tl.call(() => show('#g_step1'), null, 5);
+  tl.add(fadeIn('#rough_box_1', 0.5), 5);           // 5-5.5s box
+  tl.add(fadeIn('#rough_badge_1', 0.4), 5.5);       // 5.5-5.9s badge
+  tl.add(fadeIn('#badge1', 0.3), 5.7);              // 5.7-6.0s number
+  tl.add(wipe('cr_s1', 280, 1.0), 6.5);            // 6.5-7.5s title
+
+  tl.call(() => show('#s1_illust'), null, 7.8);
+  // 8-10s: Brain outlines draw on
+  tl.add(staggerDraw(['s1_p1','s1_p2','s1_p3','s1_p4','s1_p5','s1_p6','s1_p7','s1_p8','s1_p9'], 0.35, 0.18), 8);
+  // 10-10.8s: Brain fill
+  tl.add(fadeIn('#s1_fill', 0.8), 10);
+  // 11-12s: Lightning bolts
+  tl.add(staggerDraw(['s1_b1','s1_b2','s1_b3'], 0.4, 0.25), 11);
+  // 12-13.5s: Trigger icons
+  tl.add(staggerDraw(['s1_i1','s1_i2','s1_i3','s1_i4','s1_i5','s1_i6','s1_i7'], 0.25, 0.12), 12);
+
+  // 13.5s: Arrow 1→2
+  tl.add(drawOn('arrow_1_2', 1.0), 13.5);
+
+  // ═══════════════════════════════════════════
+  //  STEP 2: PAUSE & BREATHE  (15s → 24s)
+  // ═══════════════════════════════════════════
+  tl.call(() => show('#g_step2'), null, 15);
+  tl.add(fadeIn('#rough_box_2', 0.5), 15);
+  tl.add(fadeIn('#rough_badge_2', 0.4), 15.5);
+  tl.add(fadeIn('#badge2', 0.3), 15.7);
+  tl.add(wipe('cr_s2', 260, 1.0), 16.5);
+
+  tl.call(() => show('#s2_illust'), null, 17.3);
+  // 17.5-19.5s: Meditator outlines
+  tl.add(staggerDraw(['s2_p1','s2_p2','s2_p3','s2_p4','s2_p5','s2_p6','s2_p7','s2_p8','s2_p9','s2_p10','s2_p11','s2_p12','s2_p13','s2_p14','s2_p15'], 0.25, 0.12), 17.5);
+  // 19.5s: Fills
+  tl.add(fadeIn('#s2_fill', 0.8), 19.5);
+  // 20.5s: Thought bubbles
+  tl.add(staggerDraw(['s2_b1','s2_b2','s2_b3','s2_b4','s2_b5','s2_b6','s2_b7','s2_b8','s2_b9'], 0.25, 0.12), 20.5);
+
+  // 23.5s: Arrow 2→3
+  tl.add(drawOn('arrow_2_3', 1.0), 23.5);
+
+  // ═══════════════════════════════════════════
+  //  STEP 3: REFRAME THE SITUATION  (25s → 34s)
+  // ═══════════════════════════════════════════
+  tl.call(() => show('#g_step3'), null, 25);
+  tl.add(fadeIn('#rough_box_3', 0.5), 25);
+  tl.add(fadeIn('#rough_badge_3', 0.4), 25.5);
+  tl.add(fadeIn('#badge3', 0.3), 25.7);
+  tl.add(wipe('cr_s3', 350, 1.0), 26.5);
+
+  tl.call(() => show('#s3_illust'), null, 27.3);
+  tl.add(staggerDraw(['s3_p1','s3_p2','s3_p3','s3_p4','s3_p5','s3_p6','s3_p7','s3_p8','s3_p9','s3_p10','s3_p11','s3_p12'], 0.3, 0.12), 27.5);
+  tl.add(fadeIn('#s3_fill', 0.8), 29.5);
+  // 30.5s: Thought bubbles (negative, positive, arrow)
+  tl.add(staggerDraw(['s3_b1','s3_b2','s3_b3','s3_b4','s3_b5','s3_b6','s3_b7','s3_b8','s3_b9','s3_b10'], 0.25, 0.12), 30.5);
+
+  // 33.5s: Arrow 3→4
+  tl.add(drawOn('arrow_3_4', 1.0), 33.5);
+
+  // ═══════════════════════════════════════════
+  //  STEP 4: COMMUNICATE ASSERTIVELY  (35s → 44s)
+  // ═══════════════════════════════════════════
+  tl.call(() => show('#g_step4'), null, 35);
+  tl.add(fadeIn('#rough_box_4', 0.5), 35);
+  tl.add(fadeIn('#rough_badge_4', 0.4), 35.5);
+  tl.add(fadeIn('#badge4', 0.3), 35.7);
+  tl.add(wipe('cr_s4', 380, 1.0), 36.5);
+
+  tl.call(() => show('#s4_illust'), null, 37.3);
+  tl.add(staggerDraw(['s4_p1','s4_p2','s4_p3','s4_p4','s4_p5','s4_p6','s4_p7','s4_p8','s4_p9','s4_p10','s4_p11','s4_p12','s4_p13','s4_p14','s4_p15','s4_p16'], 0.25, 0.1), 37.5);
+  tl.add(fadeIn('#s4_fill', 0.8), 39.5);
+  // 40.5s: Speech bubbles
+  tl.add(staggerDraw(['s4_b1','s4_b2','s4_b3','s4_b4','s4_b5'], 0.3, 0.18), 40.5);
+
+  // 43.5s: Arrow 4→5
+  tl.add(drawOn('arrow_4_5', 1.0), 43.5);
+
+  // ═══════════════════════════════════════════
+  //  STEP 5: PRACTICE SELF-CARE  (45s → 54s)
+  // ═══════════════════════════════════════════
+  tl.call(() => show('#g_step5'), null, 45);
+  tl.add(fadeIn('#rough_box_5', 0.5), 45);
+  tl.add(fadeIn('#rough_badge_5', 0.4), 45.5);
+  tl.add(fadeIn('#badge5', 0.3), 45.7);
+  tl.add(wipe('cr_s5', 320, 1.0), 46.5);
+
+  tl.call(() => show('#s5_illust'), null, 47.3);
+  tl.add(staggerDraw(['s5_p1','s5_p2','s5_p3','s5_p4','s5_p5','s5_p6','s5_p7','s5_p8','s5_p9','s5_p10','s5_p11','s5_p12'], 0.25, 0.1), 47.5);
+  tl.add(fadeIn('#s5_fill', 0.8), 49);
+  // Speed lines
+  tl.add(staggerDraw(['s5_sp1','s5_sp2','s5_sp3'], 0.2, 0.1), 49.5);
+  // Icons: clock, moon, heart
+  tl.add(staggerDraw(['s5_i1','s5_i2','s5_i3','s5_i4','s5_i5','s5_i6','s5_i7','s5_i8'], 0.3, 0.12), 50);
+
+  // Hold final frame
+  tl.to({}, { duration: 2 }, TOTAL - 2);
+
+  // ── Controls ──
+  btnPlay.addEventListener('click', () => {
+    if (tl.isActive()) {
+      tl.pause();
+      btnPlay.textContent = '\u25B6 Play';
+    } else {
+      tl.play();
+      btnPlay.textContent = '\u23F8 Pause';
+    }
+  });
+
+  document.getElementById('btnReplay').addEventListener('click', () => {
+    tl.seek(0).pause();
+    // Reset all groups to hidden
+    ['g_banner','g_step1','g_step2','g_step3','g_step4','g_step5'].forEach(id => {
+      gsap.set('#' + id, { opacity: 0 });
+    });
+    ['s1_illust','s2_illust','s3_illust','s4_illust','s5_illust'].forEach(id => {
+      gsap.set('#' + id, { opacity: 0 });
+    });
+    ['s1_fill','s2_fill','s3_fill','s4_fill','s5_fill'].forEach(id => {
+      gsap.set('#' + id, { opacity: 0 });
+    });
+    ['badge1','badge2','badge3','badge4','badge5'].forEach(id => {
+      gsap.set('#' + id, { opacity: 0 });
+    });
+    // Reset clip rects
+    document.querySelectorAll('[id^="cr_"]').forEach(r => r.setAttribute('width', '0'));
+    // Reset rough shapes
+    for (let i = 1; i <= 5; i++) {
+      gsap.set('#rough_box_' + i, { opacity: 0 });
+      gsap.set('#rough_badge_' + i, { opacity: 0 });
+    }
+    gsap.set('#rough_banner', { opacity: 0 });
+    gsap.set('#progBar', { attr: { width: 0 } });
+    tl.restart();
+    btnPlay.textContent = '\u23F8 Pause';
+  });
+
+  seekBar.addEventListener('input', () => {
+    isSeeking = true;
+    tl.seek(seekBar.value / 1000).pause();
+    btnPlay.textContent = '\u25B6 Play';
+    setTimeout(() => { isSeeking = false; }, 100);
+  });
+
+  // Auto-play after fonts load
+  setTimeout(() => {
+    tl.play();
+    btnPlay.textContent = '\u23F8 Pause';
+  }, 800);
+});
+</script>
+</body>
+</html>

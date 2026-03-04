@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anger Management for Corporate Leaders — Whiteboard Explainer</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@400;700&family=Caveat:wght@400;700&family=Patrick+Hand&family=Permanent+Marker&display=swap');
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: #111;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-height: 100vh; overflow: hidden;
+}
+.wrap {
+  width: 100vw; max-width: 1280px;
+  aspect-ratio: 16/9; position: relative;
+  border-radius: 6px; overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,.6);
+}
+#board { width: 100%; height: 100%; display: block; }
+.scene { opacity: 0; }
+#controls {
+  margin-top: 10px; display: flex; gap: 10px; align-items: center;
+}
+#controls button {
+  padding: 7px 18px; background: #2b7ec2; color: #fff;
+  border: none; border-radius: 5px; font-size: 13px; cursor: pointer;
+}
+#controls button:hover { background: #1e5fa0; }
+#timeDisp { color: #888; font: 13px/1 monospace; min-width: 90px; }
+#seekBar { width: 300px; cursor: pointer; accent-color: #2b7ec2; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<svg id="board" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2=".04" y2="1">
+    <stop offset="0%" stop-color="#f5f3ef"/>
+    <stop offset="100%" stop-color="#edeae4"/>
+  </linearGradient>
+  <clipPath id="cp_scene1_title"><rect id="cr_scene1_title" x="60" y="32" width="0" height="67"/></clipPath>
+  <clipPath id="cp_scene1_body0"><rect id="cr_scene1_body0" x="60" y="122" width="0" height="42"/></clipPath>
+  <clipPath id="cp_scene1_body1"><rect id="cr_scene1_body1" x="60" y="164" width="0" height="42"/></clipPath>
+  <clipPath id="cp_scene1_label0"><rect id="cr_scene1_label0" x="842" y="645" width="0" height="30"/></clipPath>
+  <clipPath id="cp_scene1_label1"><rect id="cr_scene1_label1" x="782" y="675" width="0" height="30"/></clipPath>
+  <clipPath id="cp_scene2_title"><rect id="cr_scene2_title" x="60" y="32" width="0" height="67"/></clipPath>
+  <clipPath id="cp_scene2_body0"><rect id="cr_scene2_body0" x="60" y="122" width="0" height="42"/></clipPath>
+  <clipPath id="cp_scene2_body1"><rect id="cr_scene2_body1" x="60" y="164" width="0" height="42"/></clipPath>
+  <clipPath id="cp_scene2_label0"><rect id="cr_scene2_label0" x="776" y="645" width="0" height="30"/></clipPath>
+  <clipPath id="cp_scene2_label1"><rect id="cr_scene2_label1" x="826" y="675" width="0" height="30"/></clipPath>
+  <clipPath id="cp_scene2_label2"><rect id="cr_scene2_label2" x="831" y="705" width="0" height="30"/></clipPath>
+  <clipPath id="cp_scene3_title"><rect id="cr_scene3_title" x="60" y="32" width="0" height="67"/></clipPath>
+  <clipPath id="cp_scene3_body0"><rect id="cr_scene3_body0" x="60" y="122" width="0" height="42"/></clipPath>
+  <clipPath id="cp_scene3_body1"><rect id="cr_scene3_body1" x="60" y="164" width="0" height="42"/></clipPath>
+  <clipPath id="cp_scene3_label0"><rect id="cr_scene3_label0" x="815" y="645" width="0" height="30"/></clipPath>
+  <clipPath id="cp_scene3_label1"><rect id="cr_scene3_label1" x="853" y="675" width="0" height="30"/></clipPath>
+  <clipPath id="cp_scene4_title"><rect id="cr_scene4_title" x="374" y="22" width="0" height="67"/></clipPath>
+  <clipPath id="cp_scene4_body0"><rect id="cr_scene4_body0" x="482" y="104" width="0" height="39"/></clipPath>
+  <clipPath id="cp_scene4_body1"><rect id="cr_scene4_body1" x="475" y="142" width="0" height="39"/></clipPath>
+  <clipPath id="cp_scene4_label0"><rect id="cr_scene4_label0" x="548" y="665" width="0" height="30"/></clipPath>
+  <clipPath id="cp_scene4_label1"><rect id="cr_scene4_label1" x="521" y="695" width="0" height="30"/></clipPath>
+  <clipPath id="cp_scene5_title"><rect id="cr_scene5_title" x="60" y="32" width="0" height="67"/></clipPath>
+  <clipPath id="cp_scene5_body0"><rect id="cr_scene5_body0" x="60" y="122" width="0" height="42"/></clipPath>
+  <clipPath id="cp_scene5_body1"><rect id="cr_scene5_body1" x="60" y="164" width="0" height="42"/></clipPath>
+  <clipPath id="cp_scene5_label0"><rect id="cr_scene5_label0" x="754" y="645" width="0" height="30"/></clipPath>
+  <clipPath id="cp_scene5_label1"><rect id="cr_scene5_label1" x="826" y="675" width="0" height="30"/></clipPath>
+  <clipPath id="cp_scene6_title"><rect id="cr_scene6_title" x="60" y="32" width="0" height="67"/></clipPath>
+  <clipPath id="cp_scene6_body0"><rect id="cr_scene6_body0" x="60" y="122" width="0" height="42"/></clipPath>
+  <clipPath id="cp_scene6_body1"><rect id="cr_scene6_body1" x="60" y="164" width="0" height="42"/></clipPath>
+  <clipPath id="cp_scene6_label0"><rect id="cr_scene6_label0" x="787" y="645" width="0" height="30"/></clipPath>
+  <clipPath id="cp_scene6_label1"><rect id="cr_scene6_label1" x="793" y="675" width="0" height="30"/></clipPath>
+  <clipPath id="cp_scene6_label2"><rect id="cr_scene6_label2" x="776" y="705" width="0" height="30"/></clipPath>
+
+</defs>
+
+<!-- Background -->
+<rect width="1280" height="720" fill="url(#bg)"/>
+
+
+<!-- ═══ Scene 1: Anger: A Leader's Challenge ═══ -->
+<g id="scene1" class="scene">
+  <g clip-path="url(#cp_scene1_title)">
+    <text x="60" y="80" font-family="'Cabin Sketch', cursive" font-size="48" font-weight="700" fill="#cc3333" text-anchor="start">Anger: A Leader's Challenge</text>
+  </g>
+  <line id="scene1_underline" x1="60" y1="88" x2="772.8000000000001" y2="88" stroke="#cc3333" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+  <g clip-path="url(#cp_scene1_body0)">
+    <text x="60" y="150" font-family="'Caveat', cursive" font-size="28"><tspan fill="#333">Uncontrolled </tspan><tspan fill="#cc3333" font-weight="700">anger</tspan><tspan fill="#333"> impacts</tspan></text>
+  </g>
+  <g clip-path="url(#cp_scene1_body1)">
+    <text x="60" y="192" font-family="'Caveat', cursive" font-size="28"><tspan fill="#333">Team morale &amp; decisions.</tspan></text>
+  </g>
+  <!-- 4 illustration elements -->
+  <g id="scene1_el0" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <g fill='none' stroke='#333' stroke-width='4'><circle cx='210' cy='430' r='40' fill='#FFD6D6'/><line x1='210' y1='470' x2='210' y2='600'/><line x1='210' y1='520' x2='150' y2='500'/><line x1='210' y1='520' x2='270' y2='500'/><line x1='150' y1='500' x2='120' y2='530'/><line x1='270' y1='500' x2='300' y2='530'/><line x1='210' y1='600' x2='190' y2='750'/><line x1='210' y1='600' x2='230' y2='750'/><path d='M195 435 Q210 420 225 435' /><path d='M195 445 Q210 460 225 445' /></g>
+  </g>
+  <g id="scene1_el1" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <g fill='none' stroke='#333' stroke-width='3'><path d='M470 480 Q470 430 510 430 Q550 430 550 480 L550 600 M490 500 L530 500' /><path d='M580 480 Q580 430 620 430 Q660 430 660 480 L660 600 M600 500 L640 500' /><path d='M690 480 Q690 430 730 430 Q770 430 770 480 L770 600 M710 500 L750 500' /><path d='M800 480 Q800 430 840 430 Q880 430 880 480 L880 600 M820 500 L860 500' /></g>
+  </g>
+  <g id="scene1_el2" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <path d='M280 320 Q280 150 450 150 Q620 150 620 300 Q620 400 450 400 Q350 400 300 350' fill='none' stroke='#333' stroke-width='3'/><path d='M330 290 L400 220 L420 240 L350 310 Z' /><line x1='370' y1='250' x2='420' y2='300' /><path d='M450 200 L450 300 L550 300' /><path d='M460 210 L500 260 L540 220' />
+  </g>
+  <g id="scene1_el3" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <path d='M150 350 Q160 320 180 340 T210 320 T240 340' stroke='#333' stroke-width='3'/>
+  </g>
+  <g clip-path="url(#cp_scene1_label0)">
+    <text x="890" y="665" font-family="'Patrick Hand', cursive" font-size="20" fill="#555" text-anchor="middle">Leader</text>
+  </g>
+  <g clip-path="url(#cp_scene1_label1)">
+    <text x="890" y="695" font-family="'Patrick Hand', cursive" font-size="20" fill="#555" text-anchor="middle">Disheartened Team</text>
+  </g>
+</g>
+
+<!-- ═══ Scene 2: Spot Your *Triggers* ═══ -->
+<g id="scene2" class="scene">
+  <g clip-path="url(#cp_scene2_title)">
+    <text x="60" y="80" font-family="'Cabin Sketch', cursive" font-size="48" font-weight="700" fill="#cc7722" text-anchor="start">Spot Your Triggers</text>
+  </g>
+  <line id="scene2_underline" x1="60" y1="88" x2="535.2" y2="88" stroke="#cc7722" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+  <g clip-path="url(#cp_scene2_body0)">
+    <text x="60" y="150" font-family="'Caveat', cursive" font-size="28"><tspan fill="#333">Identify sources of </tspan><tspan fill="#cc3333" font-weight="700">frustration</tspan><tspan fill="#333">:</tspan></text>
+  </g>
+  <g clip-path="url(#cp_scene2_body1)">
+    <text x="60" y="192" font-family="'Caveat', cursive" font-size="28"><tspan fill="#333">Stress, unmet expectations.</tspan></text>
+  </g>
+  <!-- 8 illustration elements -->
+  <g id="scene2_el0" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <path d="M173,222 C173,122 368,102 368,222 C368,322 258,322 258,412" fill="none" stroke="#333" stroke-width="6" stroke-linecap="round"/>
+  </g>
+  <g id="scene2_el1" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <circle cx="258" cy="745" r="25" fill="none" stroke="#333" stroke-width="6"/>
+  </g>
+  <g id="scene2_el2" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <path d="M320,500 C320,400 450,400 450,500 L450,850 M320,500 L320,850" fill="none" stroke="#333" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <g id="scene2_el3" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <path d="M510,550 C450,550 450,450 510,450 C510,350 650,250 800,250 C950,250 1050,350 1050,450 C1150,450 1150,600 1050,600 C1050,700 900,700 800,600 C700,700 550,600 550,550 Z" fill="none" stroke="#333" stroke-width="3"/>
+  </g>
+  <g id="scene2_el4" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <circle cx="580" cy="370" r="50" fill="none" stroke="#333" stroke-width="3"/><line x1="580" y1="370" x2="610" y2="340" stroke-width="3"/><line x1="580" y1="370" x2="560" y2="340" stroke-width="3"/>
+  </g>
+  <g id="scene2_el5" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <path d="M650,450 L750,450 L700,550 Z" fill="none" stroke="#333" stroke-width="3"/><path d="M750,450 L850,450 L800,550 Z" fill="none" stroke="#333" stroke-width="3"/>
+  </g>
+  <g id="scene2_el6" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <text x="680" y="250" font-size="80" fill="#333">$ -</text>
+  </g>
+  <g id="scene2_el7" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <line x1="840" y1="250" x2="840" y2="380" stroke-width="8"/><circle cx="840" cy="420" r="8" fill="#333"/>
+  </g>
+  <g clip-path="url(#cp_scene2_label0)">
+    <text x="890" y="665" font-family="'Patrick Hand', cursive" font-size="20" fill="#555" text-anchor="middle">What sets you off?</text>
+  </g>
+  <g clip-path="url(#cp_scene2_label1)">
+    <text x="890" y="695" font-family="'Patrick Hand', cursive" font-size="20" fill="#555" text-anchor="middle">Deadlines</text>
+  </g>
+  <g clip-path="url(#cp_scene2_label2)">
+    <text x="890" y="725" font-family="'Patrick Hand', cursive" font-size="20" fill="#555" text-anchor="middle">Betrayal</text>
+  </g>
+</g>
+
+<!-- ═══ Scene 3: *Pause*, Don't React ═══ -->
+<g id="scene3" class="scene">
+  <g clip-path="url(#cp_scene3_title)">
+    <text x="60" y="80" font-family="'Cabin Sketch', cursive" font-size="48" font-weight="700" fill="#2b7ec2" text-anchor="start">Pause, Don't React</text>
+  </g>
+  <line id="scene3_underline" x1="60" y1="88" x2="535.2" y2="88" stroke="#2b7ec2" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+  <g clip-path="url(#cp_scene3_body0)">
+    <text x="60" y="150" font-family="'Caveat', cursive" font-size="28"><tspan fill="#333">Create space between</tspan></text>
+  </g>
+  <g clip-path="url(#cp_scene3_body1)">
+    <text x="60" y="192" font-family="'Caveat', cursive" font-size="28"><tspan fill="#333">Trigger &amp; </tspan><tspan fill="#cc3333" font-weight="700">response</tspan><tspan fill="#333">.</tspan></text>
+  </g>
+  <!-- 5 illustration elements -->
+  <g id="scene3_el0" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <path d="M500,420 C500,370 540,340 580,340 C620,340 660,370 660,420 C660,470 620,500 580,500 C540,500 500,470 500,420 M580,500 L580,630 M580,560 L450,650 M580,560 L710,650 M450,650 L630,700 M710,650 L530,700 M450,650 C420,680 430,710 450,710 C470,710 480,680 450,650 M710,650 C740,680 730,710 710,710 C690,710 680,680 710,650 M580,500 L500,580 L450,650 M580,500 L660,580 L710,650" fill="none" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g id="scene3_el1" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <path d="M370,750 C370,700 790,700 790,750 C790,800 370,800 370,750" fill="none" stroke="#333" stroke-width="3"/><path d="M380,750 L780,750 M390,760 L770,760 M400,770 L760,770" stroke="#333" stroke-width="2"/>
+  </g>
+  <g id="scene3_el2" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <path d="M410,250 C380,250 360,220 360,180 C360,130 400,90 450,90 C480,90 500,70 530,70 C560,70 580,90 610,90 C660,90 700,130 700,180 C700,220 680,250 650,250 C620,250 600,270 570,270 C540,270 520,250 490,250 C460,250 440,280 410,250" fill="none" stroke="#333" stroke-width="3"/><circle cx="570" cy="300" r="8"/><circle cx="575" cy="330" r="6"/>
+  </g>
+  <g id="scene3_el3" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <path d="M460,100 L580,100 L640,160 L640,240 L580,300 L460,300 L400,240 L400,160 Z" fill="none" stroke="#333" stroke-width="4"/><path d="M470,110 L570,110 L630,170 L630,230 L570,290 L470,290 L410,230 L410,170 Z" fill="none" stroke="#333" stroke-width="2"/>
+  </g>
+  <g id="scene3_el4" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <path d="M510,480 C500,490 500,530 510,540 M650,480 C660,490 660,530 650,540 M360,680 C340,700 340,730 360,750 M700,680 C720,700 720,730 700,750" fill="none" stroke="#333" stroke-width="2"/>
+  </g>
+  <g clip-path="url(#cp_scene3_label0)">
+    <text x="890" y="665" font-family="'Patrick Hand', cursive" font-size="20" fill="#555" text-anchor="middle">Deep Breath</text>
+  </g>
+  <g clip-path="url(#cp_scene3_label1)">
+    <text x="890" y="695" font-family="'Patrick Hand', cursive" font-size="20" fill="#555" text-anchor="middle">STOP</text>
+  </g>
+</g>
+
+<!-- ═══ Scene 4: *Express* Not Explode ═══ -->
+<g id="scene4" class="scene">
+  <g clip-path="url(#cp_scene4_title)">
+    <text x="640" y="70" font-family="'Cabin Sketch', cursive" font-size="48" font-weight="700" fill="#1e8c5a" text-anchor="middle">Express Not Explode</text>
+  </g>
+  <line id="scene4_underline" x1="374.2" y1="78" x2="875.8" y2="78" stroke="#1e8c5a" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+  <g clip-path="url(#cp_scene4_body0)">
+    <text x="640" y="130" font-family="'Caveat', cursive" font-size="26" text-anchor="middle"><tspan fill="#333">Communicate feelings</tspan></text>
+  </g>
+  <g clip-path="url(#cp_scene4_body1)">
+    <text x="640" y="168" font-family="'Caveat', cursive" font-size="26" text-anchor="middle"><tspan fill="#333">Using 'I' statements.</tspan></text>
+  </g>
+  <!-- 5 illustration elements -->
+  <g id="scene4_el0" class="illust-el" transform="translate(281.6,234.5) scale(0.5091)" opacity="0">
+    <path d="M138.3 226.7 C185 185 242 170 315 208 C360 170 410 185 450 220 C480 250 495 300 480 350 C490 400 450 430 420 460 C380 500 320 540 280 520 C250 560 220 580 180 620 C160 580 140 550 120 520 C80 500 50 450 80 400 C60 350 90 280 138.3 226.7 Z" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g id="scene4_el1" class="illust-el" transform="translate(281.6,234.5) scale(0.5091)" opacity="0">
+    <path d="M550 415 C540 250 720 220 890 225 C1080 230 1220 320 1220 450 C1220 560 1080 640 880 650 C800 680 750 670 700 700 C740 650 750 620 760 590 C600 580 550 500 550 415 Z" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g id="scene4_el2" class="illust-el" transform="translate(281.6,234.5) scale(0.5091)" opacity="0">
+    <line x1="510" y1="120" x2="510" y2="680" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <g id="scene4_el3" class="illust-el" transform="translate(281.6,234.5) scale(0.5091)" opacity="0">
+    <path d="M150 250 L450 550 M200 230 L480 500 M100 300 L400 600 M180 600 L480 300 M130 550 L420 260" stroke="#333" stroke-width="1" opacity="0.5"/>
+  </g>
+  <g id="scene4_el4" class="illust-el" transform="translate(281.6,234.5) scale(0.5091)" opacity="0">
+    <path d="M580 450 C580 500 650 580 750 620 M590 400 C600 480 700 560 800 600 M1150 450 C1150 500 1100 550 1000 600 M1180 400 C1170 480 1100 520 1000 550" stroke="#333" stroke-width="1"/>
+  </g>
+  <g clip-path="url(#cp_scene4_label0)">
+    <text x="640" y="685" font-family="'Patrick Hand', cursive" font-size="20" fill="#555" text-anchor="middle">Blame &amp; Attack</text>
+  </g>
+  <g clip-path="url(#cp_scene4_label1)">
+    <text x="640" y="715" font-family="'Patrick Hand', cursive" font-size="20" fill="#555" text-anchor="middle">Clear Communication</text>
+  </g>
+</g>
+
+<!-- ═══ Scene 5: Build *Resilience* ═══ -->
+<g id="scene5" class="scene">
+  <g clip-path="url(#cp_scene5_title)">
+    <text x="60" y="80" font-family="'Cabin Sketch', cursive" font-size="48" font-weight="700" fill="#8844aa" text-anchor="start">Build Resilience</text>
+  </g>
+  <line id="scene5_underline" x1="60" y1="88" x2="482.4000000000001" y2="88" stroke="#8844aa" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+  <g clip-path="url(#cp_scene5_body0)">
+    <text x="60" y="150" font-family="'Caveat', cursive" font-size="28"><tspan fill="#333">Develop </tspan><tspan fill="#cc3333" font-weight="700">EI</tspan><tspan fill="#333"> skills,</tspan></text>
+  </g>
+  <g clip-path="url(#cp_scene5_body1)">
+    <text x="60" y="192" font-family="'Caveat', cursive" font-size="28"><tspan fill="#333">Prioritize self-care.</tspan></text>
+  </g>
+  <!-- 6 illustration elements -->
+  <g id="scene5_el0" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <path d="M518 245 C450 240, 390 280, 410 350 C400 400, 460 450, 520 440 C560 490, 630 480, 640 430 C690 440, 720 380, 700 320 C730 280, 680 250, 630 270 C600 240, 550 240, 518 245 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g id="scene5_el1" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <g fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M480 230 L490 210 L505 215 L515 205 L530 210 L525 225 L540 235 L525 245 L520 260 L505 255 L490 265 L485 250 L470 245 L480 230"/><path d="M620 230 L630 210 L645 215 L655 205 L670 210 L665 225 L680 235 L665 245 L660 260 L645 255 L630 265 L625 250 L610 245 L620 230"/><path d="M440 220 C435 210, 440 195, 455 190"/><path d="M690 220 C695 210, 690 195, 675 190"/></g>
+  </g>
+  <g id="scene5_el2" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <g fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M510 230 C510 180, 520 160, 540 150 C560 160, 555 180, 555 200"/><path d="M400 350 C370 350, 320 380, 300 380"/><path d="M700 350 C730 350, 780 380, 800 380"/></g>
+  </g>
+  <g id="scene5_el3" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <g fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M490 600 C490 570, 500 550, 515 550 C530 550, 540 570, 540 600 L540 650 C540 680, 515 700, 490 680 L490 600"/><path d="M495 565 C495 540, 535 540, 535 565"/></g>
+  </g>
+  <g id="scene5_el4" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <path d="M470 750 C460 720, 480 690, 515 690 C550 690, 570 720, 560 750 C540 730, 515 730, 490 750" fill="none" stroke="#333" stroke-width="2"/>
+  </g>
+  <g id="scene5_el5" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <g fill="none" stroke="#333" stroke-width="1"><line x1="420" y1="350" x2="440" y2="330"/><line x1="430" y1="370" x2="450" y2="350"/><line x1="650" y1="400" x2="670" y2="380"/><line x1="660" y1="420" x2="680" y2="400"/><line x1="500" y1="620" x2="510" y2="630"/><line x1="510" y1="640" x2="520" y2="650"/></g>
+  </g>
+  <g clip-path="url(#cp_scene5_label0)">
+    <text x="890" y="665" font-family="'Patrick Hand', cursive" font-size="20" fill="#555" text-anchor="middle">Emotional Intelligence</text>
+  </g>
+  <g clip-path="url(#cp_scene5_label1)">
+    <text x="890" y="695" font-family="'Patrick Hand', cursive" font-size="20" fill="#555" text-anchor="middle">Self-Care</text>
+  </g>
+</g>
+
+<!-- ═══ Scene 6: Lead with *Calm* ═══ -->
+<g id="scene6" class="scene">
+  <g clip-path="url(#cp_scene6_title)">
+    <text x="60" y="80" font-family="'Cabin Sketch', cursive" font-size="48" font-weight="700" fill="#2266bb" text-anchor="start">Lead with Calm</text>
+  </g>
+  <line id="scene6_underline" x1="60" y1="88" x2="429.6" y2="88" stroke="#2266bb" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+  <g clip-path="url(#cp_scene6_body0)">
+    <text x="60" y="150" font-family="'Caveat', cursive" font-size="28"><tspan fill="#333">Inspire </tspan><tspan fill="#cc3333" font-weight="700">trust</tspan><tspan fill="#333"> &amp; collaboration.</tspan></text>
+  </g>
+  <g clip-path="url(#cp_scene6_body1)">
+    <text x="60" y="192" font-family="'Caveat', cursive" font-size="28"><tspan fill="#333">Shape positive culture.</tspan></text>
+  </g>
+  <!-- 4 illustration elements -->
+  <g id="scene6_el0" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <path d="M680,115 c20,0 40,20 40,40 s-20,40 -40,40 s-40,-20 -40,-40 s20,-40 40,-40 z M680,195 l0,180 m0,-150 l-60,60 m60,-60 l60,60 m-60,110 l-40,110 m40,-110 l40,110" fill="none" stroke="#333" stroke-width="3"/>
+  </g>
+  <g id="scene6_el1" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <path d="M380,350 l0,-150 l-50,0 l80,-120 l80,120 l-50,0 l0,150 z" fill="none" stroke="#333" stroke-width="3"/><path d="M360,200 l0,140 m10,0 l0,-140 m10,0 l0,140 m10,0 l0,-140 m10,0 l0,140" stroke="#333" stroke-width="1"/>
+  </g>
+  <g id="scene6_el2" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <path d="M600,320 c-20,-10 -50,0 -60,20 l-10,-10 m60,20 c10,-10 30,-20 40,-10 l-10,10 m20,-20 c10,10 30,20 40,10 l-10,-10 m-100,-20 c-20,0 -40,10 -50,30 m120,-30 c20,0 40,10 50,30" fill="none" stroke="#333" stroke-width="2"/>
+  </g>
+  <g id="scene6_el3" class="illust-el" transform="translate(609.5,197.0) scale(0.3984)" opacity="0">
+    <g id="figures"><circle cx="140" cy="350" r="25"/><path d="M140,375 l0,150 m0,-120 l-40,40 m40,-40 l40,40"/><circle cx="240" cy="300" r="25"/><path d="M240,325 l0,120 m0,-100 l-30,30 m30,-30 l30,30"/><circle cx="750" cy="300" r="25"/><path d="M750,325 l0,150 m0,-120 l-30,30 m30,-30 l30,30"/><circle cx="820" cy="400" r="25"/><path d="M820,425 l0,150 m0,-120 l-30,30 m30,-30 l30,30"/><circle cx="830" cy="350" r="25"/><path d="M830,375 l0,150 m0,-120 l-30,30 m30,-30 l30,30"/></g>
+  </g>
+  <g clip-path="url(#cp_scene6_label0)">
+    <text x="890" y="665" font-family="'Patrick Hand', cursive" font-size="20" fill="#555" text-anchor="middle">Confident Leader</text>
+  </g>
+  <g clip-path="url(#cp_scene6_label1)">
+    <text x="890" y="695" font-family="'Patrick Hand', cursive" font-size="20" fill="#555" text-anchor="middle">Positive Impact</text>
+  </g>
+  <g clip-path="url(#cp_scene6_label2)">
+    <text x="890" y="725" font-family="'Patrick Hand', cursive" font-size="20" fill="#555" text-anchor="middle">Collaborative Team</text>
+  </g>
+</g>
+
+
+<!-- Progress bar -->
+<rect x="0" y="716" width="1280" height="4" fill="#ddd8d0"/>
+<rect id="progBar" x="0" y="716" width="0" height="4" fill="#2b7ec2"/>
+</svg>
+</div>
+
+<div id="controls">
+  <button id="btnPlay">&#9654; Play</button>
+  <button id="btnReplay">&#8635; Replay</button>
+  <input type="range" id="seekBar" min="0" max="60000" value="0" step="100"/>
+  <span id="timeDisp">0.0 / 60.0s</span>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/DrawSVGPlugin.min.js" onerror="console.log('DrawSVGPlugin not available, using fallback')"></script>
+<script>
+try { if (typeof DrawSVGPlugin !== 'undefined') gsap.registerPlugin(DrawSVGPlugin); } catch(e) {}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const TOTAL = 60;
+  const seekBar = document.getElementById('seekBar');
+  const timeDisp = document.getElementById('timeDisp');
+  const btnPlay = document.getElementById('btnPlay');
+  let isSeeking = false;
+
+  function drawOn(id, dur, ease) {
+    const el = typeof id === 'string' ? document.getElementById(id) : id;
+    if (!el) return gsap.to({}, { duration: 0.01 });
+    if (typeof DrawSVGPlugin !== 'undefined') {
+      gsap.set(el, { drawSVG: '0%' });
+      return gsap.to(el, { drawSVG: '100%', duration: dur, ease: ease || 'power1.inOut' });
+    }
+    const len = el.getTotalLength ? el.getTotalLength() : 500;
+    gsap.set(el, { strokeDasharray: len, strokeDashoffset: len });
+    return gsap.to(el, { strokeDashoffset: 0, duration: dur, ease: ease || 'power1.inOut' });
+  }
+
+  function wipe(crId, targetWidth, dur, ease) {
+    return gsap.to('#' + crId, {
+      attr: { width: targetWidth },
+      duration: dur,
+      ease: ease || 'power1.inOut'
+    });
+  }
+
+  function fadeIn(sel, dur) {
+    return gsap.to(sel, { opacity: 1, duration: dur || 0.5, ease: 'power2.out' });
+  }
+
+  function drawOnGroup(groupId, dur) {
+    const group = document.getElementById(groupId);
+    if (!group) return gsap.to({}, { duration: 0.01 });
+    const children = group.querySelectorAll('path, line, circle, ellipse, polyline, rect');
+    if (children.length === 0) return fadeIn('#' + groupId, dur);
+    const perChild = dur / children.length;
+    const mini = gsap.timeline();
+    children.forEach((child, i) => {
+      if (child.getTotalLength) {
+        const len = child.getTotalLength();
+        gsap.set(child, { strokeDasharray: len, strokeDashoffset: len });
+        mini.to(child, { strokeDashoffset: 0, duration: Math.max(0.2, perChild), ease: 'power1.inOut' }, i * perChild * 0.7);
+      } else {
+        gsap.set(child, { opacity: 0 });
+        mini.to(child, { opacity: 1, duration: Math.max(0.2, perChild), ease: 'power2.out' }, i * perChild * 0.7);
+      }
+    });
+    return mini;
+  }
+
+  // Initialize stroke paths (underlines + old single-path illust)
+  document.querySelectorAll('[id$="_illust"], [id$="_underline"]').forEach(el => {
+    if (el.getTotalLength) {
+      const len = el.getTotalLength();
+      gsap.set(el, { strokeDasharray: len, strokeDashoffset: len });
+    }
+  });
+
+  const tl = gsap.timeline({
+    paused: true,
+    onUpdate() {
+      const t = tl.time();
+      if (!isSeeking) seekBar.value = Math.round(t * 1000);
+      timeDisp.textContent = t.toFixed(1) + ' / ' + TOTAL + 's';
+      gsap.set('#progBar', { attr: { width: (t / TOTAL) * 1280 } });
+    }
+  });
+
+
+  // ═══ Scene 1: Anger: A Leader's Challenge (0s) ═══
+  tl.set('#scene1', { opacity: 1 }, 0.0);
+  tl.add(wipe('cr_scene1_title', 743, 1.3), 0.3);
+  tl.add(drawOn('scene1_underline', 0.4), 1.8);
+  tl.add(wipe('cr_scene1_body0', 430, 0.8), 2.3);
+  tl.add(wipe('cr_scene1_body1', 400, 0.8), 3.0);
+  // Element 0: Stick figure leader with angry expression
+  gsap.set('#scene1_el0', { opacity: 1 });
+  tl.add(drawOnGroup('scene1_el0', 1.9), 3.7);
+  // Element 1: Group of 4 disheartened team members
+  gsap.set('#scene1_el1', { opacity: 1 });
+  tl.add(drawOnGroup('scene1_el1', 1.3), 5.0);
+  // Element 2: Thought bubble containing broken gavel and graph
+  gsap.set('#scene1_el2', { opacity: 1 });
+  tl.add(drawOnGroup('scene1_el2', 0.6), 5.8);
+  // Element 3: Steam rising from leader's head
+  gsap.set('#scene1_el3', { opacity: 1 });
+  tl.add(drawOnGroup('scene1_el3', 0.6), 6.2);
+  tl.add(wipe('cr_scene1_label0', 96, 0.5), 6.6);
+  tl.add(wipe('cr_scene1_label1', 217, 0.5), 7.0);
+
+  // ═══ Scene 2: Spot Your *Triggers* (10s) ═══
+  tl.set('#scene1', { opacity: 0 }, 10.0);
+  tl.set('#scene2', { opacity: 1 }, 10.0);
+  tl.add(wipe('cr_scene2_title', 505, 1.3), 10.3);
+  tl.add(drawOn('scene2_underline', 0.4), 11.8);
+  tl.add(wipe('cr_scene2_body0', 523, 0.8), 12.3);
+  tl.add(wipe('cr_scene2_body1', 446, 0.8), 13.0);
+  // Element 0: Large hand-drawn question mark
+  gsap.set('#scene2_el0', { opacity: 1 });
+  tl.add(drawOnGroup('scene2_el0', 0.9), 13.7);
+  // Element 1: Dot underneath the question mark
+  gsap.set('#scene2_el1', { opacity: 1 });
+  tl.add(drawOnGroup('scene2_el1', 0.9), 14.3);
+  // Element 2: Simple line-art head outline of a person
+  gsap.set('#scene2_el2', { opacity: 1 });
+  tl.add(drawOnGroup('scene2_el2', 0.9), 14.9);
+  // Element 3: Cloud-shaped thought bubble frame
+  gsap.set('#scene2_el3', { opacity: 1 });
+  tl.add(drawOnGroup('scene2_el3', 0.6), 15.5);
+  // Element 4: Small clock sketch inside the bubble
+  gsap.set('#scene2_el4', { opacity: 1 });
+  tl.add(drawOnGroup('scene2_el4', 0.3), 15.8);
+  // Element 5: Broken handshake icon representing betrayal
+  gsap.set('#scene2_el5', { opacity: 1 });
+  tl.add(drawOnGroup('scene2_el5', 0.3), 16.0);
+  // Element 6: Dollar sign with a minus sign icon
+  gsap.set('#scene2_el6', { opacity: 1 });
+  tl.add(drawOnGroup('scene2_el6', 0.3), 16.2);
+  // Element 7: Exclamation mark icon for unexpected changes
+  gsap.set('#scene2_el7', { opacity: 1 });
+  tl.add(drawOnGroup('scene2_el7', 0.3), 16.4);
+  tl.add(wipe('cr_scene2_label0', 228, 0.5), 16.6);
+  tl.add(wipe('cr_scene2_label1', 129, 0.5), 17.0);
+  tl.add(wipe('cr_scene2_label2', 118, 0.5), 17.4);
+
+  // ═══ Scene 3: *Pause*, Don't React (20s) ═══
+  tl.set('#scene2', { opacity: 0 }, 20.0);
+  tl.set('#scene3', { opacity: 1 }, 20.0);
+  tl.add(wipe('cr_scene3_title', 505, 1.3), 20.3);
+  tl.add(drawOn('scene3_underline', 0.4), 21.8);
+  tl.add(wipe('cr_scene3_body0', 338, 0.8), 22.3);
+  tl.add(wipe('cr_scene3_body1', 323, 0.8), 23.0);
+  // Element 0: Stick figure meditating in lotus position with arms resting on knees
+  gsap.set('#scene3_el0', { opacity: 1 });
+  tl.add(drawOnGroup('scene3_el0', 1.3), 23.7);
+  // Element 1: Elongated oval cushion with internal hatch lines
+  gsap.set('#scene3_el1', { opacity: 1 });
+  tl.add(drawOnGroup('scene3_el1', 0.9), 24.6);
+  // Element 2: Cloud-shaped thought bubble outline
+  gsap.set('#scene3_el2', { opacity: 1 });
+  tl.add(drawOnGroup('scene3_el2', 0.9), 25.2);
+  // Element 3: Octagonal frame for the STOP sign
+  gsap.set('#scene3_el3', { opacity: 1 });
+  tl.add(drawOnGroup('scene3_el3', 0.9), 25.7);
+  // Element 4: Curved motion lines near shoulders and hips
+  gsap.set('#scene3_el4', { opacity: 1 });
+  tl.add(drawOnGroup('scene3_el4', 0.5), 26.3);
+  tl.add(wipe('cr_scene3_label0', 151, 0.5), 26.6);
+  tl.add(wipe('cr_scene3_label1', 74, 0.5), 27.0);
+
+  // ═══ Scene 4: *Express* Not Explode (30s) ═══
+  tl.set('#scene3', { opacity: 0 }, 30.0);
+  tl.set('#scene4', { opacity: 1 }, 30.0);
+  tl.add(wipe('cr_scene4_title', 532, 1.3), 30.3);
+  tl.add(drawOn('scene4_underline', 0.4), 31.8);
+  tl.add(wipe('cr_scene4_body0', 316, 0.8), 32.3);
+  tl.add(wipe('cr_scene4_body1', 330, 0.8), 33.0);
+  // Element 0: The jagged outline of the aggressive speech bubble on the left
+  gsap.set('#scene4_el0', { opacity: 1 });
+  tl.add(drawOnGroup('scene4_el0', 1.6), 33.7);
+  // Element 1: The smooth, rounded outline of the calm speech bubble on the right
+  gsap.set('#scene4_el1', { opacity: 1 });
+  tl.add(drawOnGroup('scene4_el1', 1.6), 34.7);
+  // Element 2: Vertical line separating the two bubbles
+  gsap.set('#scene4_el2', { opacity: 1 });
+  tl.add(drawOnGroup('scene4_el2', 0.3), 35.8);
+  // Element 3: Internal cross-hatching shading for the aggressive bubble
+  gsap.set('#scene4_el3', { opacity: 1 });
+  tl.add(drawOnGroup('scene4_el3', 0.5), 36.0);
+  // Element 4: Internal edge shading lines for the calm speech bubble
+  gsap.set('#scene4_el4', { opacity: 1 });
+  tl.add(drawOnGroup('scene4_el4', 0.5), 36.3);
+  tl.add(wipe('cr_scene4_label0', 184, 0.5), 36.6);
+  tl.add(wipe('cr_scene4_label1', 239, 0.5), 37.0);
+
+  // ═══ Scene 5: Build *Resilience* (40s) ═══
+  tl.set('#scene4', { opacity: 0 }, 40.0);
+  tl.set('#scene5', { opacity: 1 }, 40.0);
+  tl.add(wipe('cr_scene5_title', 452, 1.3), 40.3);
+  tl.add(drawOn('scene5_underline', 0.4), 41.8);
+  tl.add(wipe('cr_scene5_body0', 307, 0.8), 42.3);
+  tl.add(wipe('cr_scene5_body1', 353, 0.8), 43.0);
+  // Element 0: Central stylized brain shape
+  gsap.set('#scene5_el0', { opacity: 1 });
+  tl.add(drawOnGroup('scene5_el0', 1.1), 43.7);
+  // Element 1: Two gears at the top of the brain with motion lines
+  gsap.set('#scene5_el1', { opacity: 1 });
+  tl.add(drawOnGroup('scene5_el1', 0.8), 44.4);
+  // Element 2: Three leaves sprouting from the brain
+  gsap.set('#scene5_el2', { opacity: 1 });
+  tl.add(drawOnGroup('scene5_el2', 0.8), 44.9);
+  // Element 3: Small kettlebell weight icon below brain
+  gsap.set('#scene5_el3', { opacity: 1 });
+  tl.add(drawOnGroup('scene5_el3', 0.8), 45.4);
+  // Element 4: Lotus flower icon at the bottom
+  gsap.set('#scene5_el4', { opacity: 1 });
+  tl.add(drawOnGroup('scene5_el4', 0.8), 45.9);
+  // Element 5: Diagonal hatching lines inside brain and kettlebell
+  gsap.set('#scene5_el5', { opacity: 1 });
+  tl.add(drawOnGroup('scene5_el5', 0.4), 46.4);
+  tl.add(wipe('cr_scene5_label0', 272, 0.5), 46.6);
+  tl.add(wipe('cr_scene5_label1', 129, 0.5), 47.0);
+
+  // ═══ Scene 6: Lead with *Calm* (50s) ═══
+  tl.set('#scene5', { opacity: 0 }, 50.0);
+  tl.set('#scene6', { opacity: 1 }, 50.0);
+  tl.add(wipe('cr_scene6_title', 400, 1.3), 50.3);
+  tl.add(drawOn('scene6_underline', 0.4), 51.8);
+  tl.add(wipe('cr_scene6_body0', 492, 0.8), 52.3);
+  tl.add(wipe('cr_scene6_body1', 384, 0.8), 53.0);
+  // Element 0: Stick figure leader standing confidently with hands on hips
+  gsap.set('#scene6_el0', { opacity: 1 });
+  tl.add(drawOnGroup('scene6_el0', 1.9), 53.7);
+  // Element 1: Large upward pointing arrow with hatching
+  gsap.set('#scene6_el1', { opacity: 1 });
+  tl.add(drawOnGroup('scene6_el1', 0.6), 55.0);
+  // Element 2: Interlocked hands symbol
+  gsap.set('#scene6_el2', { opacity: 1 });
+  tl.add(drawOnGroup('scene6_el2', 0.6), 55.4);
+  // Element 3: Five additional stick figures interacting in a circle around the leader
+  gsap.set('#scene6_el3', { opacity: 1 });
+  tl.add(drawOnGroup('scene6_el3', 1.3), 55.8);
+  tl.add(wipe('cr_scene6_label0', 206, 0.5), 56.6);
+  tl.add(wipe('cr_scene6_label1', 195, 0.5), 57.0);
+  tl.add(wipe('cr_scene6_label2', 228, 0.5), 57.4);
+
+
+  // Hold final frame
+  tl.to({}, { duration: 1.0 }, 59.0);
+
+  // Controls
+  btnPlay.addEventListener('click', () => {
+    if (tl.isActive()) {
+      tl.pause();
+      btnPlay.textContent = '\u25B6 Play';
+    } else {
+      tl.play();
+      btnPlay.textContent = '\u23F8 Pause';
+    }
+  });
+
+  document.getElementById('btnReplay').addEventListener('click', () => {
+    document.querySelectorAll('.scene').forEach(s => gsap.set(s, { opacity: 0 }));
+    document.querySelectorAll('[id^="cr_"]').forEach(r => r.setAttribute('width', '0'));
+    document.querySelectorAll('[id$="_illust"], [id$="_underline"]').forEach(el => {
+      if (el.getTotalLength) {
+        const len = el.getTotalLength();
+        gsap.set(el, { strokeDasharray: len, strokeDashoffset: len, opacity: 0 });
+      }
+    });
+    // Reset multi-element illustrations
+    document.querySelectorAll('.illust-el').forEach(g => {
+      gsap.set(g, { opacity: 0 });
+      g.querySelectorAll('path, line, circle, ellipse, polyline, rect').forEach(child => {
+        if (child.getTotalLength) {
+          const len = child.getTotalLength();
+          gsap.set(child, { strokeDasharray: len, strokeDashoffset: len });
+        }
+        gsap.set(child, { opacity: 1 });
+      });
+    });
+    gsap.set('#progBar', { attr: { width: 0 } });
+    tl.seek(0).restart();
+    btnPlay.textContent = '\u23F8 Pause';
+  });
+
+  seekBar.addEventListener('input', () => {
+    isSeeking = true;
+    tl.seek(seekBar.value / 1000).pause();
+    btnPlay.textContent = '\u25B6 Play';
+    setTimeout(() => { isSeeking = false; }, 100);
+  });
+
+  setTimeout(() => {
+    tl.play();
+    btnPlay.textContent = '\u23F8 Pause';
+  }, 800);
+});
+</script>
+</body>
+</html>

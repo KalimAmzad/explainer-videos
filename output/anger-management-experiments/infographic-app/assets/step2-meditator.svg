@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 290 200">
+  <!-- Woman meditating in lotus pose -->
+  <g class="outlines" fill="none" stroke="#333" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Head -->
+    <circle class="stroke-path" cx="145" cy="38" r="22"/>
+    <!-- Hair (bun on top) -->
+    <path class="stroke-path" d="M130,22 C128,10 140,5 148,5 C156,5 165,10 162,22"/>
+    <circle class="stroke-path" cx="146" cy="8" r="8"/>
+    <!-- Eyes (closed — peaceful) -->
+    <path class="stroke-path" d="M135,36 C137,38 140,38 142,36"/>
+    <path class="stroke-path" d="M148,36 C150,38 153,38 155,36"/>
+    <!-- Slight smile -->
+    <path class="stroke-path" d="M140,46 C143,49 147,49 150,46"/>
+    <!-- Neck -->
+    <path class="stroke-path" d="M140,58 L140,68 M150,58 L150,68"/>
+    <!-- Body / torso (teal top) -->
+    <path class="stroke-path" d="M118,72 C125,68 135,66 145,66 C155,66 165,68 172,72 L175,110 C175,115 170,118 165,118 L125,118 C120,118 115,115 115,110 Z"/>
+    <!-- Arms (resting on knees, palms up) -->
+    <path class="stroke-path" d="M118,80 C105,85 90,95 82,108 C80,112 82,115 86,115"/>
+    <path class="stroke-path" d="M172,80 C185,85 200,95 208,108 C210,112 208,115 204,115"/>
+    <!-- Legs (lotus pose) -->
+    <path class="stroke-path" d="M125,118 C120,125 100,138 95,145 C90,150 95,155 102,150 L130,135"/>
+    <path class="stroke-path" d="M165,118 C170,125 190,138 195,145 C200,150 195,155 188,150 L160,135"/>
+    <!-- Crossed legs bottom -->
+    <path class="stroke-path" d="M102,150 C110,148 125,145 145,145 C165,145 180,148 188,150"/>
+    <!-- Hands (palms up, small circles) -->
+    <circle class="stroke-path" cx="86" cy="115" r="5"/>
+    <circle class="stroke-path" cx="204" cy="115" r="5"/>
+  </g>
+
+  <!-- Skin & clothing fills -->
+  <g class="fill-shape" opacity="0">
+    <!-- Skin -->
+    <circle cx="145" cy="38" r="21" fill="#8d6344" opacity="0.7"/>
+    <!-- Hair -->
+    <path d="M130,22 C128,10 140,5 148,5 C156,5 165,10 162,22 Z" fill="#2a2a2a" opacity="0.6"/>
+    <circle cx="146" cy="8" r="7" fill="#2a2a2a" opacity="0.6"/>
+    <!-- Teal clothing -->
+    <path d="M118,72 C125,68 135,66 145,66 C155,66 165,68 172,72 L175,110 C175,115 170,118 165,118 L125,118 C120,118 115,115 115,110 Z" fill="#1a6b6a" opacity="0.5"/>
+    <!-- Hands -->
+    <circle cx="86" cy="115" r="4" fill="#8d6344" opacity="0.5"/>
+    <circle cx="204" cy="115" r="4" fill="#8d6344" opacity="0.5"/>
+  </g>
+
+  <!-- Thought bubbles with calm/gear icons -->
+  <g class="outlines" fill="none" stroke="#1a6b6a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Left thought bubble -->
+    <circle class="stroke-path" cx="60" cy="28" r="18"/>
+    <circle class="stroke-path" cx="78" cy="48" r="5"/>
+    <circle class="stroke-path" cx="88" cy="55" r="3"/>
+    <!-- Gear icon inside left bubble -->
+    <circle class="stroke-path" cx="60" cy="28" r="7"/>
+    <path class="stroke-path" d="M60,18 L60,21 M60,35 L60,38 M50,28 L53,28 M67,28 L70,28"/>
+
+    <!-- Right thought bubble -->
+    <circle class="stroke-path" cx="230" cy="28" r="18"/>
+    <circle class="stroke-path" cx="212" cy="48" r="5"/>
+    <circle class="stroke-path" cx="202" cy="55" r="3"/>
+    <!-- Brain icon inside right bubble -->
+    <path class="stroke-path" d="M224,22 C222,18 226,16 230,18 C234,16 238,18 236,22 C239,24 239,30 236,33 C238,35 236,38 232,37 C230,39 228,39 226,37 C222,38 220,35 222,33 C219,30 219,24 224,22Z"/>
+  </g>
+</svg>

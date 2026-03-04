@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 200">
+  <!-- Brain with lightning bolts and trigger icons -->
+  <g class="outlines" fill="none" stroke="#333" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Brain left hemisphere -->
+    <path class="stroke-path" d="M100,55 C95,30 115,15 135,18 C148,8 168,12 172,28"/>
+    <!-- Brain right hemisphere -->
+    <path class="stroke-path" d="M172,28 C188,18 205,25 205,45 C215,52 215,68 205,78"/>
+    <!-- Brain bottom -->
+    <path class="stroke-path" d="M205,78 C210,90 200,100 188,100 C185,108 170,112 160,105"/>
+    <path class="stroke-path" d="M160,105 C150,112 135,108 130,100 C118,102 108,92 110,80"/>
+    <path class="stroke-path" d="M110,80 C95,75 90,60 100,55"/>
+    <!-- Brain folds/sulci -->
+    <path class="stroke-path" d="M135,30 C140,45 155,50 170,40"/>
+    <path class="stroke-path" d="M115,55 C125,60 140,58 150,65 C160,58 175,60 185,55"/>
+    <path class="stroke-path" d="M125,80 C135,75 145,78 155,85 C165,78 178,80 185,85"/>
+    <!-- Brain stem -->
+    <path class="stroke-path" d="M145,105 L145,125 C145,135 155,135 155,125 L155,105"/>
+  </g>
+
+  <!-- Brain fills -->
+  <g class="fill-shape" opacity="0">
+    <path d="M100,55 C95,30 115,15 135,18 C148,8 168,12 172,28 C188,18 205,25 205,45 C215,52 215,68 205,78 C210,90 200,100 188,100 C185,108 170,112 160,105 C150,112 135,108 130,100 C118,102 108,92 110,80 C95,75 90,60 100,55Z" fill="#e8a0a8" opacity="0.4"/>
+  </g>
+
+  <!-- Lightning bolts -->
+  <g class="outlines" fill="none" stroke="#d4a020" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Bolt top-right -->
+    <path class="stroke-path" d="M220,25 L210,45 L220,45 L208,68"/>
+    <!-- Bolt right -->
+    <path class="stroke-path" d="M230,55 L222,72 L230,72 L220,90"/>
+    <!-- Bolt top-left -->
+    <path class="stroke-path" d="M75,30 L85,48 L75,48 L88,68"/>
+  </g>
+
+  <!-- Lightning bolt fills -->
+  <g class="fill-shape" opacity="0">
+    <polygon points="220,25 210,45 220,45 208,68 218,48 208,48" fill="#e8b832" opacity="0.6"/>
+    <polygon points="230,55 222,72 230,72 220,90 228,74 220,74" fill="#e8b832" opacity="0.6"/>
+    <polygon points="75,30 85,48 75,48 88,68 78,50 88,50" fill="#e8b832" opacity="0.6"/>
+  </g>
+
+  <!-- Trigger icons -->
+  <g class="outlines" fill="none" stroke="#d4762c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Angry face (top) -->
+    <circle class="stroke-path" cx="155" cy="155" r="15"/>
+    <path class="stroke-path" d="M147,150 L152,153"/>
+    <path class="stroke-path" d="M163,150 L158,153"/>
+    <path class="stroke-path" d="M148,163 C151,158 159,158 162,163"/>
+
+    <!-- Exclamation mark (left) -->
+    <path class="stroke-path" d="M50,100 L50,125"/>
+    <circle class="stroke-path" cx="50" cy="132" r="2"/>
+
+    <!-- Gear/cog (right) -->
+    <circle class="stroke-path" cx="245" cy="110" r="10"/>
+    <path class="stroke-path" d="M245,96 L245,100 M245,120 L245,124 M231,110 L235,110 M255,110 L259,110 M235,100 L238,103 M252,117 L255,120 M235,120 L238,117 M252,103 L255,100"/>
+  </g>
+
+  <!-- Small arrows pointing toward brain -->
+  <g class="outlines" fill="none" stroke="#666" stroke-width="1.5" stroke-linecap="round">
+    <path class="stroke-path" d="M55,108 L85,85" marker-end="url(#arrowGray)"/>
+    <path class="stroke-path" d="M240,115 L215,90" marker-end="url(#arrowGray)"/>
+    <path class="stroke-path" d="M155,165 L155,140" marker-end="url(#arrowGray)"/>
+  </g>
+</svg>

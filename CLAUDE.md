@@ -14,14 +14,29 @@ explainer-videos/
 ├── examples/                  # Working reference examples
 │   ├── what-are-cells.html    # Multi-scene biology explainer (7 scenes, ~65s)
 │   └── writing-composition.html # Single-scene skills overview (~15s)
+├── docs/                      # Technical documentation
+│   ├── llm-from-scratch-approach.md
+│   └── technical-workflow.md
+├── scripts/
+│   ├── pipeline/              # Automated video generation pipeline
+│   │   ├── run-pipeline.mjs   # Orchestrator (runs steps 1-5)
+│   │   ├── 01-plan-content.mjs
+│   │   ├── 02-source-assets.mjs
+│   │   ├── 02b-analyze-assets.mjs
+│   │   ├── 03-process-assets.mjs
+│   │   ├── 04-assemble-html.mjs
+│   │   ├── 05-verify.mjs
+│   │   └── lib/               # Shared utilities (gemini-client, etc.)
+│   ├── capture-video.mjs      # HTML → MP4 export (Playwright + ffmpeg)
+│   └── _archive/              # Experimental/superseded scripts
 ├── output/                    # Generated video HTML files go here
-├── assets/svg/                # Reusable SVG illustrations
-└── lib/                       # Local library copies (optional)
+│   └── {topic-slug}/          # Each project gets its own subdirectory
+└── assets/svg/                # Reusable SVG illustrations
 ```
 
 ## Tech Stack
-- **GSAP 3.12+** — Animation engine, timeline sequencing, easing
-- **GSAP DrawSVGPlugin** — Stroke draw-on animation (free since April 2025)
+- **GSAP 3.14.2** — Animation engine, timeline sequencing, easing
+- **GSAP DrawSVGPlugin** — Stroke draw-on animation (free since April 2025; NOT available in 3.12.7)
 - **GSAP MotionPathPlugin** — Animate objects along paths (optional)
 - **Rough.js 4.6+** — Generate hand-drawn/sketchy SVG shapes
 - **Google Fonts** — Cabin Sketch, Caveat, Patrick Hand, Permanent Marker
@@ -34,9 +49,9 @@ SVG Asset Sources
 
 ### CDN URLs (always use these exact versions)
 ```
-https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js
-https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/DrawSVGPlugin.min.js
-https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/MotionPathPlugin.min.js
+https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js
+https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/DrawSVGPlugin.min.js
+https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/MotionPathPlugin.min.js
 https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.min.js
 ```
 
@@ -79,7 +94,7 @@ Assign each major concept a dedicated color. Common palette:
 - Blue `#2b7ec2` — titles, primary
 - Red `#cc3333` — key terms, emphasis
 - Green `#1e8c5a` — concept A
-- Blue `#2266bb` — concept B
+- Steel Blue `#2266bb` — concept B
 - Orange `#cc7722` — concept C
 - Purple `#8844aa` — concept D
 
@@ -101,9 +116,9 @@ Before delivering a video file, verify:
 - [ ] Google Fonts load before animation starts (800ms auto-play delay)
 
 ## Video Export
-To convert HTML to MP4:
+To convert HTML to MP4 (uses Playwright + ffmpeg):
 ```bash
-npx timecut output/video.html --output output/video.mp4 --duration 60 --fps 30 --viewport 1280,720
+npm run capture -- output/video.html 60
 ```
 
 ## Reference

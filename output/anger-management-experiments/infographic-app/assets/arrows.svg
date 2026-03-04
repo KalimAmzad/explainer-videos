@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <!-- Curved connecting arrows between steps -->
+  <defs>
+    <marker id="arrowTeal" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1a6b6a"/>
+    </marker>
+  </defs>
+
+  <g fill="none" stroke="#1a6b6a" stroke-width="3" stroke-linecap="round">
+    <!-- Arrow 1→2: from right edge of step1 box to left edge of step2 box -->
+    <path id="arrow_1_2" class="stroke-path" d="M400,200 C415,190 425,185 440,200" marker-end="url(#arrowTeal)"/>
+
+    <!-- Arrow 2→3: from bottom of step2 to top of step3 -->
+    <path id="arrow_2_3" class="stroke-path" d="M580,352 C570,365 510,375 460,390" marker-end="url(#arrowTeal)"/>
+
+    <!-- Arrow 3→4: from right of step3 curving up to step4 -->
+    <path id="arrow_3_4" class="stroke-path" d="M610,470 C680,420 780,300 860,210" marker-end="url(#arrowTeal)"/>
+
+    <!-- Arrow 4→5: from bottom of step4 down to step5 -->
+    <path id="arrow_4_5" class="stroke-path" d="M1000,352 C990,370 880,385 830,400" marker-end="url(#arrowTeal)"/>
+  </g>
+</svg>

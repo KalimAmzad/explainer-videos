@@ -1,2 +1,17 @@
 node_modules/
 .DS_Store
+
+# Environment / secrets
+.env
+
+# Generated output artifacts
+output/*.png
+output/*.mp4
+output/*.svg
+output/assets/
+output/asset-manifest.json
+output/debug-*
+output/capture-temp/
+
+# Temporary / scratch SVGs at root
+*.tmp.svg

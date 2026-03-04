@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200">
+  <!-- Two people facing each other in conversation -->
+
+  <!-- Person A (left, facing right) -->
+  <g class="outlines" fill="none" stroke="#333" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Head -->
+    <circle class="stroke-path" cx="85" cy="80" r="22"/>
+    <!-- Hair (short) -->
+    <path class="stroke-path" d="M65,72 C63,58 75,50 88,50 C100,50 108,58 106,72"/>
+    <!-- Eye -->
+    <circle class="stroke-path" cx="93" cy="76" r="2.5"/>
+    <!-- Eyebrow -->
+    <path class="stroke-path" d="M88,70 L98,69"/>
+    <!-- Mouth (talking — open) -->
+    <path class="stroke-path" d="M88,90 C92,94 96,94 98,90"/>
+    <path class="stroke-path" d="M88,90 C92,92 96,92 98,90"/>
+    <!-- Neck -->
+    <path class="stroke-path" d="M80,100 L78,112 M90,100 L92,112"/>
+    <!-- Shoulders/body -->
+    <path class="stroke-path" d="M52,120 C60,112 72,108 85,108 C98,108 108,112 118,120 L120,175 L50,175 Z"/>
+    <!-- Arm (gesturing) -->
+    <path class="stroke-path" d="M118,125 L135,110 L140,105"/>
+    <path class="stroke-path" d="M140,105 C142,103 144,105 143,107 L138,112"/>
+  </g>
+
+  <!-- Person B (right, facing left) -->
+  <g class="outlines" fill="none" stroke="#333" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Head -->
+    <circle class="stroke-path" cx="215" cy="80" r="22"/>
+    <!-- Hair (longer, professional) -->
+    <path class="stroke-path" d="M195,72 C193,55 205,45 218,45 C230,45 240,55 238,72"/>
+    <path class="stroke-path" d="M195,72 L192,95 M238,72 L240,95"/>
+    <!-- Eye -->
+    <circle class="stroke-path" cx="207" cy="76" r="2.5"/>
+    <!-- Eyebrow -->
+    <path class="stroke-path" d="M202,69 L212,70"/>
+    <!-- Mouth (listening, slight smile) -->
+    <path class="stroke-path" d="M205,90 C208,93 212,93 215,90"/>
+    <!-- Neck -->
+    <path class="stroke-path" d="M210,100 L208,112 M220,100 L222,112"/>
+    <!-- Shoulders/body -->
+    <path class="stroke-path" d="M180,120 C188,112 200,108 215,108 C228,108 238,112 248,120 L250,175 L178,175 Z"/>
+  </g>
+
+  <!-- Person A fills -->
+  <g class="fill-shape" opacity="0">
+    <circle cx="85" cy="80" r="21" fill="#8d6344" opacity="0.6"/>
+    <path d="M65,72 C63,58 75,50 88,50 C100,50 108,58 106,72Z" fill="#2a2a2a" opacity="0.5"/>
+    <path d="M52,120 C60,112 72,108 85,108 C98,108 108,112 118,120 L120,175 L50,175 Z" fill="#2b7ec2" opacity="0.4"/>
+  </g>
+
+  <!-- Person B fills -->
+  <g class="fill-shape" opacity="0">
+    <circle cx="215" cy="80" r="21" fill="#c49a6c" opacity="0.6"/>
+    <path d="M195,72 C193,55 205,45 218,45 C230,45 240,55 238,72 L240,95 L192,95Z" fill="#2a2a2a" opacity="0.5"/>
+    <path d="M180,120 C188,112 200,108 215,108 C228,108 238,112 248,120 L250,175 L178,175 Z" fill="#1a6b6a" opacity="0.4"/>
+  </g>
+
+  <!-- Speech bubbles -->
+  <g class="outlines" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Bubble 1 (from person A, orange) -->
+    <path class="stroke-path" stroke="#d4762c" d="M120,45 L180,45 C185,45 188,48 188,52 L188,62 C188,66 185,68 180,68 L135,68 L125,78 L128,68 L120,68 C115,68 112,66 112,62 L112,52 C112,48 115,45 120,45Z"/>
+    <!-- Lines inside bubble 1 -->
+    <path class="stroke-path" stroke="#d4762c" d="M122,53 L178,53 M122,60 L165,60"/>
+
+    <!-- Bubble 2 (from person B, teal) -->
+    <path class="stroke-path" stroke="#1a6b6a" d="M155,10 L240,10 C245,10 248,13 248,17 L248,30 C248,34 245,36 240,36 L170,36 L178,46 L172,36 L155,36 C150,36 148,34 148,30 L148,17 C148,13 150,10 155,10Z"/>
+    <!-- Lines inside bubble 2 -->
+    <path class="stroke-path" stroke="#1a6b6a" d="M158,19 L238,19 M158,28 L220,28"/>
+
+    <!-- Bubble 3 (small, from person A, cream bg) -->
+    <ellipse class="stroke-path" stroke="#d4762c" cx="145" cy="85" rx="18" ry="10"/>
+    <path class="stroke-path" stroke="#d4762c" d="M135,90 L130,98 L138,92"/>
+  </g>
+</svg>
