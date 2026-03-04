@@ -1,0 +1,23 @@
+%%{init: {'flowchart': {'curve': 'linear'}}}%%
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	research_plan(research_plan)
+	asset_agent(asset_agent)
+	asset_tools(asset_tools)
+	asset_decomposition(asset_decomposition)
+	animation(animation)
+	playback(playback)
+	quality_review(quality_review)
+	__end__([<p>__end__</p>]):::last
+	__start__ --> research_plan;
+	animation --> playback;
+	asset_decomposition --> animation;
+	asset_tools --> asset_agent;
+	playback --> quality_review;
+	quality_review --> __end__;
+	research_plan --> asset_agent;
+	asset_agent -.-> asset_tools;
+	asset_agent -. &nbsp;next&nbsp; .-> asset_decomposition;
+	classDef default fill:#f2f0ff,line-height:1.2;
+	classDef first fill-opacity:0;
+	classDef last fill:#bfb6fc;
