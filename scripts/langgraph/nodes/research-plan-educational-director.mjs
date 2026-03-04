@@ -1,57 +1,43 @@
 /**
  * Node 1: Research & Plan Educational Director
- * Uses Claude Opus via @anthropic-ai/claude-agent-sdk for deep research
+ * Uses Claude Opus via @anthropic-ai/sdk for deep research
  * and comprehensive video blueprint generation.
  */
-import { query } from '@anthropic-ai/claude-agent-sdk';
+import Anthropic from '@anthropic-ai/sdk';
 import { MODELS, KEYS } from '../config.mjs';
 import { buildResearchPlanPrompt, BLUEPRINT_JSON_SCHEMA } from '../prompts/research-plan.mjs';
 
 /**
- * Call Claude Opus to generate a rich video blueprint.
- * Uses structured output (json_schema) for reliable JSON.
+ * Call Claude with structured JSON output via the Anthropic SDK.
  */
 async function callClaudeStructured(prompt, schema, model) {
-  // Ensure ANTHROPIC_API_KEY is in env
-  if (KEYS.anthropic && !process.env.ANTHROPIC_API_KEY) {
-    process.env.ANTHROPIC_API_KEY = KEYS.anthropic;
-  }
+  const client = new Anthropic({ apiKey: KEYS.anthropic });
 
-  const q = query({
-    prompt,
-    options: {
-      model,
-      maxTokens: 16384,
-      outputFormat: {
-        type: 'json_schema',
-        schema,
-      },
-    },
+  const response = await client.messages.create({
+    model,
+    max_tokens: 16384,
+    messages: [{ role: 'user', content: prompt }],
   });
 
-  for await (const message of q) {
-    if (message.type === 'result') {
-      if (message.subtype === 'success') {
-        console.log(`  Claude usage: ${JSON.stringify(message.usage)}`);
-        console.log(`  Cost: $${message.total_cost_usd?.toFixed(4) || '?'}`);
-
-        // structured_output is already parsed JSON
-        if (message.structured_output) {
-          return message.structured_output;
-        }
-        // Fallback: parse from text result
-        if (message.result) {
-          return JSON.parse(message.result);
-        }
-        throw new Error('No structured output or text result from Claude');
-      } else {
-        const errors = message.errors?.join(', ') || 'Unknown error';
-        throw new Error(`Claude query failed: ${errors}`);
-      }
-    }
+  // Extract text from the response
+  const textBlock = response.content.find(b => b.type === 'text');
+  if (!textBlock?.text) {
+    throw new Error('No text in Claude response');
   }
 
-  throw new Error('Claude query ended without result');
+  // Log usage
+  const usage = response.usage;
+  console.log(`  Tokens: ${usage.input_tokens} in / ${usage.output_tokens} out`);
+
+  // Parse JSON from response (Claude returns JSON when prompted to)
+  let text = textBlock.text.trim();
+
+  // Strip markdown code fences if present
+  if (text.startsWith('```')) {
+    text = text.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '');
+  }
+
+  return JSON.parse(text);
 }
 
 /**
@@ -65,8 +51,8 @@ export async function researchPlanNode(state) {
   console.log('  Node 1: Research & Plan Educational Director');
   console.log('══════════════════════════════════════');
   console.log(`  Topic:    ${state.topic}`);
-  console.log(`  Audience: ${state.audience}`);
-  console.log(`  Duration: ${state.duration}s`);
+  console.log(`  Audience: ${state.audience || 'general audience'}`);
+  console.log(`  Duration: ${state.duration ? state.duration + 's' : 'auto'}`);
   console.log(`  Model:    ${model}`);
 
   const prompt = buildResearchPlanPrompt({
@@ -103,7 +89,6 @@ export async function researchPlanNode(state) {
   }
 
   // Backward compatibility: create illustration field from first visual_element
-  // so downstream nodes (asset-sourcing) can consume either format
   for (const scene of blueprint.scenes) {
     if (!scene.illustration && scene.visual_elements?.length > 0) {
       const main = scene.visual_elements.find(v => v.type === 'main_illustration') || scene.visual_elements[0];
