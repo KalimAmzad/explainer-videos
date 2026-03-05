@@ -7,6 +7,7 @@
   "scripts": {
     "pipeline": "node scripts/pipeline/run-pipeline.mjs",
     "langgraph": "node scripts/langgraph/index.mjs",
+    "langgraph4": "node scripts/langgraph-v4/index.mjs",
     "capture": "node scripts/capture-video.mjs"
   },
   "dependencies": {
@@ -17,6 +18,11 @@
     "@langchain/google": "^0.1.5",
     "@langchain/langgraph": "^1.2.0",
     "@playwright/test": "^1.58.2",
+    "@revideo/2d": "^0.10.4",
+    "@revideo/core": "^0.10.4",
+    "@revideo/ffmpeg": "^0.10.4",
+    "@revideo/renderer": "^0.10.4",
+    "@revideo/vite-plugin": "^0.10.4",
     "langsmith": "^0.5.7",
     "potrace": "^2.1.8",
     "sharp": "^0.34.5",
