@@ -121,6 +121,48 @@ To convert HTML to MP4 (uses Playwright + ffmpeg):
 npm run capture -- output/video.html 60
 ```
 
+## LangGraph Pipeline
+
+An agentic alternative to the sequential shell pipeline. Uses LangGraph StateGraph with 6 nodes, tool-calling, and checkpointing.
+
+### Running
+```bash
+npm run langgraph -- "Topic Name" --duration=60 --audience="target audience"
+```
+
+### Architecture
+```
+START → content_research → asset_agent ⇄ asset_tools → asset_decomposition → animation → playback → quality_review → END
+```
+
+### Nodes
+1. **Content Research** — Gemini generates comprehensive video blueprint with layout, timing, animation sequence
+2. **Asset Sourcing Agent** — ReAct loop: Icons8 search + download, Gemini SVG generation, sketchy conversion
+3. **Asset Decomposition** — Gemini Vision decomposes complex assets into animatable SVG elements
+4. **Animation** — Deterministic layout computation + GSAP timeline code generation
+5. **Playback** — HTML assembly with enhanced controls (speed, scene jumps, keyboard shortcuts, fullscreen)
+6. **Quality Review** — LLM reviews HTML for common issues (overlaps, timing gaps, off-canvas)
+
+### Checkpointing
+Uses MemorySaver for resume-from-failure. Re-run with `--thread=<id>` to resume from last checkpoint.
+
+### Key Files
+```
+scripts/langgraph/
+├── index.mjs          — CLI entry point
+├── graph.mjs          — StateGraph definition
+├── state.mjs          — State schema (Annotation)
+├── nodes/             — 6 node implementations
+├── tools/             — Icons8, SVG generator, sketchy converter
+├── prompts/           — System prompts for LLM nodes
+└── lib/               — Shared utilities (re-exports pipeline gemini-client)
+```
+
+### Dependencies
+`@langchain/google`, `@langchain/core`, `@langchain/langgraph`, `zod` (+ existing: sharp, potrace, svg2roughjs)
+
+See `docs/langgraph-implementation-plan.md` for full architecture details.
+
 ## Reference
 Full system prompt with all style rules, animation patterns, and code examples:
 → `prompts/whiteboard-video-system-prompt.md`

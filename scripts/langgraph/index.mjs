@@ -68,7 +68,7 @@ const outputDir = process.argv.find(a => a.startsWith('--output='))?.split('=')[
 const threadId = process.argv.find(a => a.startsWith('--thread='))?.split('=')[1] || `${slug}-${Date.now()}`;
 
 console.log('╔══════════════════════════════════════════╗');
-console.log('║  LangGraph Whiteboard Video Pipeline v2  ║');
+console.log('║  LangGraph Whiteboard Video Pipeline v3  ║');
 console.log('╚══════════════════════════════════════════╝');
 console.log();
 console.log(`  Topic:    ${topic}`);
@@ -99,16 +99,9 @@ try {
   console.log('╚══════════════════════════════════════════╝');
   console.log();
   console.log(`  Output:   ${result.outputPath}`);
-  console.log(`  Duration: ${result.blueprint?.total_duration}s`);
-  console.log(`  Scenes:   ${result.blueprint?.scenes?.length}`);
+  console.log(`  Duration: ${result.researchNotes?.total_duration}s`);
+  console.log(`  Scenes:   ${result.researchNotes?.scenes?.length}`);
   console.log(`  Elapsed:  ${elapsed}s`);
-
-  if (result.reviewNotes?.length) {
-    console.log('\n  Review Notes:');
-    for (const note of result.reviewNotes) {
-      console.log(`    ${note}`);
-    }
-  }
 
   if (result.errors?.length) {
     console.log('\n  Errors:');

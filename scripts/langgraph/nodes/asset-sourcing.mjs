@@ -1,168 +1,160 @@
 /**
- * Node 2: SVG Asset Sourcing & Generation Agent
- * ReAct tool-calling loop using Gemini for reasoning + Icons8/SVG gen tools.
- *
- * This node uses the LangGraph messages channel for the ReAct pattern.
- * The agent decides which tools to call based on each scene's illustration requirements.
+ * Node 2: Asset Sourcing (v3.2)
+ * Two paths:
+ * - Icons8 → download PNG → store as base64 for <image> embedding
+ * - Generated → Gemini writes primitive SVG code directly (no PNG→potrace)
  */
-import { ChatGoogle } from '@langchain/google';
-import { HumanMessage, SystemMessage } from '@langchain/core/messages';
-import { ASSET_SOURCING_SYSTEM_PROMPT } from '../prompts/asset-sourcing.mjs';
-import { searchIcons8, downloadIcon } from '../tools/icons8.mjs';
-import { generateSvg } from '../tools/svg-generator.mjs';
-import { convertToSketchy } from '../tools/svg-to-rough.mjs';
-import { MODELS, KEYS } from '../config.mjs';
-import { getAllAssets, getAsset } from '../lib/asset-store.mjs';
-
-const MODEL = MODELS.assetAgent;
-
-/** All tools available to the asset agent */
-export const assetTools = [searchIcons8, downloadIcon, generateSvg, convertToSketchy];
+import fs from 'fs';
+import path from 'path';
+import { searchIcons8, downloadIconPng } from '../lib/icons8-api.mjs';
+import { generateSvgCode } from '../lib/svg-pipeline.mjs';
 
 /**
- * Determine if the asset agent should continue calling tools or move on.
+ * Source a single asset.
  */
-export function shouldContinueAssetLoop(state) {
-  const lastMessage = state.messages[state.messages.length - 1];
+async function sourceOneAsset(asset, sceneNumber, assetsDir) {
+  const roleLabel = `scene${sceneNumber}_${asset.role}`;
+  console.log(`  [Asset] ${roleLabel}: ${asset.source_hint || 'generate'} — "${(asset.description || '').slice(0, 60)}"`);
 
-  // If the last message has tool calls, route to tool execution
-  if (lastMessage?.tool_calls?.length > 0) {
-    return 'asset_tools';
-  }
+  try {
+    // Path A: Icons8 icon → download PNG → store as base64
+    if (asset.source_hint === 'icons8' && asset.search_terms?.length) {
+      for (const term of asset.search_terms) {
+        console.log(`    [Icons8] Searching: "${term}"`);
+        const results = await searchIcons8(term);
 
-  // Otherwise, the agent is done — move to next node
-  return 'next';
-}
+        if (results.length > 0) {
+          const icon = results[0];
+          console.log(`    [Icons8] Found: ${icon.name} (${icon.id})`);
 
-/**
- * Asset sourcing agent node.
- * On first call, initializes with blueprint context.
- * On subsequent calls (after tool results), continues reasoning.
- */
-export async function assetSourcingAgent(state) {
-  const isFirstCall = !state.messages.length ||
-    state.messages.every(m => m._getType?.() !== 'system');
+          const pngBuffer = await downloadIconPng(icon.id, 128);
+          if (pngBuffer) {
+            // Save source PNG
+            const pngFilename = `${roleLabel}_icon_src.png`;
+            fs.writeFileSync(path.join(assetsDir, pngFilename), pngBuffer);
 
-  console.log('\n══════════════════════════════════════');
-  console.log('  Node 2: Asset Sourcing Agent');
-  console.log('══════════════════════════════════════');
+            // Store base64 for embedding in HTML
+            const base64 = pngBuffer.toString('base64');
+            const svgWrapper = `<image href="data:image/png;base64,${base64}" width="128" height="128"/>`;
 
-  const model = new ChatGoogle({
-    model: MODEL,
-    temperature: 0.3,
-    apiKey: KEYS.gemini,
-  });
+            // Save SVG wrapper for debugging
+            const svgFilename = `${roleLabel}_icon.svg`;
+            fs.writeFileSync(path.join(assetsDir, svgFilename),
+              `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">${svgWrapper}</svg>`);
 
-  const modelWithTools = model.bindTools(assetTools);
-
-  // Build messages for this call
-  let messages;
-  if (isFirstCall || state.messages.length === 0) {
-    // First call: provide system prompt + blueprint context
-    const blueprint = state.blueprint;
-    const sceneSummaries = blueprint.scenes.map(s => {
-      // Support both visual_elements (new) and illustration (legacy) formats
-      if (s.visual_elements?.length > 0) {
-        const elements = s.visual_elements.map(ve =>
-          `    - [${ve.type}] ${ve.id}: "${ve.description}" (${ve.source_preference || 'gemini_generate'}, terms: ${JSON.stringify(ve.icon_search_terms || [])})`
-        ).join('\n');
-        return `Scene ${s.scene_number}: "${s.title}"\n  Visual elements:\n${elements}`;
+            console.log(`    [Icons8] Saved: ${pngFilename} + ${svgFilename} (base64 embedded)`);
+            return {
+              filename: svgFilename,
+              description: asset.description,
+              role: asset.role,
+              dimensions: { width: 128, height: 128 },
+              source: 'icons8',
+              svgContent: svgWrapper,
+              sceneNumber,
+            };
+          }
+        }
+        console.log(`    [Icons8] No results for "${term}", trying next...`);
       }
-      const illust = s.illustration || {};
-      return `Scene ${s.scene_number}: "${s.title}"
-  - source_preference: ${illust.source_preference || 'gemini_generate'}
-  - description: ${illust.description || s.key_concept || s.title}
-  - icon_search_terms: ${JSON.stringify(illust.icon_search_terms || [])}
-  - style: ${illust.style || 'custom_sketch'}
-  - complexity: ${illust.complexity || 'moderate'}`;
-    }).join('\n\n');
-
-    const userPrompt = `Here is the video blueprint with ${blueprint.scenes.length} scenes that need illustrations:
-
-${sceneSummaries}
-
-Process each scene in order. For each scene:
-1. If source_preference is "icons8", search Icons8 using the icon_search_terms
-2. If a good match is found, download it and convert to sketchy style
-3. If no good match or source_preference is "gemini_generate", use generateSvg
-4. If source_preference is "roughjs", just note it (no tool call needed)
-
-Start with Scene 1.`;
-
-    messages = [
-      new SystemMessage(ASSET_SOURCING_SYSTEM_PROMPT),
-      new HumanMessage(userPrompt),
-    ];
-  } else {
-    // Continuation: use existing messages
-    messages = state.messages;
-  }
-
-  console.log(`  Calling ${MODEL} (${messages.length} messages)...`);
-  const response = await modelWithTools.invoke(messages);
-
-  if (response.tool_calls?.length > 0) {
-    console.log(`  Agent requested ${response.tool_calls.length} tool call(s):`);
-    for (const tc of response.tool_calls) {
-      console.log(`    → ${tc.name}(${JSON.stringify(tc.args).slice(0, 100)})`);
+      console.log(`    [Icons8] All search terms exhausted, falling back to SVG generation`);
     }
-  } else {
-    console.log('  Agent finished sourcing assets.');
-    // Build assets from the global store (tools stored heavy data there)
-    const assets = buildAssetsFromStore(state.blueprint);
+
+    // Path B: LLM-generated primitive SVG code
+    console.log(`    [Gemini SVG] Generating code for: "${(asset.description || '').slice(0, 60)}"`);
+    const { svg, svgContent, width, height } = await generateSvgCode(
+      asset.description,
+      asset.svg_elements
+    );
+
+    const svgFilename = `${roleLabel}_gen.svg`;
+    fs.writeFileSync(path.join(assetsDir, svgFilename), svg);
+
+    const charCount = svgContent.length;
+    console.log(`    [Gemini SVG] Saved: ${svgFilename} (${charCount} chars, ${width}x${height})`);
+
     return {
-      messages: [...messages, response],
-      assets,
-      currentStep: 'asset_sourcing_complete',
+      filename: svgFilename,
+      description: asset.description,
+      role: asset.role,
+      dimensions: { width, height },
+      source: 'gemini_svg',
+      svgContent,
+      sceneNumber,
+    };
+  } catch (e) {
+    console.error(`    [Asset] ERROR for ${roleLabel}: ${e.message}`);
+    return {
+      filename: null,
+      description: asset.description,
+      role: asset.role,
+      dimensions: null,
+      source: 'error',
+      svgContent: '',
+      error: e.message,
+      sceneNumber,
     };
   }
-
-  return {
-    messages: [...messages, response],
-    currentStep: 'asset_sourcing_in_progress',
-  };
 }
 
-/**
- * Build the assets array from the global asset store + blueprint defaults.
- * Heavy data (SVG paths, PNGs) is stored in the asset store by tools,
- * not in LLM messages (to avoid context window blowup).
- */
-function buildAssetsFromStore(blueprint) {
-  const assets = [];
+export async function assetSourcingNode(state) {
+  console.log('\n══════════════════════════════════════');
+  console.log('  Node 2: Asset Sourcing (v3.2)');
+  console.log('══════════════════════════════════════');
 
-  for (const scene of blueprint.scenes) {
-    const n = scene.scene_number;
-    const stored = getAsset(n);
-    const illust = scene.illustration || {};
+  const { researchNotes, outputDir } = state;
+  const assetsDir = path.join(outputDir, 'assets');
+  fs.mkdirSync(assetsDir, { recursive: true });
 
-    if (stored && (stored.type === 'custom_sketch' || stored.type === 'icons8_sketchy')) {
-      assets.push({
-        sceneNumber: n,
-        type: stored.type,
-        svgContent: stored.svgContent || stored.strokePathD || '',
-        strokePathD: stored.strokePathD || '',
-        pngBase64: stored.pngBase64 || '',
-        sourceWidth: stored.sourceWidth,
-        sourceHeight: stored.sourceHeight,
-        description: stored.description || illust.description || scene.title,
-      });
-    } else if (illust.source_preference === 'roughjs') {
-      assets.push({
-        sceneNumber: n,
-        type: 'roughjs',
-        description: illust.description || scene.title,
-        svgContent: '',
-      });
-    } else {
-      assets.push({
-        sceneNumber: n,
-        type: stored?.type || 'placeholder',
-        description: illust.description || scene.title,
-        svgContent: stored?.svgContent || '',
-      });
+  // Collect all assets from all scenes
+  const allTasks = [];
+  for (const scene of researchNotes.scenes) {
+    const sceneNum = scene.scene_number;
+    for (const asset of (scene.assets || [])) {
+      allTasks.push({ asset, sceneNumber: sceneNum });
     }
   }
 
-  return assets;
+  console.log(`  Total assets to source: ${allTasks.length}`);
+
+  // Process all assets in parallel
+  const results = await Promise.all(
+    allTasks.map(({ asset, sceneNumber }) => sourceOneAsset(asset, sceneNumber, assetsDir))
+  );
+
+  // Group by scene number
+  const sceneAssets = {};
+  for (const result of results) {
+    const sn = result.sceneNumber;
+    if (!sceneAssets[sn]) sceneAssets[sn] = [];
+    sceneAssets[sn].push(result);
+  }
+
+  // Build combined asset <defs> block
+  const defsLines = [];
+  for (const result of results) {
+    if (!result.svgContent) continue;
+    const defId = `asset_s${result.sceneNumber}_${result.role}`;
+    defsLines.push(`<g id="${defId}">${result.svgContent}</g>`);
+  }
+  const assetDefs = defsLines.join('\n');
+
+  // Save for debugging
+  fs.writeFileSync(path.join(assetsDir, 'asset-defs.svg'), `<defs>\n${assetDefs}\n</defs>`);
+
+  // Summary
+  const successCount = results.filter(r => r.filename).length;
+  const errorCount = results.filter(r => !r.filename).length;
+  const icons8Count = results.filter(r => r.source === 'icons8').length;
+  const svgGenCount = results.filter(r => r.source === 'gemini_svg').length;
+
+  console.log(`\n  Asset sourcing complete:`);
+  console.log(`    Total: ${results.length} (${successCount} success, ${errorCount} errors)`);
+  console.log(`    Icons8 PNG: ${icons8Count}, Gemini SVG code: ${svgGenCount}`);
+  console.log(`    Asset defs: ${defsLines.length} assets wrapped for <use href>`);
+
+  return {
+    sceneAssets,
+    assetDefs,
+    currentStep: 'asset_sourcing_complete',
+  };
 }

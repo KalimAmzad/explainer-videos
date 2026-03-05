@@ -1,62 +1,46 @@
 /**
- * LangGraph StateGraph definition for the whiteboard video pipeline.
+ * LangGraph v3 StateGraph — 4 nodes with parallel scene coding via Send API.
  *
  * Flow:
- *   START → research_plan → asset_agent ⇄ asset_tools → asset_decomposition
- *         → animation → playback → quality_review
- *                                      ↓ (if issues)    ↓ (if clean)
- *                                   animation           END
- *
- * Quality review can loop back to animation up to 2 times for structural fixes.
+ *   START → research_plan → asset_sourcing → [scene_coder × N] → scene_compiler → END
  */
-import { StateGraph, START, END, MemorySaver } from '@langchain/langgraph';
-import { ToolNode } from '@langchain/langgraph/prebuilt';
-import { VideoGraphState } from './state.mjs';
-import { researchPlanNode } from './nodes/research-plan-educational-director.mjs';
-import { assetSourcingAgent, assetTools, shouldContinueAssetLoop } from './nodes/asset-sourcing.mjs';
-import { assetDecompositionNode } from './nodes/asset-decomposition.mjs';
-import { animationNode } from './nodes/animation.mjs';
-import { playbackNode } from './nodes/playback.mjs';
-import { qualityReviewNode, shouldRetryOrFinish } from './nodes/quality-review.mjs';
+import { StateGraph, START, END, Send, MemorySaver } from '@langchain/langgraph';
+import { VideoState } from './state.mjs';
+import { researchPlanNode } from './nodes/research-plan.mjs';
+import { assetSourcingNode } from './nodes/asset-sourcing.mjs';
+import { sceneCoderNode } from './nodes/scene-coder.mjs';
+import { sceneCompilerNode } from './nodes/scene-compiler.mjs';
 
 /**
- * Build and compile the LangGraph workflow.
+ * Fan-out: spawn one scene_coder per scene.
+ */
+function fanOutScenes(state) {
+  const scenes = state.researchNotes?.scenes || [];
+  console.log(`\n  Fanning out ${scenes.length} scene coders in parallel...`);
+  return scenes.map((scene, i) =>
+    new Send('scene_coder', {
+      ...state,
+      _sceneIndex: i,
+      _sceneNotes: scene,
+    })
+  );
+}
+
+/**
+ * Build and compile the LangGraph v3 workflow.
  */
 export function buildGraph() {
-  const toolNode = new ToolNode(assetTools);
-
-  const workflow = new StateGraph(VideoGraphState)
+  const workflow = new StateGraph(VideoState)
     .addNode('research_plan', researchPlanNode)
-    .addNode('asset_agent', assetSourcingAgent)
-    .addNode('asset_tools', toolNode)
-    .addNode('asset_decomposition', assetDecompositionNode)
-    .addNode('animation', animationNode)
-    .addNode('playback', playbackNode)
-    .addNode('quality_review', qualityReviewNode)
+    .addNode('asset_sourcing', assetSourcingNode)
+    .addNode('scene_coder', sceneCoderNode)
+    .addNode('scene_compiler', sceneCompilerNode)
 
-    // Linear flow
     .addEdge(START, 'research_plan')
-    .addEdge('research_plan', 'asset_agent')
-
-    // Asset sourcing ReAct loop
-    .addConditionalEdges('asset_agent', shouldContinueAssetLoop, {
-      asset_tools: 'asset_tools',
-      next: 'asset_decomposition',
-    })
-    .addEdge('asset_tools', 'asset_agent')
-
-    // Processing pipeline
-    .addEdge('asset_decomposition', 'animation')
-    .addEdge('animation', 'playback')
-    .addEdge('playback', 'quality_review')
-
-    // Quality review feedback loop
-    // If structural issues found (and under retry limit) → back to animation
-    // Otherwise → END
-    .addConditionalEdges('quality_review', shouldRetryOrFinish, {
-      retry: 'animation',
-      done: END,
-    });
+    .addEdge('research_plan', 'asset_sourcing')
+    .addConditionalEdges('asset_sourcing', fanOutScenes, ['scene_coder'])
+    .addEdge('scene_coder', 'scene_compiler')
+    .addEdge('scene_compiler', END);
 
   const checkpointer = new MemorySaver();
   return workflow.compile({ checkpointer });

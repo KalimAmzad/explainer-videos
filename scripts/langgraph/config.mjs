@@ -25,10 +25,9 @@ const env = loadEnv();
 
 // ── Models ──
 export const MODELS = {
-  research:     'claude-opus-4-6',           // Node 1: Research & planning (best reasoning)
-  assetAgent:   'gemini-3.1-flash-lite-preview',          // Node 2: Asset sourcing ReAct loop
-  decompose:    'gemini-3.1-flash-lite-preview',          // Node 3: Asset decomposition (vision)
-  qualityReview:'gemini-3.1-pro-preview',  // Node 6: Quality review (strong model)
+  research:     'claude-opus-4-6',               // Node 1: Research plan (best reasoning)
+  sceneCoder:   'claude-sonnet-4-6',              // Node 3: Scene coding (parallel)
+  imageGen:     'gemini-3.1-flash-image-preview', // Asset generation (image gen)
 };
 
 // ── API Keys ──

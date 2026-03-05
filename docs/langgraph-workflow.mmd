@@ -2,23 +2,15 @@
 graph TD;
 	__start__([<p>__start__</p>]):::first
 	research_plan(research_plan)
-	asset_agent(asset_agent)
-	asset_tools(asset_tools)
-	asset_decomposition(asset_decomposition)
-	animation(animation)
-	playback(playback)
-	quality_review(quality_review)
+	asset_sourcing(asset_sourcing)
+	scene_coder(scene_coder)
+	scene_compiler(scene_compiler)
 	__end__([<p>__end__</p>]):::last
 	__start__ --> research_plan;
-	animation --> playback;
-	asset_decomposition --> animation;
-	asset_tools --> asset_agent;
-	playback --> quality_review;
-	research_plan --> asset_agent;
-	asset_agent -.-> asset_tools;
-	asset_agent -. &nbsp;next&nbsp; .-> asset_decomposition;
-	quality_review -. &nbsp;retry&nbsp; .-> animation;
-	quality_review -. &nbsp;done&nbsp; .-> __end__;
+	research_plan --> asset_sourcing;
+	scene_coder --> scene_compiler;
+	scene_compiler --> __end__;
+	asset_sourcing -.-> scene_coder;
 	classDef default fill:#f2f0ff,line-height:1.2;
 	classDef first fill-opacity:0;
 	classDef last fill:#bfb6fc;

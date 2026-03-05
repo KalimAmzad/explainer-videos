@@ -13,18 +13,36 @@ const ai = new GoogleGenAI({ apiKey: KEYS.gemini });
 
 export const rootDir = PATHS.root;
 
+/** Retry helper with exponential backoff for transient network errors. */
+async function withRetry(fn, maxRetries = 3) {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (e) {
+      const isRetryable = e.message?.includes('fetch failed') ||
+        e.message?.includes('ECONNRESET') ||
+        e.message?.includes('429') ||
+        e.message?.includes('503');
+      if (!isRetryable || attempt === maxRetries) throw e;
+      const delay = Math.pow(2, attempt) * 2000 + Math.random() * 1000;
+      console.log(`    [Gemini] Retry ${attempt + 1}/${maxRetries} after ${(delay / 1000).toFixed(1)}s: ${e.message}`);
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+}
+
 /**
  * Generate structured JSON from a text prompt.
  */
 export const callGeminiJSON = traceable(async function callGeminiJSON(model, prompt, schema) {
-  const response = await ai.models.generateContent({
+  const response = await withRetry(() => ai.models.generateContent({
     model,
     contents: prompt,
     config: {
       responseMimeType: 'application/json',
       responseSchema: schema,
     },
-  });
+  }));
   const text = response.text;
   if (!text) throw new Error('No text in Gemini response');
   const usage = response.usageMetadata;
@@ -38,13 +56,13 @@ export const callGeminiJSON = traceable(async function callGeminiJSON(model, pro
  * Generate an image using Gemini multimodal output.
  */
 export const callGeminiImage = traceable(async function callGeminiImage(model, prompt) {
-  const response = await ai.models.generateContent({
+  const response = await withRetry(() => ai.models.generateContent({
     model,
     contents: prompt,
     config: {
       responseModalities: ['TEXT', 'IMAGE'],
     },
-  });
+  }));
 
   const parts = response.candidates?.[0]?.content?.parts || [];
   let imageData = null;
