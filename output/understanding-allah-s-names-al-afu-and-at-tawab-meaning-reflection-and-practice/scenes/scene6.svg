@@ -1,0 +1,101 @@
+<g id="scene6" class="scene">
+
+  <!-- Title -->
+  <g clip-path="url(#cp_s6_title)">
+    <text x="640" y="55" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="48" font-weight="700" fill="#993344">Why We Need Both Names</text>
+  </g>
+
+  <!-- Wavy underline beneath title -->
+  <path id="s6_underline" d="M 339 72 Q 390 78 440 72 Q 490 66 540 72 Q 590 78 640 72 Q 690 66 740 72 Q 790 78 840 72 Q 890 66 940 72" fill="none" stroke="#993344" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Illustration zone: winding path + stick figures, centered in upper half -->
+  <!-- Path area: x=100 to x=1180, y center around 300 -->
+
+  <!-- The winding upward path -->
+  <path id="s6_path_main" d="M 130 420 Q 200 410 250 380 Q 320 340 380 350 Q 450 355 500 310 Q 560 265 620 270 Q 680 272 730 230 Q 800 185 860 190 Q 920 192 970 155 Q 1030 115 1080 120 Q 1130 122 1150 100" fill="none" stroke="#993344" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Milestone 1: Stumbling figure at ~(220, 370) -->
+  <g id="s6_illust_fig1" opacity="0" transform="translate(170, 270) scale(2.2)">
+    <circle cx="50" cy="140" r="8" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="50" y1="148" x2="58" y2="162" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="152" x2="38" y2="148" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="152" x2="63" y2="148" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="58" y1="162" x2="52" y2="170" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="58" y1="162" x2="66" y2="170" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Milestone 2: Kneeling figure at ~(470, 310) -->
+  <g id="s6_illust_fig2" opacity="0" transform="translate(420, 210) scale(2.2)">
+    <circle cx="50" cy="130" r="8" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="138" x2="50" y2="155" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="145" x2="44" y2="150" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="145" x2="56" y2="150" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="155" x2="44" y2="165" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="44" y1="165" x2="50" y2="165" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="155" x2="56" y2="158" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Milestone 3: Dua/raised hands figure at ~(720, 235) -->
+  <g id="s6_illust_fig3" opacity="0" transform="translate(670, 135) scale(2.2)">
+    <circle cx="50" cy="130" r="8" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="138" x2="50" y2="158" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="143" x2="42" y2="132" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="143" x2="58" y2="132" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="158" x2="45" y2="168" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="158" x2="55" y2="168" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Milestone 4: Standing tall with light at ~(980, 145) -->
+  <g id="s6_illust_fig4" opacity="0" transform="translate(930, 45) scale(2.2)">
+    <circle cx="50" cy="130" r="8" fill="none" stroke="#993344" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="138" x2="50" y2="158" fill="none" stroke="#993344" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="143" x2="44" y2="148" fill="none" stroke="#993344" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="143" x2="56" y2="148" fill="none" stroke="#993344" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="158" x2="45" y2="168" fill="none" stroke="#993344" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="158" x2="55" y2="168" fill="none" stroke="#993344" stroke-width="2" stroke-linecap="round"/>
+    <!-- Radiance lines above head -->
+    <line id="s6_ray1" x1="50" y1="120" x2="50" y2="108" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round"/>
+    <line id="s6_ray2" x1="50" y1="120" x2="43" y2="110" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round"/>
+    <line id="s6_ray3" x1="50" y1="120" x2="57" y2="110" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round"/>
+    <line id="s6_ray4" x1="50" y1="120" x2="40" y2="114" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round"/>
+    <line id="s6_ray5" x1="50" y1="120" x2="60" y2="114" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Labels below each milestone -->
+  <g clip-path="url(#cp_s6_lbl1)">
+    <text x="220" y="458" text-anchor="middle" font-family="'Patrick Hand',cursive" font-size="24" fill="#333">Sin</text>
+  </g>
+  <g clip-path="url(#cp_s6_lbl2)">
+    <text x="480" y="458" text-anchor="middle" font-family="'Patrick Hand',cursive" font-size="24" fill="#333">Regret</text>
+  </g>
+  <g clip-path="url(#cp_s6_lbl3)">
+    <text x="730" y="458" text-anchor="middle" font-family="'Patrick Hand',cursive" font-size="24" fill="#333">Tawbah</text>
+  </g>
+  <g clip-path="url(#cp_s6_lbl4)">
+    <text x="1010" y="458" text-anchor="middle" font-family="'Patrick Hand',cursive" font-size="24" fill="#333">Renewal</text>
+  </g>
+
+  <!-- Small arrows from labels up toward figures -->
+  <path id="s6_arr1" d="M 220 445 L 220 415" fill="none" stroke="#993344" stroke-width="1.8" stroke-linecap="round" marker-end="url(#arrow_993344)"/>
+  <path id="s6_arr2" d="M 480 445 L 480 415" fill="none" stroke="#993344" stroke-width="1.8" stroke-linecap="round" marker-end="url(#arrow_993344)"/>
+  <path id="s6_arr3" d="M 730 445 L 730 415" fill="none" stroke="#993344" stroke-width="1.8" stroke-linecap="round" marker-end="url(#arrow_993344)"/>
+  <path id="s6_arr4" d="M 1010 445 L 1010 390" fill="none" stroke="#993344" stroke-width="1.8" stroke-linecap="round" marker-end="url(#arrow_993344)"/>
+
+  <!-- Divider line separating illustration from body text -->
+  <line id="s6_divider" x1="80" y1="490" x2="1200" y2="490" stroke="#ccb0b8" stroke-width="1.5" stroke-dasharray="6,4" stroke-linecap="round"/>
+
+  <!-- Body text lines -->
+  <g clip-path="url(#cp_s6_body1)">
+    <text x="640" y="530" text-anchor="middle" font-family="'Caveat',cursive" font-size="34" fill="#333">The Prophet ﷺ said: <tspan font-family="'Permanent Marker',cursive" font-size="30" fill="#993344">Every son of Adam sins</tspan></text>
+  </g>
+  <g clip-path="url(#cp_s6_body2)">
+    <text x="640" y="575" text-anchor="middle" font-family="'Caveat',cursive" font-size="34" fill="#333">But the <tspan font-family="'Permanent Marker',cursive" font-size="30" fill="#993344">best sinners</tspan> are those who repent</text>
+  </g>
+  <g clip-path="url(#cp_s6_body3)">
+    <text x="640" y="620" text-anchor="middle" font-family="'Caveat',cursive" font-size="34" fill="#333">Sin is not the end — it's the <tspan font-family="'Permanent Marker',cursive" font-size="30" fill="#993344">beginning</tspan></text>
+  </g>
+  <g clip-path="url(#cp_s6_body4)">
+    <text x="640" y="662" text-anchor="middle" font-family="'Caveat',cursive" font-size="34" fill="#333">Of a deeper bond with your Lord</text>
+  </g>
+
+</g>

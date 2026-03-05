@@ -1,0 +1,84 @@
+<g id="scene2" class="scene">
+  <!-- Title -->
+  <g clip-path="url(#cp_s2_title)">
+    <text x="60" y="62" font-family="'Cabin Sketch',cursive" font-size="48" font-weight="700" fill="#1e8c5a">Al-Afu: The Pardoner</text>
+  </g>
+  <!-- Underline -->
+  <path id="s2_underline" d="M 60 74 Q 150 80 260 73 Q 370 66 480 74 Q 530 78 560 73" fill="none" stroke="#1e8c5a" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Body Line 1: Root -->
+  <g clip-path="url(#cp_s2_body1)">
+    <text x="60" y="210" font-family="'Caveat',cursive" font-size="34" fill="#333">Root: <tspan font-family="'Permanent Marker',cursive" font-size="30" fill="#1e8c5a">'Afw</tspan> = to wipe away entirely</text>
+  </g>
+
+  <!-- Body Line 2: Not just forgiveness -->
+  <g clip-path="url(#cp_s2_body2)">
+    <text x="60" y="258" font-family="'Caveat',cursive" font-size="34" fill="#333">Not just forgiveness — <tspan font-family="'Permanent Marker',cursive" font-size="30" fill="#cc7722">complete erasure</tspan></text>
+  </g>
+
+  <!-- Body Line 3: Wind analogy -->
+  <g clip-path="url(#cp_s2_body3)">
+    <text x="60" y="410" font-family="'Caveat',cursive" font-size="34" fill="#333">Like wind erasing footprints in sand</text>
+  </g>
+
+  <!-- Body Line 4: Hadith reference -->
+  <g clip-path="url(#cp_s2_body4)">
+    <text x="92" y="578" font-family="'Caveat',cursive" font-size="32" fill="#333">Aisha (RA) was taught: <tspan font-family="'Permanent Marker',cursive" font-size="28" fill="#1e8c5a">Allahumma innaka 'Afuww</tspan></text>
+  </g>
+
+  <!-- Scroll icon (supporting) -->
+  <g id="s2_illust_supporting" opacity="0" transform="translate(40, 530) scale(0.55)">
+    <rect x="84" y="91" width="31" height="19" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="73" cy="101" r="10" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="126" cy="99" r="10" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- ===== RIGHT HALF ILLUSTRATION ===== -->
+
+  <!-- TOP PANEL: Footprints in sand -->
+  <!-- Panel background label -->
+  <text id="s2_panel_top_label" x="970" y="115" font-family="'Patrick Hand',cursive" font-size="22" fill="#888" text-anchor="middle" opacity="0">Before</text>
+
+  <!-- Top panel sand + footprints group -->
+  <g id="s2_illust_top" opacity="0" transform="translate(730, 120) scale(2.4)">
+    <!-- Wavy sand lines -->
+    <path d="M 20 20 Q 50 16 80 24 Q 110 34 140 21 Q 170 11 180 19 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 25 40 Q 55 46 85 39 Q 115 31 145 43 Q 175 49 180 41 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 21 60 Q 51 66 81 59 Q 111 51 141 63 Q 171 69 181 61 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Footprints -->
+    <ellipse cx="61" cy="31" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="71" cy="36" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="101" cy="26" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="111" cy="31" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="76" cy="51" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="86" cy="56" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="131" cy="46" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="141" cy="51" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Downward arrow between panels -->
+  <path id="s2_panel_arrow" d="M 970 325 L 970 415" fill="none" stroke="#1e8c5a" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow_1e8c5a)"/>
+
+  <!-- Arrow label: Al-Afu -->
+  <g clip-path="url(#cp_s2_arrow_label)">
+    <text x="790" y="422" font-family="'Permanent Marker',cursive" font-size="30" fill="#1e8c5a">Al-Afu</text>
+  </g>
+
+  <!-- BOTTOM PANEL: Smooth sand with wind -->
+  <text id="s2_panel_bot_label" x="970" y="450" font-family="'Patrick Hand',cursive" font-size="22" fill="#888" text-anchor="middle" opacity="0">After</text>
+
+  <g id="s2_illust_bottom" opacity="0" transform="translate(730, 455) scale(2.4)">
+    <!-- Smooth wavy sand lines -->
+    <path d="M 20 130 Q 50 136 80 129 Q 110 121 140 133 Q 170 139 180 131 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 25 150 Q 55 156 85 149 Q 115 141 145 153 Q 175 159 180 151 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 21 170 Q 51 176 81 169 Q 111 161 141 173 Q 171 179 181 171 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Wind swoosh lines -->
+    <path d="M 160 140 Q 170 135 175 145 Q 170 150 160 140 Z" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 155 155 Q 165 150 170 160 Q 165 165 155 155 Z" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 150 170 Q 160 165 165 175 Q 160 180 150 170 Z" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Rough.js frame placeholder for right panel zone -->
+  <g id="rough_s2_panel_frame" opacity="0"></g>
+
+</g>

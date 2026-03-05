@@ -1,0 +1,67 @@
+<g id="scene1" class="scene">
+
+  <!-- Crescent + Star icon top-right -->
+  <g id="s1_illust_supporting" opacity="0" transform="translate(1060, 10) scale(1.1)">
+    <path d="M 85.3 75.1 A 30.5 45.2 0 0 1 80.1 125.4 A 25.4 38.3 0 0 0 85.3 75.1 Z" fill="none" stroke="#2b7ec2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <polygon points="125.5 82.2 129.8 93.6 142.3 94.3 132.5 102.6 135.7 114.5 125.1 108.1 114.3 114.5 117.5 102.4 107.8 94.3 120.2 93.4" fill="none" stroke="#2b7ec2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Title -->
+  <g clip-path="url(#cp_s1_title)">
+    <text x="640" y="55" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="48" font-weight="700" fill="#2b7ec2">Names That Heal</text>
+  </g>
+
+  <!-- Wavy underline beneath title -->
+  <path id="s1_underline" d="M 432 68 Q 490 78 548 68 Q 606 58 664 68 Q 722 78 780 68 Q 820 62 848 68" fill="none" stroke="#2b7ec2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Body line 1: Allah has 99 Beautiful Names -->
+  <g clip-path="url(#cp_s1_body1)">
+    <text x="640" y="185" text-anchor="middle" font-family="'Caveat',cursive" font-size="34" fill="#333">Allah has <tspan font-family="'Permanent Marker',cursive" fill="#2b7ec2">99 Beautiful Names</tspan></text>
+  </g>
+
+  <!-- Body line 2: Each name is a door to knowing Him -->
+  <g clip-path="url(#cp_s1_body2)">
+    <text x="640" y="233" text-anchor="middle" font-family="'Caveat',cursive" font-size="34" fill="#333">Each name is a door to <tspan font-family="'Permanent Marker',cursive" fill="#cc7722">knowing Him</tspan></text>
+  </g>
+
+  <!-- Body line 3: Two names speak to every sinner -->
+  <g clip-path="url(#cp_s1_body3)">
+    <text x="640" y="281" text-anchor="middle" font-family="'Caveat',cursive" font-size="34" fill="#333">Two names speak to every sinner:</text>
+  </g>
+
+  <!-- Body line 4: Al-Afu & At-Tawab -->
+  <g clip-path="url(#cp_s1_body4)">
+    <text x="640" y="329" text-anchor="middle" font-family="'Permanent Marker',cursive" font-size="34" fill="#1e8c5a">Al-Afu  &amp;  At-Tawab</text>
+  </g>
+
+  <!-- Main illustration: Two doors with radiance -->
+  <g id="s1_illust_main" opacity="0" transform="translate(310, 340) scale(2.9)">
+    <line x1="99" y1="49" x2="217" y2="28" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="99" y1="49" x2="203" y2="-9" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="99" y1="49" x2="176" y2="-41" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="99" y1="49" x2="140" y2="-62" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="99" y1="49" x2="99" y2="-69" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="99" y1="49" x2="58" y2="-62" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="99" y1="49" x2="22" y2="-41" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="99" y1="49" x2="-5" y2="-9" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="17" y="52" width="77" height="147" fill="none" stroke="#2b7ec2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 17 52 A 38.5 38.5 0 0 1 94 52 Z" fill="none" stroke="#2b7ec2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="89" cy="126" r="5" fill="none" stroke="#2b7ec2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="37" y="116" width="37" height="19" fill="none" stroke="#2b7ec2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="107" y="53" width="77" height="146" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 107 53 A 38.5 38.5 0 0 1 184 53 Z" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="112" cy="126.5" r="5" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="127" y="117" width="38" height="18" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Left door label: Al-Afu -->
+  <g clip-path="url(#cp_s1_lbl_left)">
+    <text id="s1_lbl_left_text" x="450" y="620" text-anchor="middle" font-family="'Permanent Marker',cursive" font-size="28" fill="#2b7ec2">Al-Afu</text>
+  </g>
+
+  <!-- Right door label: At-Tawab -->
+  <g clip-path="url(#cp_s1_lbl_right)">
+    <text id="s1_lbl_right_text" x="795" y="620" text-anchor="middle" font-family="'Permanent Marker',cursive" font-size="28" fill="#1e8c5a">At-Tawab</text>
+  </g>
+
+</g>

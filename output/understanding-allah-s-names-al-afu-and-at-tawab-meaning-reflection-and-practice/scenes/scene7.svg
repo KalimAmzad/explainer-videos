@@ -1,0 +1,79 @@
+<g id="scene7" class="scene">
+
+  <!-- Title -->
+  <g clip-path="url(#cp_s7_title)">
+    <text x="640" y="55" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="48" font-weight="700" fill="#1e8c5a">Practice These Names Daily</text>
+  </g>
+
+  <!-- Double underline -->
+  <path id="s7_underline1" d="M300 66 Q400 70 500 66 Q580 63 640 66 Q710 70 800 66 Q870 63 960 66" fill="none" stroke="#1e8c5a" stroke-width="3" stroke-linecap="round"/>
+  <path id="s7_underline2" d="M300 74 Q400 78 500 74 Q580 71 640 74 Q710 78 800 74 Q870 71 960 74" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Item 1: Dua icon + text -->
+  <g id="s7_illust_icon1" opacity="0" transform="translate(60, 200) scale(0.55)">
+    <path d="M74 136 C64 99 86 94 91 137 Z" fill="none" stroke="#1e8c5a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M109 136 C104 94 126 99 131 137 Z" fill="none" stroke="#1e8c5a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="98" y1="84" x2="98" y2="74" stroke="#1e8c5a" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="102" y1="80" x2="102" y2="70" stroke="#1e8c5a" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="100" y1="88" x2="100" y2="78" stroke="#1e8c5a" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <g clip-path="url(#cp_s7_item1)">
+    <text x="160" y="268" font-family="'Caveat',cursive" font-size="36" fill="#333">1. Make dua: <tspan font-family="'Permanent Marker',cursive" font-size="30" fill="#1e8c5a">Allahumma innaka Afuww...</tspan></text>
+  </g>
+
+  <!-- Item 2: Forgiveness icon + text -->
+  <g id="s7_illust_icon2" opacity="0" transform="translate(60, 298) scale(0.55)">
+    <circle cx="79" cy="89" r="6" fill="none" stroke="#cc7722" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="79" y1="95" x2="79" y2="119" stroke="#cc7722" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="79" y1="104" x2="94" y2="105" stroke="#cc7722" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="121" cy="91" r="6" fill="none" stroke="#cc7722" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="121" y1="97" x2="121" y2="121" stroke="#cc7722" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="121" y1="106" x2="106" y2="105" stroke="#cc7722" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M100 102 L103.5 105 L100 108.5 L96.5 105 Z" fill="none" stroke="#cc7722" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g clip-path="url(#cp_s7_item2)">
+    <text x="160" y="368" font-family="'Caveat',cursive" font-size="36" fill="#333">2. Forgive others — embody <tspan font-family="'Permanent Marker',cursive" font-size="30" fill="#cc7722">Al-Afu</tspan></text>
+  </g>
+
+  <!-- Item 3: Clock icon + text -->
+  <g id="s7_illust_icon3" opacity="0" transform="translate(60, 398) scale(0.55)">
+    <circle cx="99" cy="101" r="35" fill="none" stroke="#8844aa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="99" y1="101" x2="97" y2="76" stroke="#8844aa" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="99" y1="101" x2="89" y2="86" stroke="#8844aa" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 130 110 A 50 50 0 1 0 70 110" fill="none" stroke="#8844aa" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="70" y1="110" x2="80" y2="105" stroke="#8844aa" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="70" y1="110" x2="80" y2="115" stroke="#8844aa" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <g clip-path="url(#cp_s7_item3)">
+    <text x="160" y="468" font-family="'Caveat',cursive" font-size="36" fill="#333">3. Repent daily — never <tspan font-family="'Permanent Marker',cursive" font-size="30" fill="#8844aa">delay tawbah</tspan></text>
+  </g>
+
+  <!-- Item 4: Palm/heart icon + text -->
+  <g id="s7_illust_icon4" opacity="0" transform="translate(60, 498) scale(0.55)">
+    <path d="M 72 127 Q 62 82 101 61 Q 142 83 131 126 Q 100 136 72 127 Z" fill="none" stroke="#1e8c5a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 101 101 C 96 96 96 89 101 89 C 106 89 106 96 101 101 Z" fill="none" stroke="#1e8c5a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g clip-path="url(#cp_s7_item4)">
+    <text x="160" y="568" font-family="'Caveat',cursive" font-size="36" fill="#333">4. Trust Allah — He <tspan font-family="'Permanent Marker',cursive" font-size="30" fill="#1e8c5a">always</tspan> accepts you</text>
+  </g>
+
+  <!-- Bottom banner -->
+  <g id="s7_illust_banner" opacity="0" transform="translate(440, 610) scale(2.0)">
+    <polygon points="1,81 199,81 189,100 199,119 1,119 11,100" fill="#f5f0e8" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g clip-path="url(#cp_s7_banner_text)">
+    <text x="640" y="672" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="38" font-weight="700" fill="#1e8c5a">Start Tonight</text>
+  </g>
+
+  <!-- Sparkle stars (hidden initially) -->
+  <g id="s7_sparkle1" opacity="0">
+    <path d="M530 655 L533 648 L536 655 L543 658 L536 661 L533 668 L530 661 L523 658 Z" fill="#1e8c5a" stroke="#1e8c5a" stroke-width="1"/>
+  </g>
+  <g id="s7_sparkle2" opacity="0">
+    <path d="M640 605 L643 598 L646 605 L653 608 L646 611 L643 618 L640 611 L633 608 Z" fill="#cc7722" stroke="#cc7722" stroke-width="1"/>
+  </g>
+  <g id="s7_sparkle3" opacity="0">
+    <path d="M750 655 L753 648 L756 655 L763 658 L756 661 L753 668 L750 661 L743 658 Z" fill="#1e8c5a" stroke="#1e8c5a" stroke-width="1"/>
+  </g>
+
+</g>

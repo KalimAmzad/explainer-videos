@@ -1,0 +1,71 @@
+<g id="scene5" class="scene">
+
+  <!-- Title -->
+  <g clip-path="url(#cp_s5_title)">
+    <text x="640" y="55" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="48" font-weight="700" fill="#1a8a8a">Quranic Reflections</text>
+  </g>
+
+  <!-- Wavy underline beneath title -->
+  <path id="s5_underline" d="M379 64 Q420 70 460 64 Q500 58 540 64 Q580 70 620 64 Q660 58 700 64 Q740 70 780 64 Q820 58 860 64 Q880 70 901 64" fill="none" stroke="#1a8a8a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- === LEFT TEXT GROUP (lines 1 & 2) upper-left === -->
+  <!-- Line 1: Quran 4:99 — Allah is Afuwwan Qadira -->
+  <g clip-path="url(#cp_s5_line1)">
+    <text x="60" y="235" font-family="'Caveat',cursive" font-size="32" fill="#333">Quran 4:99 — <tspan font-family="'Permanent Marker',cursive" font-size="28" fill="#1a8a8a">Afuwwan Qadira</tspan></text>
+  </g>
+  <!-- Line 2: Pardoning & fully Capable of punishing -->
+  <g clip-path="url(#cp_s5_line2)">
+    <text x="60" y="281" font-family="'Caveat',cursive" font-size="32" fill="#333">Pardoning &amp; fully <tspan font-style="italic" fill="#cc7722">Capable</tspan> of punishing</text>
+  </g>
+
+  <!-- Arrow from left text group down to left Quran page -->
+  <path id="s5_arrow_left" d="M 280 295 C 280 350 390 390 430 450" fill="none" stroke="#1a8a8a" stroke-width="2.5" stroke-linecap="round" marker-end="url(#arrow_1a8a8a)"/>
+
+  <!-- === RIGHT TEXT GROUP (lines 3 & 4) upper-right === -->
+  <!-- Line 3: Quran 2:37 — He is At-Tawab Ar-Rahim -->
+  <g clip-path="url(#cp_s5_line3)">
+    <text x="720" y="235" font-family="'Caveat',cursive" font-size="32" fill="#333">Quran 2:37 — <tspan font-family="'Permanent Marker',cursive" font-size="28" fill="#1a8a8a">At-Tawab Ar-Rahim</tspan></text>
+  </g>
+  <!-- Line 4: Accepting repentance with tender mercy -->
+  <g clip-path="url(#cp_s5_line4)">
+    <text x="720" y="281" font-family="'Caveat',cursive" font-size="32" fill="#333">Accepting repentance with <tspan font-style="italic" fill="#cc7722">tender mercy</tspan></text>
+  </g>
+
+  <!-- Arrow from right text group down to right Quran page -->
+  <path id="s5_arrow_right" d="M 870 295 C 870 350 820 390 800 450" fill="none" stroke="#1a8a8a" stroke-width="2.5" stroke-linecap="round" marker-end="url(#arrow_1a8a8a)"/>
+
+  <!-- === OPEN QURAN ILLUSTRATION (center) === -->
+  <g id="s5_illust_main" opacity="0" transform="translate(440, 330) scale(2.8)">
+    <line x1="100" y1="54" x2="100" y2="146" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="33" y="58" width="65" height="85" transform="rotate(-5 100 100)" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="102" y="58" width="65" height="85" transform="rotate(5 100 100)" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="43" y1="73" x2="88" y2="73" transform="rotate(-5 100 100)" fill="none" stroke="#1a8a8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="43" y1="93" x2="88" y2="93" transform="rotate(-5 100 100)" fill="none" stroke="#1a8a8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="43" y1="113" x2="88" y2="113" transform="rotate(-5 100 100)" fill="none" stroke="#1a8a8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="43" y1="133" x2="88" y2="133" transform="rotate(-5 100 100)" fill="none" stroke="#1a8a8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="112" y1="73" x2="157" y2="73" transform="rotate(5 100 100)" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="112" y1="93" x2="157" y2="93" transform="rotate(5 100 100)" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="112" y1="113" x2="157" y2="113" transform="rotate(5 100 100)" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="112" y1="133" x2="157" y2="133" transform="rotate(5 100 100)" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="100" cy="54" r="4" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="100" cy="146" r="4" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Page reference labels on Quran pages -->
+  <g clip-path="url(#cp_s5_ref_left)">
+    <text id="s5_ref_left_text" x="500" y="540" text-anchor="middle" font-family="'Patrick Hand',cursive" font-size="24" fill="#1a8a8a">4:99</text>
+  </g>
+  <g clip-path="url(#cp_s5_ref_right)">
+    <text id="s5_ref_right_text" x="780" y="540" text-anchor="middle" font-family="'Patrick Hand',cursive" font-size="24" fill="#cc7722">2:37</text>
+  </g>
+
+  <!-- === HEART ICON (bottom center) === -->
+  <g id="s5_illust_supporting" opacity="0" transform="translate(540, 560) scale(1.7)">
+    <path d="M 101 141 C 51 121 49 69 99 68 C 151 71 149 122 101 141 Z" fill="none" stroke="#993344" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 110 75 C 115 65 125 60 130 50 C 127 53 117 68 110 75 Z" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 140 100 C 150 90 160 95 170 100 C 165 103 155 108 140 100 Z" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 80 130 C 70 135 60 145 50 155 C 55 152 65 140 80 130 Z" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 60 100 C 50 90 40 95 30 100 C 35 103 45 108 60 100 Z" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+</g>

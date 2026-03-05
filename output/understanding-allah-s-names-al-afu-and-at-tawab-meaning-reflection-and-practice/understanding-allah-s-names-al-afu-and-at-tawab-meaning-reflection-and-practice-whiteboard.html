@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Understanding Allah's Names: Al-Afu and At-Tawab — Meaning, Reflection, and Practice — Whiteboard Explainer</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@400;700&family=Caveat:wght@400;700&family=Patrick+Hand&family=Permanent+Marker&display=swap');
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: #111;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-height: 100vh; overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+.wrap {
+  width: 100vw; max-width: 1280px;
+  aspect-ratio: 16/9; position: relative;
+  border-radius: 6px; overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,.6);
+}
+#board { width: 100%; height: 100%; display: block; }
+.scene { opacity: 0; }
+
+/* Controls */
+#controls {
+  margin-top: 10px; display: flex; gap: 8px; align-items: center;
+  flex-wrap: wrap; max-width: 1280px; width: 100%;
+  padding: 0 4px;
+}
+#controls button {
+  padding: 6px 14px; background: #2b7ec2; color: #fff;
+  border: none; border-radius: 5px; font-size: 12px; cursor: pointer;
+  transition: background 0.2s;
+}
+#controls button:hover { background: #1e5fa0; }
+#controls button.active { background: #1e5fa0; outline: 2px solid #5ba8e6; }
+#timeDisp { color: #888; font: 12px/1 monospace; min-width: 80px; }
+#seekWrap {
+  flex: 1; min-width: 200px; position: relative; height: 20px;
+  display: flex; align-items: center;
+}
+#seekBar {
+  width: 100%; cursor: pointer; accent-color: #2b7ec2;
+  height: 6px; -webkit-appearance: none; appearance: none;
+  background: #333; border-radius: 3px; outline: none;
+}
+#seekBar::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 14px; height: 14px;
+  border-radius: 50%; background: #2b7ec2; cursor: pointer;
+}
+.scene-marker {
+  position: absolute; top: 50%; transform: translate(-50%, -50%);
+  width: 8px; height: 8px; border-radius: 50%;
+  pointer-events: none; opacity: 0.7;
+}
+#sceneInfo { color: #aaa; font-size: 12px; min-width: 120px; text-align: right; }
+
+/* Speed controls */
+.speed-group { display: flex; gap: 2px; }
+.speed-group button { padding: 4px 8px; font-size: 11px; background: #444; }
+.speed-group button.active { background: #2b7ec2; }
+
+/* Scene jump bar */
+#sceneJumps {
+  margin-top: 6px; display: flex; gap: 4px; flex-wrap: wrap;
+  max-width: 1280px; width: 100%; padding: 0 4px;
+}
+.scene-jump {
+  padding: 4px 10px; border-radius: 4px; font-size: 11px;
+  cursor: pointer; border: 1px solid #444; color: #ccc;
+  background: #222; transition: all 0.2s;
+}
+.scene-jump:hover { border-color: #666; color: #fff; }
+.scene-jump.active { color: #fff; }
+
+/* Keyboard hint */
+#kbHint {
+  color: #555; font-size: 10px; margin-top: 4px;
+  max-width: 1280px; text-align: center;
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="playerWrap">
+<svg id="board" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2=".04" y2="1">
+    <stop offset="0%" stop-color="#f5f3ef"/>
+    <stop offset="100%" stop-color="#edeae4"/>
+  </linearGradient>
+  <!-- Arrow markers for common colors -->
+  <marker id="arrow_333" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 Z" fill="#333333"/>
+  </marker>
+  <marker id="arrow_993344" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 Z" fill="#993344"/>
+  </marker>
+  <marker id="arrow_2b7ec2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 Z" fill="#2b7ec2"/>
+  </marker>
+  <marker id="arrow_cc3333" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 Z" fill="#cc3333"/>
+  </marker>
+  <marker id="arrow_1e8c5a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 Z" fill="#1e8c5a"/>
+  </marker>
+  <marker id="arrow_cc7722" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 Z" fill="#cc7722"/>
+  </marker>
+  <marker id="arrow_8844aa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 Z" fill="#8844aa"/>
+  </marker>
+  <marker id="arrow_1a8a8a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 Z" fill="#1a8a8a"/>
+  </marker>
+  <marker id="arrow_2266bb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 Z" fill="#2266bb"/>
+  </marker>
+<g id="asset_s1_main"><line x1="99" y1="49" x2="217" y2="28" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="99" y1="49" x2="203" y2="-9" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="99" y1="49" x2="176" y2="-41" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="99" y1="49" x2="140" y2="-62" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="99" y1="49" x2="99" y2="-69" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="99" y1="49" x2="58" y2="-62" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="99" y1="49" x2="22" y2="-41" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="99" y1="49" x2="-5" y2="-9" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="17" y="52" width="77" height="147" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 17 52 A 38.5 38.5 0 0 1 94 52 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="89" cy="126" r="5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="37" y="116" width="37" height="19" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="107" y="53" width="77" height="146" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 107 53 A 38.5 38.5 0 0 1 184 53 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="112" cy="126.5" r="5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="127" y="117" width="38" height="18" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="asset_s1_supporting"><path d="M 85.3 75.1 A 30.5 45.2 0 0 1 80.1 125.4 A 25.4 38.3 0 0 0 85.3 75.1 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polygon points="125.5 82.2 129.8 93.6 142.3 94.3 132.5 102.6 135.7 114.5 125.1 108.1 114.3 114.5 117.5 102.4 107.8 94.3 120.2 93.4" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="asset_s2_main"><path d="M 20 20 Q 50 16 80 24 Q 110 34 140 21 Q 170 11 180 19 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 25 40 Q 55 46 85 39 Q 115 31 145 43 Q 175 49 180 41 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 21 60 Q 51 66 81 59 Q 111 51 141 63 Q 171 69 181 61 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="61" cy="31" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="71" cy="36" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="101" cy="26" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="111" cy="31" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="76" cy="51" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="86" cy="56" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="131" cy="46" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="141" cy="51" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 20 130 Q 50 136 80 129 Q 110 121 140 133 Q 170 139 180 131 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 25 150 Q 55 156 85 149 Q 115 141 145 153 Q 175 159 180 151 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 21 170 Q 51 176 81 169 Q 111 161 141 173 Q 171 179 181 171 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 160 140 Q 170 135 175 145 Q 170 150 160 140 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 155 155 Q 165 150 170 160 Q 165 165 155 155 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 150 170 Q 160 165 165 175 Q 160 180 150 170 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="100" y1="80" x2="100" y2="120" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polygon points="100 120, 95 110, 105 110" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="106" y="94" width="40" height="15" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="asset_s2_supporting"><rect x="84" y="91" width="31" height="19" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="73" cy="101" r="10" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="126" cy="99" r="10" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="asset_s3_diagram"><circle cx="100.5" cy="160.5" r="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="100.5" y1="172.5" x2="100.5" y2="185.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="97.5" y1="175.5" x2="88.5" y2="168.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="103.5" y1="175.5" x2="112.5" y2="168.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="98.5" y1="185.5" x2="90.5" y2="197.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="102.5" y1="185.5" x2="110.5" y2="197.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="100.5" cy="40.5" r="20" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="100.5" y1="20.5" x2="100.5" y2="15.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="110.5" y1="23.2" x2="113.0" y2="18.9" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="120.5" y1="40.5" x2="125.5" y2="40.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="110.5" y1="57.8" x2="113.0" y2="62.1" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="90.5" y1="57.8" x2="88.0" y2="62.1" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="80.5" y1="40.5" x2="75.5" y2="40.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="90.5" y1="23.2" x2="88.0" y2="18.9" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 80.5 160.5 Q 50.5 100.5 80.5 40.5 L 81 40.5 Q 51 100.5 81 160.5 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polygon points="80.5,40.5 77.5,47.5 83.5,47.5" fill="#333" stroke="none"/><line x1="73.5" y1="145.5" x2="77.5" y2="145.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="65.5" y1="128.5" x2="69.5" y2="128.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="58.5" y1="98.5" x2="58.5" y2="102.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="65.5" y1="72.5" x2="69.5" y2="72.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="73.5" y1="55.5" x2="77.5" y2="55.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="79.5" y1="43.5" x2="81.5" y2="43.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 120.5 40.5 Q 150.5 100.5 120.5 160.5 L 120 160.5 Q 149.5 100.5 120 40.5 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polygon points="120.5,160.5 117.5,153.5 123.5,153.5" fill="#333" stroke="none"/><line x1="123.5" y1="55.5" x2="127.5" y2="55.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="131.5" y1="72.5" x2="135.5" y2="72.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="142.5" y1="98.5" x2="142.5" y2="102.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="131.5" y1="128.5" x2="135.5" y1="128.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="123.5" y1="145.5" x2="127.5" y2="145.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="119.5" y1="157.5" x2="123.5" y2="157.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="asset_s4_main"><rect x="41" y="56" width="118" height="88" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="48" y1="69" x2="150" y2="69" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="48" y1="89" x2="150" y2="89" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="48" y1="109" x2="150" y2="109" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="48" y1="129" x2="150" y2="129" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="60" y1="67" x2="64" y2="71" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="60" y1="71" x2="64" y2="67" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="90" y1="67" x2="94" y2="71" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="90" y1="71" x2="94" y2="67" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="75" y1="87" x2="79" y2="91" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="75" y1="91" x2="79" y2="87" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="120" y1="107" x2="124" y2="111" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="120" y1="111" x2="124" y2="107" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polygon points="155,45 165,48 175,62 150,58" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="140,60 145,65 150,60" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="135,70 140,75 145,70" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="asset_s4_main"><rect x="44" y="98" width="40" height="30" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><rect x="116" y="100" width="40" height="30" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><rect x="85" y="99" width="30" height="8" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><path d="M 47 131 Q 80 160 112 133 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="8 8" /><line x1="99" y1="89" x2="99" y2="97" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><line x1="101" y1="107" x2="101" y2="115" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><line x1="78" y1="102" x2="84" y2="102" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><line x1="116" y1="104" x2="122" y2="104" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></g>
+<g id="asset_s4_supporting"><path d="M 11 151 L 11 166 Q 101 181 189 166 L 189 151 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="61" y="185" width="78" height="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="asset_s5_main"><line x1="100" y1="54" x2="100" y2="146" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="33" y="58" width="65" height="85" transform="rotate(-5 100 100)" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="102" y="58" width="65" height="85" transform="rotate(5 100 100)" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="43" y1="73" x2="88" y2="73" transform="rotate(-5 100 100)" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="43" y1="93" x2="88" y2="93" transform="rotate(-5 100 100)" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="43" y1="113" x2="88" y2="113" transform="rotate(-5 100 100)" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="43" y1="133" x2="88" y2="133" transform="rotate(-5 100 100)" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="112" y1="73" x2="157" y2="73" transform="rotate(5 100 100)" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="112" y1="93" x2="157" y2="93" transform="rotate(5 100 100)" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="112" y1="113" x2="157" y2="113" transform="rotate(5 100 100)" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="112" y1="133" x2="157" y2="133" transform="rotate(5 100 100)" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="100" cy="54" r="4" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="100" cy="146" r="4" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="asset_s5_supporting"><path d="M 101 141 C 51 121 49 69 99 68 C 151 71 149 122 101 141 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 110 75 C 115 65 125 60 130 50 C 127 53 117 68 110 75 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 140 100 C 150 90 160 95 170 100 C 165 103 155 108 140 100 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 80 130 C 70 135 60 145 50 155 C 55 152 65 140 80 130 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 60 100 C 50 90 40 95 30 100 C 35 103 45 108 60 100 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="asset_s6_main"><path d="M 30 170 Q 55 180 80 145 Q 105 105 130 110 Q 155 90 175 30" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="140" r="8" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="50" y1="140" x2="55" y2="155" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="50" y1="145" x2="40" y2="140" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="50" y1="145" x2="60" y2="140" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="55" y1="155" x2="49" y2="160" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="55" y1="155" x2="61" y2="160" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="90" cy="100" r="8" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="90" y1="100" x2="90" y2="120" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="90" y1="110" x2="86" y2="115" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="90" y1="110" x2="94" y2="115" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="90" y1="120" x2="85" y2="125" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="90" y1="120" x2="95" y2="125" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="130" cy="70" r="8" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="130" y1="70" x2="130" y2="85" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="130" y1="75" x2="126" y2="65" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="130" y1="75" x2="134" y2="65" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="130" y1="85" x2="126" y2="90" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="130" y1="85" x2="134" y2="90" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="160" cy="30" r="8" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="160" y1="30" x2="160" y2="45" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="160" y1="35" x2="156" y2="40" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="160" y1="35" x2="164" y2="40" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="160" y1="45" x2="156" y2="50" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="160" y1="45" x2="164" y2="50" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="160" y1="20" x2="160" y2="10" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="160" y1="20" x2="155" y2="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="160" y1="20" x2="165" y2="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="160" y1="20" x2="152" y2="17" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="160" y1="20" x2="168" y2="17" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="asset_s7_supporting"><path d="M74 136 C64 99 86 94 91 137 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M109 136 C104 94 126 99 131 137 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="98" y1="84" x2="98" y2="74" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="102" y1="80" x2="102" y2="70" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="100" y1="88" x2="100" y2="78" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="asset_s7_supporting"><circle cx="79" cy="89" r="6" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="79" y1="95" x2="79" y2="119" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="79" y1="104" x2="94" y2="105" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="121" cy="91" r="6" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="121" y1="97" x2="121" y2="121" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="121" y1="106" x2="106" y2="105" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M100 102 L103.5 105 L100 108.5 L96.5 105 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="asset_s7_supporting"><circle cx="99" cy="101" r="35" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="99" y1="101" x2="97" y2="76" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="99" y1="101" x2="89" y2="86" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 130 110 A 50 50 0 1 0 70 110" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="70" y1="110" x2="80" y2="105" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="70" y1="110" x2="80" y2="115" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="asset_s7_supporting"><path d="M 72 127 Q 62 82 101 61 Q 142 83 131 126 Q 100 136 72 127 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 101 101 C 96 96 96 89 101 89 C 106 89 106 96 101 101 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="asset_s7_supporting"><polygon points="1,81 199,81 189,100 199,119 1,119 11,100" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<clipPath id="cp_s1_title"><rect id="cr_s1_title" x="432" y="7" width="0" height="67"/></clipPath><clipPath id="cp_s1_body1"><rect id="cr_s1_body1" x="377" y="148" width="0" height="50"/></clipPath><clipPath id="cp_s1_body2"><rect id="cr_s1_body2" x="358" y="196" width="0" height="50"/></clipPath><clipPath id="cp_s1_body3"><rect id="cr_s1_body3" x="320" y="244" width="0" height="50"/></clipPath><clipPath id="cp_s1_body4"><rect id="cr_s1_body4" x="372" y="292" width="0" height="50"/></clipPath><clipPath id="cp_s1_lbl_left"><rect id="cr_s1_lbl_left" x="388" y="586" width="0" height="39"/></clipPath><clipPath id="cp_s1_lbl_right"><rect id="cr_s1_lbl_right" x="672" y="586" width="0" height="39"/></clipPath>
+<clipPath id="cp_s2_title"><rect id="cr_s2_title" x="60" y="14" width="0" height="67"/></clipPath><clipPath id="cp_s2_body1"><rect id="cr_s2_body1" x="60" y="175" width="0" height="50"/></clipPath><clipPath id="cp_s2_body2"><rect id="cr_s2_body2" x="60" y="225" width="0" height="50"/></clipPath><clipPath id="cp_s2_body3"><rect id="cr_s2_body3" x="60" y="375" width="0" height="50"/></clipPath><clipPath id="cp_s2_body4"><rect id="cr_s2_body4" x="92" y="545" width="0" height="50"/></clipPath><clipPath id="cp_s2_arrow_label"><rect id="cr_s2_arrow_label" x="790" y="388" width="0" height="42"/></clipPath>
+<clipPath id="cp_s3_title"><rect id="cr_s3_title" x="313" y="7" width="0" height="67"/></clipPath><clipPath id="cp_s3_underline"><rect id="cr_s3_underline" x="313" y="74" width="0" height="16"/></clipPath><clipPath id="cp_s3_body1"><rect id="cr_s3_body1" x="660" y="200" width="0" height="48"/></clipPath><clipPath id="cp_s3_body2"><rect id="cr_s3_body2" x="660" y="248" width="0" height="48"/></clipPath><clipPath id="cp_s3_body3"><rect id="cr_s3_body3" x="660" y="296" width="0" height="48"/></clipPath><clipPath id="cp_s3_body4"><rect id="cr_s3_body4" x="660" y="344" width="0" height="48"/></clipPath><clipPath id="cp_s3_lbl_servant"><rect id="cr_s3_lbl_servant" x="148" y="548" width="0" height="34"/></clipPath><clipPath id="cp_s3_lbl_mercy"><rect id="cr_s3_lbl_mercy"
+ x="148" y="168" width="0" height="34"/></clipPath><clipPath id="cp_s3_lbl_tawbah"><rect id="cr_s3_lbl_tawbah" x="90" y="378" width="0" height="34"/></clipPath><clipPath id="cp_s3_lbl_accept"><rect id="cr_s3_lbl_accept" x="370" y="378" width="0" height="34"/></clipPath><clipPath id="cp_s3_infinite"><rect id="cr_s3_infinite" x="200" y="610" width="0" height="40"/></clipPath>
+<clipPath id="cp_s4_title"><rect id="cr_s4_title" x="247" y="7" width="0" height="67"/></clipPath><clipPath id="cp_s4_afu_head"><rect id="cr_s4_afu_head" x="140" y="128" width="0" height="56"/></clipPath><clipPath id="cp_s4_tawab_head"><rect id="cr_s4_tawab_head" x="730" y="128" width="0" height="56"/></clipPath><clipPath id="cp_s4_lbl1"><rect id="cr_s4_lbl1" x="80" y="430" width="0" height="39"/></clipPath><clipPath id="cp_s4_lbl2"><rect id="cr_s4_lbl2" x="80" y="478" width="0" height="39"/></clipPath><clipPath id="cp_s4_lbl3"><rect id="cr_s4_lbl3" x="700" y="430" width="0" height="39"/></clipPath><clipPath id="cp_s4_lbl4"><rect id="cr_s4_lbl4" x="700" y="478" width="0" height="39"/></clipPath><clipPath id="cp_s4_renewal"><rect id="cr_s4_renewal" x="503" y="658" width="0" height="42"/></clipPath>
+<clipPath id="cp_s5_title"><rect id="cr_s5_title" x="379" y="7" width="0" height="67"/></clipPath><clipPath id="cp_s5_line1"><rect id="cr_s5_line1" x="60" y="198" width="0" height="50"/></clipPath><clipPath id="cp_s5_line2"><rect id="cr_s5_line2" x="60" y="248" width="0" height="50"/></clipPath><clipPath id="cp_s5_line3"><rect id="cr_s5_line3" x="720" y="198" width="0" height="50"/></clipPath><clipPath id="cp_s5_line4"><rect id="cr_s5_line4" x="720" y="248" width="0" height="50"/></clipPath><clipPath id="cp_s5_ref_left"><rect id="cr_s5_ref_left" x="330" y="508" width="0" height="39"/></clipPath><clipPath id="cp_s5_ref_right"><rect id="cr_s5_ref_right" x="710" y="508" width="0" height="39"/></clipPath>
+<clipPath id="cp_s6_title"><rect id="cr_s6_title" x="339" y="7" width="0" height="67"/></clipPath><clipPath id="cp_s6_underline"><rect id="cr_s6_underline" x="339" y="74" width="0" height="20"/></clipPath><clipPath id="cp_s6_body1"><rect id="cr_s6_body1" x="140" y="536" width="0" height="48"/></clipPath><clipPath id="cp_s6_body2"><rect id="cr_s6_body2" x="140" y="582" width="0" height="48"/></clipPath><clipPath id="cp_s6_body3"><rect id="cr_s6_body3" x="140" y="628" width="0" height="48"/></clipPath><clipPath id="cp_s6_body4"><rect id="cr_s6_body4" x="140" y="674" width="0" height="48"/></clipPath><clipPath id="cp_s6_lbl1"><rect id="cr_s6_lbl1" x="148" y="430" width="0" height="34"/></clipPath><clipPath id="cp_s6_lbl2"><rect id="cr_s6_lbl2" x="398" y="430" width="0" height="34"/></clipPath><clipPath id="cp_s6_lbl3"><rect id="cr_s6_lbl3" x="648" y="430" width="0" height="34"/></clipPath><clipPath id="cp_s6_lbl4"><rect id="cr_s6_lbl4" x="898" y="430" width="0" height="34"/></clipPath>
+<clipPath id="cp_s7_title"><rect id="cr_s7_title" x="287" y="7" width="0" height="67"/></clipPath><clipPath id="cp_s7_item1"><rect id="cr_s7_item1" x="160" y="228" width="0" height="50"/></clipPath><clipPath id="cp_s7_item2"><rect id="cr_s7_item2" x="160" y="328" width="0" height="50"/></clipPath><clipPath id="cp_s7_item3"><rect id="cr_s7_item3" x="160" y="428" width="0" height="50"/></clipPath><clipPath id="cp_s7_item4"><rect id="cr_s7_item4" x="160" y="528" width="0" height="50"/></clipPath><clipPath id="cp_s7_banner_text"><rect id="cr_s7_banner_text" x="490" y="630" width="0" height="50"/></clipPath>
+</defs>
+
+<rect width="1280" height="720" fill="url(#bg)"/>
+
+<g id="scene1" class="scene">
+
+  <!-- Crescent + Star icon top-right -->
+  <g id="s1_illust_supporting" opacity="0" transform="translate(1060, 10) scale(1.1)">
+    <path d="M 85.3 75.1 A 30.5 45.2 0 0 1 80.1 125.4 A 25.4 38.3 0 0 0 85.3 75.1 Z" fill="none" stroke="#2b7ec2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <polygon points="125.5 82.2 129.8 93.6 142.3 94.3 132.5 102.6 135.7 114.5 125.1 108.1 114.3 114.5 117.5 102.4 107.8 94.3 120.2 93.4" fill="none" stroke="#2b7ec2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Title -->
+  <g clip-path="url(#cp_s1_title)">
+    <text x="640" y="55" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="48" font-weight="700" fill="#2b7ec2">Names That Heal</text>
+  </g>
+
+  <!-- Wavy underline beneath title -->
+  <path id="s1_underline" d="M 432 68 Q 490 78 548 68 Q 606 58 664 68 Q 722 78 780 68 Q 820 62 848 68" fill="none" stroke="#2b7ec2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Body line 1: Allah has 99 Beautiful Names -->
+  <g clip-path="url(#cp_s1_body1)">
+    <text x="640" y="185" text-anchor="middle" font-family="'Caveat',cursive" font-size="34" fill="#333">Allah has <tspan font-family="'Permanent Marker',cursive" fill="#2b7ec2">99 Beautiful Names</tspan></text>
+  </g>
+
+  <!-- Body line 2: Each name is a door to knowing Him -->
+  <g clip-path="url(#cp_s1_body2)">
+    <text x="640" y="233" text-anchor="middle" font-family="'Caveat',cursive" font-size="34" fill="#333">Each name is a door to <tspan font-family="'Permanent Marker',cursive" fill="#cc7722">knowing Him</tspan></text>
+  </g>
+
+  <!-- Body line 3: Two names speak to every sinner -->
+  <g clip-path="url(#cp_s1_body3)">
+    <text x="640" y="281" text-anchor="middle" font-family="'Caveat',cursive" font-size="34" fill="#333">Two names speak to every sinner:</text>
+  </g>
+
+  <!-- Body line 4: Al-Afu & At-Tawab -->
+  <g clip-path="url(#cp_s1_body4)">
+    <text x="640" y="329" text-anchor="middle" font-family="'Permanent Marker',cursive" font-size="34" fill="#1e8c5a">Al-Afu  &amp;  At-Tawab</text>
+  </g>
+
+  <!-- Main illustration: Two doors with radiance -->
+  <g id="s1_illust_main" opacity="0" transform="translate(310, 340) scale(2.9)">
+    <line x1="99" y1="49" x2="217" y2="28" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="99" y1="49" x2="203" y2="-9" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="99" y1="49" x2="176" y2="-41" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="99" y1="49" x2="140" y2="-62" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="99" y1="49" x2="99" y2="-69" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="99" y1="49" x2="58" y2="-62" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="99" y1="49" x2="22" y2="-41" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="99" y1="49" x2="-5" y2="-9" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="17" y="52" width="77" height="147" fill="none" stroke="#2b7ec2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 17 52 A 38.5 38.5 0 0 1 94 52 Z" fill="none" stroke="#2b7ec2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="89" cy="126" r="5" fill="none" stroke="#2b7ec2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="37" y="116" width="37" height="19" fill="none" stroke="#2b7ec2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="107" y="53" width="77" height="146" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 107 53 A 38.5 38.5 0 0 1 184 53 Z" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="112" cy="126.5" r="5" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="127" y="117" width="38" height="18" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Left door label: Al-Afu -->
+  <g clip-path="url(#cp_s1_lbl_left)">
+    <text id="s1_lbl_left_text" x="450" y="620" text-anchor="middle" font-family="'Permanent Marker',cursive" font-size="28" fill="#2b7ec2">Al-Afu</text>
+  </g>
+
+  <!-- Right door label: At-Tawab -->
+  <g clip-path="url(#cp_s1_lbl_right)">
+    <text id="s1_lbl_right_text" x="795" y="620" text-anchor="middle" font-family="'Permanent Marker',cursive" font-size="28" fill="#1e8c5a">At-Tawab</text>
+  </g>
+
+</g>
+
+<g id="scene2" class="scene">
+  <!-- Title -->
+  <g clip-path="url(#cp_s2_title)">
+    <text x="60" y="62" font-family="'Cabin Sketch',cursive" font-size="48" font-weight="700" fill="#1e8c5a">Al-Afu: The Pardoner</text>
+  </g>
+  <!-- Underline -->
+  <path id="s2_underline" d="M 60 74 Q 150 80 260 73 Q 370 66 480 74 Q 530 78 560 73" fill="none" stroke="#1e8c5a" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Body Line 1: Root -->
+  <g clip-path="url(#cp_s2_body1)">
+    <text x="60" y="210" font-family="'Caveat',cursive" font-size="34" fill="#333">Root: <tspan font-family="'Permanent Marker',cursive" font-size="30" fill="#1e8c5a">'Afw</tspan> = to wipe away entirely</text>
+  </g>
+
+  <!-- Body Line 2: Not just forgiveness -->
+  <g clip-path="url(#cp_s2_body2)">
+    <text x="60" y="258" font-family="'Caveat',cursive" font-size="34" fill="#333">Not just forgiveness — <tspan font-family="'Permanent Marker',cursive" font-size="30" fill="#cc7722">complete erasure</tspan></text>
+  </g>
+
+  <!-- Body Line 3: Wind analogy -->
+  <g clip-path="url(#cp_s2_body3)">
+    <text x="60" y="410" font-family="'Caveat',cursive" font-size="34" fill="#333">Like wind erasing footprints in sand</text>
+  </g>
+
+  <!-- Body Line 4: Hadith reference -->
+  <g clip-path="url(#cp_s2_body4)">
+    <text x="92" y="578" font-family="'Caveat',cursive" font-size="32" fill="#333">Aisha (RA) was taught: <tspan font-family="'Permanent Marker',cursive" font-size="28" fill="#1e8c5a">Allahumma innaka 'Afuww</tspan></text>
+  </g>
+
+  <!-- Scroll icon (supporting) -->
+  <g id="s2_illust_supporting" opacity="0" transform="translate(40, 530) scale(0.55)">
+    <rect x="84" y="91" width="31" height="19" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="73" cy="101" r="10" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="126" cy="99" r="10" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- ===== RIGHT HALF ILLUSTRATION ===== -->
+
+  <!-- TOP PANEL: Footprints in sand -->
+  <!-- Panel background label -->
+  <text id="s2_panel_top_label" x="970" y="115" font-family="'Patrick Hand',cursive" font-size="22" fill="#888" text-anchor="middle" opacity="0">Before</text>
+
+  <!-- Top panel sand + footprints group -->
+  <g id="s2_illust_top" opacity="0" transform="translate(730, 120) scale(2.4)">
+    <!-- Wavy sand lines -->
+    <path d="M 20 20 Q 50 16 80 24 Q 110 34 140 21 Q 170 11 180 19 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 25 40 Q 55 46 85 39 Q 115 31 145 43 Q 175 49 180 41 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 21 60 Q 51 66 81 59 Q 111 51 141 63 Q 171 69 181 61 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Footprints -->
+    <ellipse cx="61" cy="31" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="71" cy="36" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="101" cy="26" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="111" cy="31" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="76" cy="51" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="86" cy="56" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="131" cy="46" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="141" cy="51" rx="8" ry="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Downward arrow between panels -->
+  <path id="s2_panel_arrow" d="M 970 325 L 970 415" fill="none" stroke="#1e8c5a" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow_1e8c5a)"/>
+
+  <!-- Arrow label: Al-Afu -->
+  <g clip-path="url(#cp_s2_arrow_label)">
+    <text x="790" y="422" font-family="'Permanent Marker',cursive" font-size="30" fill="#1e8c5a">Al-Afu</text>
+  </g>
+
+  <!-- BOTTOM PANEL: Smooth sand with wind -->
+  <text id="s2_panel_bot_label" x="970" y="450" font-family="'Patrick Hand',cursive" font-size="22" fill="#888" text-anchor="middle" opacity="0">After</text>
+
+  <g id="s2_illust_bottom" opacity="0" transform="translate(730, 455) scale(2.4)">
+    <!-- Smooth wavy sand lines -->
+    <path d="M 20 130 Q 50 136 80 129 Q 110 121 140 133 Q 170 139 180 131 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 25 150 Q 55 156 85 149 Q 115 141 145 153 Q 175 159 180 151 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 21 170 Q 51 176 81 169 Q 111 161 141 173 Q 171 179 181 171 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Wind swoosh lines -->
+    <path d="M 160 140 Q 170 135 175 145 Q 170 150 160 140 Z" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 155 155 Q 165 150 170 160 Q 165 165 155 155 Z" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 150 170 Q 160 165 165 175 Q 160 180 150 170 Z" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Rough.js frame placeholder for right panel zone -->
+  <g id="rough_s2_panel_frame" opacity="0"></g>
+
+</g>
+
+<g id="scene3" class="scene">
+
+  <!-- Title -->
+  <g clip-path="url(#cp_s3_title)">
+    <text x="640" y="55" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="48" font-weight="700" fill="#8844aa">At-Tawab: Ever-Returning</text>
+  </g>
+
+  <!-- Wavy underline beneath title -->
+  <path id="s3_underline" d="M313 70 Q370 78 430 68 Q490 58 550 70 Q610 80 670 68 Q730 58 790 70 Q840 78 967 70" fill="none" stroke="#8844aa" stroke-width="3" stroke-linecap="round" stroke-dasharray="1000" stroke-dashoffset="1000"/>
+
+  <!-- ===== LEFT HALF: Loop Diagram (centered around x=310, y=390) ===== -->
+
+  <!-- Stick figure (Servant) at bottom of loop, scaled 2.5x, translated to left zone -->
+  <g id="s3_illust_diagram" opacity="0" transform="translate(175, 195) scale(2.5)">
+    <!-- Head -->
+    <circle cx="100.5" cy="160.5" r="12" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Body -->
+    <line x1="100.5" y1="172.5" x2="100.5" y2="185.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Arms raised in dua -->
+    <line x1="97.5" y1="175.5" x2="88.5" y2="168.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="103.5" y1="175.5" x2="112.5" y2="168.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Legs -->
+    <line x1="98.5" y1="185.5" x2="90.5" y2="197.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="102.5" y1="185.5" x2="110.5" y2="197.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Mercy circle (top) -->
+    <circle cx="100.5" cy="40.5" r="20" fill="none" stroke="#8844aa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Radiating lines -->
+    <line x1="100.5" y1="20.5" x2="100.5" y2="15.5" fill="none" stroke="#8844aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="110.5" y1="23.2" x2="113.0" y2="18.9" fill="none" stroke="#8844aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="120.5" y1="40.5" x2="125.5" y2="40.5" fill="none" stroke="#8844aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="110.5" y1="57.8" x2="113.0" y2="62.1" fill="none" stroke="#8844aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="90.5" y1="57.8" x2="88.0" y2="62.1" fill="none" stroke="#8844aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="80.5" y1="40.5" x2="75.5" y2="40.5" fill="none" stroke="#8844aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="90.5" y1="23.2" x2="88.0" y2="18.9" fill="none" stroke="#8844aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Left curved arrow (Tawbah: upward from servant to mercy) -->
+    <path d="M 80.5 160.5 Q 50.5 100.5 80.5 40.5 L 81 40.5 Q 51 100.5 81 160.5 Z" fill="none" stroke="#8844aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <polygon points="80.5,40.5 77.5,47.5 83.5,47.5" fill="#8844aa" stroke="none"/>
+    <!-- Tick marks on left arrow -->
+    <line x1="73.5" y1="145.5" x2="77.5" y2="145.5" fill="none" stroke="#8844aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="65.5" y1="128.5" x2="69.5" y2="128.5" fill="none" stroke="#8844aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="58.5" y1="98.5" x2="58.5" y2="102.5" fill="none" stroke="#8844aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="65.5" y1="72.5" x2="69.5" y2="72.5" fill="none" stroke="#8844aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="73.5" y1="55.5" x2="77.5" y2="55.5" fill="none" stroke="#8844aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Right curved arrow (Acceptance: downward from mercy to servant) -->
+    <path d="M 120.5 40.5 Q 150.5 100.5 120.5 160.5 L 120 160.5 Q 149.5 100.5 120 40.5 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <polygon points="120.5,160.5 117.5,153.5 123.5,153.5" fill="#333" stroke="none"/>
+    <!-- Tick marks on right arrow -->
+    <line x1="123.5" y1="55.5" x2="127.5" y2="55.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="131.5" y1="72.5" x2="135.5" y2="72.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="142.5" y1="98.5" x2="142.5" y2="102.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="131.5" y1="128.5" x2="135.5" y2="128.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="123.5" y1="145.5" x2="127.5" y2="145.5" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Label: Servant -->
+  <g clip-path="url(#cp_s3_lbl_servant)">
+    <text id="s3_lbl_servant" x="148" y="578" font-family="'Patrick Hand',cursive" font-size="26" fill="#333">Servant</text>
+  </g>
+
+  <!-- Label: Allah's Mercy -->
+  <g clip-path="url(#cp_s3_lbl_mercy)">
+    <text id="s3_lbl_mercy" x="148" y="196" font-family="'Patrick Hand',cursive" font-size="26" fill="#8844aa">Allah's Mercy</text>
+  </g>
+
+  <!-- Label: Tawbah (left side of loop) -->
+  <g clip-path="url(#cp_s3_lbl_tawbah)">
+    <text id="s3_lbl_tawbah" x="90" y="408" font-family="'Permanent Marker',cursive" font-size="26" fill="#8844aa">Tawbah</text>
+  </g>
+
+  <!-- Label: Acceptance (right side of loop) -->
+  <g clip-path="url(#cp_s3_lbl_accept)">
+    <text id="s3_lbl_accept" x="370" y="408" font-family="'Permanent Marker',cursive" font-size="26" fill="#333">Acceptance</text>
+  </g>
+
+  <!-- Infinite loop indicator text -->
+  <g clip-path="url(#cp_s3_infinite)">
+    <text id="s3_lbl_infinite" x="200" y="645" font-family="'Caveat',cursive" font-size="28" fill="#8844aa">∞ repeating loop</text>
+  </g>
+
+  <!-- ===== RIGHT HALF: Body Text Teaching Notes ===== -->
+
+  <!-- Body line 1: Root: Tawb = to return, turn back -->
+  <g clip-path="url(#cp_s3_body1)">
+    <text x="660" y="240" font-family="'Caveat',cursive" font-size="34" fill="#333">Root: Tawb = to return, turn back</text>
+  </g>
+
+  <!-- Body line 2: Allah turns toward the one who repents -->
+  <g clip-path="url(#cp_s3_body2)">
+    <text x="660" y="290" font-family="'Caveat',cursive" font-size="34" fill="#333">Allah turns toward the one who repents</text>
+  </g>
+
+  <!-- Body line 3: Not once — again and again and again -->
+  <g clip-path="url(#cp_s3_body3)">
+    <text x="660" y="340" font-family="'Caveat',cursive" font-size="34" fill="#333">Not once — again and again and again</text>
+  </g>
+
+  <!-- Body line 4: Mentioned 11 times in the Quran -->
+  <g clip-path="url(#cp_s3_body4)">
+    <text x="660" y="390" font-family="'Caveat',cursive" font-size="34" fill="#333">Mentioned 11 times in the Quran</text>
+  </g>
+
+  <!-- Decorative emphasis box around body3 (drawn via rough.js in JS) -->
+
+  <!-- Vertical divider line between left and right zones -->
+  <line id="s3_divider" x1="590" y1="100" x2="590" y2="660" stroke="#ccbbdd" stroke-width="1.5" stroke-dasharray="8,6" stroke-linecap="round" opacity="0.5"/>
+
+  <!-- Key term highlight arrow pointing to loop -->
+  <path id="s3_arrow_loop" d="M 620 410 Q 580 430 545 420" fill="none" stroke="#8844aa" stroke-width="2" stroke-linecap="round" marker-end="url(#arrow_8844aa)" stroke-dasharray="200" stroke-dashoffset="200"/>
+
+</g>
+
+<g id="scene4" class="scene">
+
+  <!-- Title -->
+  <g clip-path="url(#cp_s4_title)">
+    <text x="640" y="55" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="48" font-weight="700" fill="#333">Afu vs. Tawab: The Difference</text>
+  </g>
+
+  <!-- Wavy underline beneath title -->
+  <path id="s4_underline" d="M247 65 Q320 72 400 63 Q480 54 560 65 Q640 76 720 65 Q800 54 880 65 Q960 76 1033 65" fill="none" stroke="#cc7722" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Vertical dashed divider -->
+  <line id="s4_divider" x1="640" y1="90" x2="640" y2="620" stroke="#999" stroke-width="2" stroke-dasharray="10 6" stroke-linecap="round"/>
+
+  <!-- LEFT COLUMN: Al-Afu header -->
+  <g clip-path="url(#cp_s4_afu_head)">
+    <text x="200" y="170" text-anchor="middle" font-family="'Permanent Marker',cursive" font-size="44" fill="#1e8c5a">Al-Afu</text>
+  </g>
+
+  <!-- LEFT: Ledger illustration group -->
+  <g id="s4_illust_main" opacity="0" transform="translate(50, 190) scale(2.3)">
+    <rect x="41" y="56" width="118" height="88" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="48" y1="69" x2="150" y2="69" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="48" y1="89" x2="150" y2="89" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="48" y1="109" x2="150" y2="109" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="48" y1="129" x2="150" y2="129" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="60" y1="67" x2="64" y2="71" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="60" y1="71" x2="64" y2="67" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="90" y1="67" x2="94" y2="71" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="90" y1="71" x2="94" y2="67" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="75" y1="87" x2="79" y2="91" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="75" y1="91" x2="79" y2="87" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="120" y1="107" x2="124" y2="111" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="120" y1="111" x2="124" y2="107" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <polygon points="155,45 165,48 175,62 150,58" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="140,60 145,65 150,60" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="135,70 140,75 145,70" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- RIGHT COLUMN: At-Tawab header -->
+  <g clip-path="url(#cp_s4_tawab_head)">
+    <text x="900" y="170" text-anchor="middle" font-family="'Permanent Marker',cursive" font-size="44" fill="#8844aa">At-Tawab</text>
+  </g>
+
+  <!-- RIGHT: Bridge illustration group -->
+  <g id="s4_illust_bridge" opacity="0" transform="translate(680, 190) scale(2.3)">
+    <rect x="44" y="98" width="40" height="30" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="116" y="100" width="40" height="30" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="85" y="99" width="30" height="8" fill="none" stroke="#8844aa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 47 131 Q 80 160 112 133 Z" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="8 8"/>
+    <line x1="99" y1="89" x2="99" y2="97" fill="none" stroke="#8844aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="101" y1="107" x2="101" y2="115" fill="none" stroke="#8844aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="78" y1="102" x2="84" y2="102" fill="none" stroke="#8844aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="116" y1="104" x2="122" y2="104" fill="none" stroke="#8844aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- LEFT body labels -->
+  <g clip-path="url(#cp_s4_lbl1)">
+    <text x="80" y="462" font-family="'Caveat',cursive" font-size="32" fill="#333">✦ Erases the <tspan font-family="'Permanent Marker',cursive" fill="#1e8c5a">sin record</tspan></text>
+  </g>
+  <g clip-path="url(#cp_s4_lbl2)">
+    <text x="80" y="510" font-family="'Caveat',cursive" font-size="32" fill="#333">✦ Removes the <tspan font-family="'Permanent Marker',cursive" fill="#1e8c5a">stain</tspan></text>
+  </g>
+
+  <!-- RIGHT body labels -->
+  <g clip-path="url(#cp_s4_lbl3)">
+    <text x="700" y="462" font-family="'Caveat',cursive" font-size="32" fill="#333">✦ Restores the <tspan font-family="'Permanent Marker',cursive" fill="#8844aa">bond</tspan></text>
+  </g>
+  <g clip-path="url(#cp_s4_lbl4)">
+    <text x="700" y="510" font-family="'Caveat',cursive" font-size="32" fill="#333">✦ Rebuilds the <tspan font-family="'Permanent Marker',cursive" fill="#8844aa">bridge</tspan></text>
+  </g>
+
+  <!-- Bottom bracket supporting element -->
+  <g id="s4_illust_supporting" opacity="0" transform="translate(140, 520) scale(5.0)">
+    <path d="M 11 151 L 11 166 Q 101 181 189 166 L 189 151 Z" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Complete Renewal label -->
+  <g clip-path="url(#cp_s4_renewal)">
+    <text x="640" y="692" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="36" font-weight="700" fill="#cc7722">Complete Renewal</text>
+  </g>
+
+</g>
+
+<g id="scene5" class="scene">
+
+  <!-- Title -->
+  <g clip-path="url(#cp_s5_title)">
+    <text x="640" y="55" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="48" font-weight="700" fill="#1a8a8a">Quranic Reflections</text>
+  </g>
+
+  <!-- Wavy underline beneath title -->
+  <path id="s5_underline" d="M379 64 Q420 70 460 64 Q500 58 540 64 Q580 70 620 64 Q660 58 700 64 Q740 70 780 64 Q820 58 860 64 Q880 70 901 64" fill="none" stroke="#1a8a8a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- === LEFT TEXT GROUP (lines 1 & 2) upper-left === -->
+  <!-- Line 1: Quran 4:99 — Allah is Afuwwan Qadira -->
+  <g clip-path="url(#cp_s5_line1)">
+    <text x="60" y="235" font-family="'Caveat',cursive" font-size="32" fill="#333">Quran 4:99 — <tspan font-family="'Permanent Marker',cursive" font-size="28" fill="#1a8a8a">Afuwwan Qadira</tspan></text>
+  </g>
+  <!-- Line 2: Pardoning & fully Capable of punishing -->
+  <g clip-path="url(#cp_s5_line2)">
+    <text x="60" y="281" font-family="'Caveat',cursive" font-size="32" fill="#333">Pardoning &amp; fully <tspan font-style="italic" fill="#cc7722">Capable</tspan> of punishing</text>
+  </g>
+
+  <!-- Arrow from left text group down to left Quran page -->
+  <path id="s5_arrow_left" d="M 280 295 C 280 350 390 390 430 450" fill="none" stroke="#1a8a8a" stroke-width="2.5" stroke-linecap="round" marker-end="url(#arrow_1a8a8a)"/>
+
+  <!-- === RIGHT TEXT GROUP (lines 3 & 4) upper-right === -->
+  <!-- Line 3: Quran 2:37 — He is At-Tawab Ar-Rahim -->
+  <g clip-path="url(#cp_s5_line3)">
+    <text x="720" y="235" font-family="'Caveat',cursive" font-size="32" fill="#333">Quran 2:37 — <tspan font-family="'Permanent Marker',cursive" font-size="28" fill="#1a8a8a">At-Tawab Ar-Rahim</tspan></text>
+  </g>
+  <!-- Line 4: Accepting repentance with tender mercy -->
+  <g clip-path="url(#cp_s5_line4)">
+    <text x="720" y="281" font-family="'Caveat',cursive" font-size="32" fill="#333">Accepting repentance with <tspan font-style="italic" fill="#cc7722">tender mercy</tspan></text>
+  </g>
+
+  <!-- Arrow from right text group down to right Quran page -->
+  <path id="s5_arrow_right" d="M 870 295 C 870 350 820 390 800 450" fill="none" stroke="#1a8a8a" stroke-width="2.5" stroke-linecap="round" marker-end="url(#arrow_1a8a8a)"/>
+
+  <!-- === OPEN QURAN ILLUSTRATION (center) === -->
+  <g id="s5_illust_main" opacity="0" transform="translate(440, 330) scale(2.8)">
+    <line x1="100" y1="54" x2="100" y2="146" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="33" y="58" width="65" height="85" transform="rotate(-5 100 100)" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="102" y="58" width="65" height="85" transform="rotate(5 100 100)" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="43" y1="73" x2="88" y2="73" transform="rotate(-5 100 100)" fill="none" stroke="#1a8a8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="43" y1="93" x2="88" y2="93" transform="rotate(-5 100 100)" fill="none" stroke="#1a8a8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="43" y1="113" x2="88" y2="113" transform="rotate(-5 100 100)" fill="none" stroke="#1a8a8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="43" y1="133" x2="88" y2="133" transform="rotate(-5 100 100)" fill="none" stroke="#1a8a8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="112" y1="73" x2="157" y2="73" transform="rotate(5 100 100)" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="112" y1="93" x2="157" y2="93" transform="rotate(5 100 100)" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="112" y1="113" x2="157" y2="113" transform="rotate(5 100 100)" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="112" y1="133" x2="157" y2="133" transform="rotate(5 100 100)" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="100" cy="54" r="4" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="100" cy="146" r="4" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Page reference labels on Quran pages -->
+  <g clip-path="url(#cp_s5_ref_left)">
+    <text id="s5_ref_left_text" x="500" y="540" text-anchor="middle" font-family="'Patrick Hand',cursive" font-size="24" fill="#1a8a8a">4:99</text>
+  </g>
+  <g clip-path="url(#cp_s5_ref_right)">
+    <text id="s5_ref_right_text" x="780" y="540" text-anchor="middle" font-family="'Patrick Hand',cursive" font-size="24" fill="#cc7722">2:37</text>
+  </g>
+
+  <!-- === HEART ICON (bottom center) === -->
+  <g id="s5_illust_supporting" opacity="0" transform="translate(540, 560) scale(1.7)">
+    <path d="M 101 141 C 51 121 49 69 99 68 C 151 71 149 122 101 141 Z" fill="none" stroke="#993344" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 110 75 C 115 65 125 60 130 50 C 127 53 117 68 110 75 Z" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 140 100 C 150 90 160 95 170 100 C 165 103 155 108 140 100 Z" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 80 130 C 70 135 60 145 50 155 C 55 152 65 140 80 130 Z" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 60 100 C 50 90 40 95 30 100 C 35 103 45 108 60 100 Z" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+</g>
+
+<g id="scene6" class="scene">
+
+  <!-- Title -->
+  <g clip-path="url(#cp_s6_title)">
+    <text x="640" y="55" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="48" font-weight="700" fill="#993344">Why We Need Both Names</text>
+  </g>
+
+  <!-- Wavy underline beneath title -->
+  <path id="s6_underline" d="M 339 72 Q 390 78 440 72 Q 490 66 540 72 Q 590 78 640 72 Q 690 66 740 72 Q 790 78 840 72 Q 890 66 940 72" fill="none" stroke="#993344" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Illustration zone: winding path + stick figures, centered in upper half -->
+  <!-- Path area: x=100 to x=1180, y center around 300 -->
+
+  <!-- The winding upward path -->
+  <path id="s6_path_main" d="M 130 420 Q 200 410 250 380 Q 320 340 380 350 Q 450 355 500 310 Q 560 265 620 270 Q 680 272 730 230 Q 800 185 860 190 Q 920 192 970 155 Q 1030 115 1080 120 Q 1130 122 1150 100" fill="none" stroke="#993344" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Milestone 1: Stumbling figure at ~(220, 370) -->
+  <g id="s6_illust_fig1" opacity="0" transform="translate(170, 270) scale(2.2)">
+    <circle cx="50" cy="140" r="8" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="50" y1="148" x2="58" y2="162" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="152" x2="38" y2="148" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="152" x2="63" y2="148" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="58" y1="162" x2="52" y2="170" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="58" y1="162" x2="66" y2="170" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Milestone 2: Kneeling figure at ~(470, 310) -->
+  <g id="s6_illust_fig2" opacity="0" transform="translate(420, 210) scale(2.2)">
+    <circle cx="50" cy="130" r="8" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="138" x2="50" y2="155" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="145" x2="44" y2="150" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="145" x2="56" y2="150" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="155" x2="44" y2="165" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="44" y1="165" x2="50" y2="165" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="155" x2="56" y2="158" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Milestone 3: Dua/raised hands figure at ~(720, 235) -->
+  <g id="s6_illust_fig3" opacity="0" transform="translate(670, 135) scale(2.2)">
+    <circle cx="50" cy="130" r="8" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="138" x2="50" y2="158" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="143" x2="42" y2="132" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="143" x2="58" y2="132" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="158" x2="45" y2="168" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="158" x2="55" y2="168" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Milestone 4: Standing tall with light at ~(980, 145) -->
+  <g id="s6_illust_fig4" opacity="0" transform="translate(930, 45) scale(2.2)">
+    <circle cx="50" cy="130" r="8" fill="none" stroke="#993344" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="138" x2="50" y2="158" fill="none" stroke="#993344" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="143" x2="44" y2="148" fill="none" stroke="#993344" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="143" x2="56" y2="148" fill="none" stroke="#993344" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="158" x2="45" y2="168" fill="none" stroke="#993344" stroke-width="2" stroke-linecap="round"/>
+    <line x1="50" y1="158" x2="55" y2="168" fill="none" stroke="#993344" stroke-width="2" stroke-linecap="round"/>
+    <!-- Radiance lines above head -->
+    <line id="s6_ray1" x1="50" y1="120" x2="50" y2="108" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round"/>
+    <line id="s6_ray2" x1="50" y1="120" x2="43" y2="110" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round"/>
+    <line id="s6_ray3" x1="50" y1="120" x2="57" y2="110" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round"/>
+    <line id="s6_ray4" x1="50" y1="120" x2="40" y2="114" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round"/>
+    <line id="s6_ray5" x1="50" y1="120" x2="60" y2="114" fill="none" stroke="#cc7722" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Labels below each milestone -->
+  <g clip-path="url(#cp_s6_lbl1)">
+    <text x="220" y="458" text-anchor="middle" font-family="'Patrick Hand',cursive" font-size="24" fill="#333">Sin</text>
+  </g>
+  <g clip-path="url(#cp_s6_lbl2)">
+    <text x="480" y="458" text-anchor="middle" font-family="'Patrick Hand',cursive" font-size="24" fill="#333">Regret</text>
+  </g>
+  <g clip-path="url(#cp_s6_lbl3)">
+    <text x="730" y="458" text-anchor="middle" font-family="'Patrick Hand',cursive" font-size="24" fill="#333">Tawbah</text>
+  </g>
+  <g clip-path="url(#cp_s6_lbl4)">
+    <text x="1010" y="458" text-anchor="middle" font-family="'Patrick Hand',cursive" font-size="24" fill="#333">Renewal</text>
+  </g>
+
+  <!-- Small arrows from labels up toward figures -->
+  <path id="s6_arr1" d="M 220 445 L 220 415" fill="none" stroke="#993344" stroke-width="1.8" stroke-linecap="round" marker-end="url(#arrow_993344)"/>
+  <path id="s6_arr2" d="M 480 445 L 480 415" fill="none" stroke="#993344" stroke-width="1.8" stroke-linecap="round" marker-end="url(#arrow_993344)"/>
+  <path id="s6_arr3" d="M 730 445 L 730 415" fill="none" stroke="#993344" stroke-width="1.8" stroke-linecap="round" marker-end="url(#arrow_993344)"/>
+  <path id="s6_arr4" d="M 1010 445 L 1010 390" fill="none" stroke="#993344" stroke-width="1.8" stroke-linecap="round" marker-end="url(#arrow_993344)"/>
+
+  <!-- Divider line separating illustration from body text -->
+  <line id="s6_divider" x1="80" y1="490" x2="1200" y2="490" stroke="#ccb0b8" stroke-width="1.5" stroke-dasharray="6,4" stroke-linecap="round"/>
+
+  <!-- Body text lines -->
+  <g clip-path="url(#cp_s6_body1)">
+    <text x="640" y="530" text-anchor="middle" font-family="'Caveat',cursive" font-size="34" fill="#333">The Prophet ﷺ said: <tspan font-family="'Permanent Marker',cursive" font-size="30" fill="#993344">Every son of Adam sins</tspan></text>
+  </g>
+  <g clip-path="url(#cp_s6_body2)">
+    <text x="640" y="575" text-anchor="middle" font-family="'Caveat',cursive" font-size="34" fill="#333">But the <tspan font-family="'Permanent Marker',cursive" font-size="30" fill="#993344">best sinners</tspan> are those who repent</text>
+  </g>
+  <g clip-path="url(#cp_s6_body3)">
+    <text x="640" y="620" text-anchor="middle" font-family="'Caveat',cursive" font-size="34" fill="#333">Sin is not the end — it's the <tspan font-family="'Permanent Marker',cursive" font-size="30" fill="#993344">beginning</tspan></text>
+  </g>
+  <g clip-path="url(#cp_s6_body4)">
+    <text x="640" y="662" text-anchor="middle" font-family="'Caveat',cursive" font-size="34" fill="#333">Of a deeper bond with your Lord</text>
+  </g>
+
+</g>
+
+<g id="scene7" class="scene">
+
+  <!-- Title -->
+  <g clip-path="url(#cp_s7_title)">
+    <text x="640" y="55" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="48" font-weight="700" fill="#1e8c5a">Practice These Names Daily</text>
+  </g>
+
+  <!-- Double underline -->
+  <path id="s7_underline1" d="M300 66 Q400 70 500 66 Q580 63 640 66 Q710 70 800 66 Q870 63 960 66" fill="none" stroke="#1e8c5a" stroke-width="3" stroke-linecap="round"/>
+  <path id="s7_underline2" d="M300 74 Q400 78 500 74 Q580 71 640 74 Q710 78 800 74 Q870 71 960 74" fill="none" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Item 1: Dua icon + text -->
+  <g id="s7_illust_icon1" opacity="0" transform="translate(60, 200) scale(0.55)">
+    <path d="M74 136 C64 99 86 94 91 137 Z" fill="none" stroke="#1e8c5a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M109 136 C104 94 126 99 131 137 Z" fill="none" stroke="#1e8c5a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="98" y1="84" x2="98" y2="74" stroke="#1e8c5a" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="102" y1="80" x2="102" y2="70" stroke="#1e8c5a" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="100" y1="88" x2="100" y2="78" stroke="#1e8c5a" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <g clip-path="url(#cp_s7_item1)">
+    <text x="160" y="268" font-family="'Caveat',cursive" font-size="36" fill="#333">1. Make dua: <tspan font-family="'Permanent Marker',cursive" font-size="30" fill="#1e8c5a">Allahumma innaka Afuww...</tspan></text>
+  </g>
+
+  <!-- Item 2: Forgiveness icon + text -->
+  <g id="s7_illust_icon2" opacity="0" transform="translate(60, 298) scale(0.55)">
+    <circle cx="79" cy="89" r="6" fill="none" stroke="#cc7722" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="79" y1="95" x2="79" y2="119" stroke="#cc7722" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="79" y1="104" x2="94" y2="105" stroke="#cc7722" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="121" cy="91" r="6" fill="none" stroke="#cc7722" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="121" y1="97" x2="121" y2="121" stroke="#cc7722" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="121" y1="106" x2="106" y2="105" stroke="#cc7722" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M100 102 L103.5 105 L100 108.5 L96.5 105 Z" fill="none" stroke="#cc7722" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g clip-path="url(#cp_s7_item2)">
+    <text x="160" y="368" font-family="'Caveat',cursive" font-size="36" fill="#333">2. Forgive others — embody <tspan font-family="'Permanent Marker',cursive" font-size="30" fill="#cc7722">Al-Afu</tspan></text>
+  </g>
+
+  <!-- Item 3: Clock icon + text -->
+  <g id="s7_illust_icon3" opacity="0" transform="translate(60, 398) scale(0.55)">
+    <circle cx="99" cy="101" r="35" fill="none" stroke="#8844aa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="99" y1="101" x2="97" y2="76" stroke="#8844aa" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="99" y1="101" x2="89" y2="86" stroke="#8844aa" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 130 110 A 50 50 0 1 0 70 110" fill="none" stroke="#8844aa" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="70" y1="110" x2="80" y2="105" stroke="#8844aa" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="70" y1="110" x2="80" y2="115" stroke="#8844aa" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <g clip-path="url(#cp_s7_item3)">
+    <text x="160" y="468" font-family="'Caveat',cursive" font-size="36" fill="#333">3. Repent daily — never <tspan font-family="'Permanent Marker',cursive" font-size="30" fill="#8844aa">delay tawbah</tspan></text>
+  </g>
+
+  <!-- Item 4: Palm/heart icon + text -->
+  <g id="s7_illust_icon4" opacity="0" transform="translate(60, 498) scale(0.55)">
+    <path d="M 72 127 Q 62 82 101 61 Q 142 83 131 126 Q 100 136 72 127 Z" fill="none" stroke="#1e8c5a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 101 101 C 96 96 96 89 101 89 C 106 89 106 96 101 101 Z" fill="none" stroke="#1e8c5a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g clip-path="url(#cp_s7_item4)">
+    <text x="160" y="568" font-family="'Caveat',cursive" font-size="36" fill="#333">4. Trust Allah — He <tspan font-family="'Permanent Marker',cursive" font-size="30" fill="#1e8c5a">always</tspan> accepts you</text>
+  </g>
+
+  <!-- Bottom banner -->
+  <g id="s7_illust_banner" opacity="0" transform="translate(440, 610) scale(2.0)">
+    <polygon points="1,81 199,81 189,100 199,119 1,119 11,100" fill="#f5f0e8" stroke="#1e8c5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g clip-path="url(#cp_s7_banner_text)">
+    <text x="640" y="672" text-anchor="middle" font-family="'Cabin Sketch',cursive" font-size="38" font-weight="700" fill="#1e8c5a">Start Tonight</text>
+  </g>
+
+  <!-- Sparkle stars (hidden initially) -->
+  <g id="s7_sparkle1" opacity="0">
+    <path d="M530 655 L533 648 L536 655 L543 658 L536 661 L533 668 L530 661 L523 658 Z" fill="#1e8c5a" stroke="#1e8c5a" stroke-width="1"/>
+  </g>
+  <g id="s7_sparkle2" opacity="0">
+    <path d="M640 605 L643 598 L646 605 L653 608 L646 611 L643 618 L640 611 L633 608 Z" fill="#cc7722" stroke="#cc7722" stroke-width="1"/>
+  </g>
+  <g id="s7_sparkle3" opacity="0">
+    <path d="M750 655 L753 648 L756 655 L763 658 L756 661 L753 668 L750 661 L743 658 Z" fill="#1e8c5a" stroke="#1e8c5a" stroke-width="1"/>
+  </g>
+
+</g>
+
+<!-- Progress bar -->
+<rect x="0" y="716" width="1280" height="4" fill="#ddd8d0"/>
+<rect id="progBar" x="0" y="716" width="0" height="4" fill="#2b7ec2"/>
+</svg>
+</div>
+
+<div id="controls">
+  <button id="btnPlay">&#9654; Play</button>
+  <button id="btnReplay">&#8635; Replay</button>
+  <div id="seekWrap">
+    <input type="range" id="seekBar" min="0" max="180000" value="0" step="100"/>
+    <div class="scene-marker" style="left:0.0%;background:#2b7ec2"></div>
+    <div class="scene-marker" style="left:12.2%;background:#1e8c5a"></div>
+    <div class="scene-marker" style="left:27.8%;background:#8844aa"></div>
+    <div class="scene-marker" style="left:43.3%;background:#cc7722"></div>
+    <div class="scene-marker" style="left:58.9%;background:#1a8a8a"></div>
+    <div class="scene-marker" style="left:74.4%;background:#993344"></div>
+    <div class="scene-marker" style="left:86.7%;background:#1e8c5a"></div>
+  </div>
+  <span id="timeDisp">0.0 / 180s</span>
+  <span id="sceneInfo">Scene 1</span>
+  <div class="speed-group">
+    <button data-speed="0.5">0.5x</button>
+    <button data-speed="1" class="active">1x</button>
+    <button data-speed="1.5">1.5x</button>
+    <button data-speed="2">2x</button>
+  </div>
+  <button id="btnFullscreen">&#x26F6; Full</button>
+</div>
+
+<div id="sceneJumps">
+  <div class="scene-jump" data-time="0" data-scene="1" style="border-color:#2b7ec2">1. Names That Heal</div>
+  <div class="scene-jump" data-time="22" data-scene="2" style="border-color:#1e8c5a">2. Al-Afu: The Pardoner</div>
+  <div class="scene-jump" data-time="50" data-scene="3" style="border-color:#8844aa">3. At-Tawab: Ever-Returning</div>
+  <div class="scene-jump" data-time="78" data-scene="4" style="border-color:#cc7722">4. Afu vs. Tawab: The Difference</div>
+  <div class="scene-jump" data-time="106" data-scene="5" style="border-color:#1a8a8a">5. Quranic Reflections</div>
+  <div class="scene-jump" data-time="134" data-scene="6" style="border-color:#993344">6. Why We Need Both Names</div>
+  <div class="scene-jump" data-time="156" data-scene="7" style="border-color:#1e8c5a">7. Practice These Names Daily</div>
+</div>
+
+<div id="kbHint">Space: play/pause &nbsp; &#8592;&#8594;: seek &plusmn;2s &nbsp; R: replay &nbsp; 1-9: jump to scene &nbsp; F: fullscreen</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/DrawSVGPlugin.min.js" onerror="console.log('DrawSVGPlugin not available, using fallback')"></script>
+<script src="https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.min.js"></script>
+<script>
+try { if (typeof DrawSVGPlugin !== 'undefined') gsap.registerPlugin(DrawSVGPlugin); } catch(e) {}
+
+// Wait for fonts to load before initializing
+document.fonts.ready.then(() => {
+  const TOTAL = 180;
+  const seekBar = document.getElementById('seekBar');
+  const timeDisp = document.getElementById('timeDisp');
+  const sceneInfo = document.getElementById('sceneInfo');
+  const btnPlay = document.getElementById('btnPlay');
+  let isSeeking = false;
+
+  // Scene time boundaries
+  const sceneTimes = [{"time":0,"title":"Names That Heal"},{"time":22,"title":"Al-Afu: The Pardoner"},{"time":50,"title":"At-Tawab: Ever-Returning"},{"time":78,"title":"Afu vs. Tawab: The Difference"},{"time":106,"title":"Quranic Reflections"},{"time":134,"title":"Why We Need Both Names"},{"time":156,"title":"Practice These Names Daily"}];
+
+  // ═══════════════════════════════════════
+  // Helper functions (used by scene JS code)
+  // ═══════════════════════════════════════
+
+  /** Stroke draw-on animation using fromTo for seek correctness */
+  function drawOn(id, dur, ease) {
+    const el = typeof id === 'string' ? document.getElementById(id) : id;
+    if (!el) return gsap.to({}, { duration: 0.01 });
+    if (typeof DrawSVGPlugin !== 'undefined') {
+      return gsap.fromTo(el, { drawSVG: '0%' }, { drawSVG: '100%', duration: dur, ease: ease || 'power1.inOut' });
+    }
+    const len = el.getTotalLength ? el.getTotalLength() : 500;
+    return gsap.fromTo(el,
+      { strokeDasharray: len, strokeDashoffset: len },
+      { strokeDashoffset: 0, duration: dur, ease: ease || 'power1.inOut' }
+    );
+  }
+
+  /** Clip-rect text wipe — left-to-right reveal using fromTo */
+  function wipe(crId, targetWidth, dur, ease) {
+    return gsap.fromTo('#' + crId, {
+      attr: { width: 0 }
+    }, {
+      attr: { width: targetWidth },
+      duration: dur,
+      ease: ease || 'power1.inOut'
+    });
+  }
+
+  /** Fade-in — ONLY for Rough.js shapes and PNG icons */
+  function fadeIn(sel, dur) {
+    return gsap.fromTo(sel, { opacity: 0 }, { opacity: 1, duration: dur || 0.5, ease: 'power2.out' });
+  }
+
+  /** Draw-on all children of a group (stroke-by-stroke animation) */
+  function drawOnGroup(groupId, dur) {
+    const group = document.getElementById(groupId);
+    if (!group) return gsap.to({}, { duration: 0.01 });
+    // First make the group visible
+    gsap.set(group, { opacity: 1 });
+    const children = group.querySelectorAll('path, line, circle, ellipse, polyline, polygon, rect');
+    if (children.length === 0) return fadeIn('#' + groupId, dur);
+    const perChild = dur / children.length;
+    const mini = gsap.timeline();
+    children.forEach((child, i) => {
+      if (child.getTotalLength) {
+        const len = child.getTotalLength();
+        mini.fromTo(child,
+          { strokeDasharray: len, strokeDashoffset: len },
+          { strokeDashoffset: 0, duration: Math.max(0.2, perChild), ease: 'power1.inOut' },
+          i * perChild * 0.7
+        );
+      } else {
+        mini.fromTo(child,
+          { opacity: 0 },
+          { opacity: 1, duration: Math.max(0.2, perChild), ease: 'power2.out' },
+          i * perChild * 0.7
+        );
+      }
+    });
+    return mini;
+  }
+
+  /** Show a scene group */
+  function showScene(sel) {
+    const el = document.querySelector(sel);
+    if (el) gsap.set(el, { opacity: 1 });
+  }
+
+  /** Hide a scene group */
+  function hideScene(sel) {
+    const el = document.querySelector(sel);
+    if (el) gsap.set(el, { opacity: 0 });
+  }
+
+  // Rough.js setup
+  const rc = typeof rough !== 'undefined' ? rough.svg(document.getElementById('board')) : null;
+
+  /** Add a Rough.js generated shape to a scene group */
+  function addRoughShape(roughNode, id, parentSceneId) {
+    if (!roughNode) return;
+    roughNode.setAttribute('id', id);
+    gsap.set(roughNode, { opacity: 0 });
+    const parent = document.getElementById(parentSceneId);
+    if (parent) {
+      parent.appendChild(roughNode);
+    } else {
+      document.getElementById('board').appendChild(roughNode);
+    }
+  }
+
+  // Current scene tracker
+  function getCurrentScene(time) {
+    for (let i = sceneTimes.length - 1; i >= 0; i--) {
+      if (time >= sceneTimes[i].time) return i;
+    }
+    return 0;
+  }
+
+  // Master timeline
+  const tl = gsap.timeline({
+    paused: true,
+    onUpdate() {
+      const t = tl.time();
+      if (!isSeeking) seekBar.value = Math.round(t * 1000);
+      timeDisp.textContent = t.toFixed(1) + ' / ' + TOTAL + 's';
+      gsap.set('#progBar', { attr: { width: (t / TOTAL) * 1280 } });
+      const si = getCurrentScene(t);
+      sceneInfo.textContent = 'Scene ' + (si + 1) + ': ' + sceneTimes[si].title;
+      document.querySelectorAll('.scene-jump').forEach((btn, i) => {
+        btn.classList.toggle('active', i === si);
+      });
+    }
+  });
+
+  // ── Scene timeline code (generated by scene coders) ──
+  // ── Scene 1 ──
+// Scene 1: Names That Heal (0s → 22s)
+tl.call(() => { showScene('#scene1'); }, null, 0.0);
+
+// 0.1s — Crescent icon fades in top-right
+tl.add(fadeIn('#s1_illust_supporting', 0.8), 0.1);
+
+// 0.5s — Title wipes in left-to-right
+// charCount=15, fontSize=48 => estimatedWidth=15*48*0.55+20=416, clipRect.x=640-208=432
+tl.add(wipe('cr_s1_title', 416, 1.3), 0.5);
+
+// 2.0s — Wavy underline draws on
+tl.add(drawOn('s1_underline', 0.6), 2.0);
+
+// 2.8s — Body line 1: 'Allah has 99 Beautiful Names'
+// charCount~30, fontSize=34 => width=30*34*0.55+20=582, x=640-291=349 (use 263 for safety)
+tl.add(wipe('cr_s1_body1', 530, 0.8), 2.8);
+
+// 3.3s — Body line 2: 'Each name is a door to knowing Him'
+// charCount~34, fontSize=34 => width=34*34*0.55+20=636 => clipRect.x=640-318=322 (use 282)
+tl.add(wipe('cr_s1_body2', 564, 0.8), 3.3);
+
+// 3.8s — Body line 3: 'Two names speak to every sinner:'
+// charCount~32, fontSize=34 => width=32*34*0.55+20=600 => clipRect.x=640-300=340
+tl.add(wipe('cr_s1_body3', 640, 0.8), 3.8);
+
+// 4.4s — Body line 4: 'Al-Afu & At-Tawab'
+// charCount~18, fontSize=34 => width=18*34*0.55+20=357 => clipRect.x=640-178=462 (use 268)
+tl.add(wipe('cr_s1_body4', 536, 0.9), 4.4);
+
+// 5.6s — Main illustration (two doors + radiance) draws on stroke-by-stroke
+tl.add(drawOnGroup('s1_illust_main', 3.5), 5.6);
+
+// 9.5s — Left door label 'Al-Afu' wipes in
+// charCount~6, fontSize=28 => width=6*28*0.55+20=112 => clipRect.x=450-56=394
+tl.add(wipe('cr_s1_lbl_left', 124, 0.6), 9.5);
+
+// 10.1s — Right door label 'At-Tawab' wipes in
+// charCount~8, fontSize=28 => width=8*28*0.55+20=143 => clipRect.x=795-71=724 (use 123)
+tl.add(wipe('cr_s1_lbl_right', 152, 0.6), 10.1);
+
+// Scene holds until 22s — no further action needed (natural breathing room ~11s)
+
+  // ── Scene 2 ──
+// ── Scene 2: Al-Afu: The Pardoner (22s → 50s) ──
+
+// Scene transition
+tl.call(() => { hideScene('#scene1'); showScene('#scene2'); }, null, 22.0);
+
+// Rough.js decorative frame around illustration zone
+tl.call(() => {
+  if (rc) {
+    const frame = rc.rectangle(718, 100, 510, 570, {
+      roughness: 1.8,
+      bowing: 1.5,
+      stroke: '#1e8c5a',
+      strokeWidth: 2,
+      fill: 'none'
+    });
+    addRoughShape(frame, 'rough_s2_panel_frame', 'scene2');
+  }
+}, null, 22.2);
+tl.add(fadeIn('#rough_s2_panel_frame', 0.8), 22.2);
+
+// Title wipes in
+// charCount ~20, fontSize=48 → targetWidth = 20*48*0.55+20 = 548
+tl.add(wipe('cr_s2_title', 548, 1.3), 22.5);
+
+// Underline draws on
+tl.add(drawOn('s2_underline', 0.5), 23.9);
+
+// Body line 1: Root — charCount ~36 → 36*34*0.55+20 = 693
+tl.add(wipe('cr_s2_body1', 530, 0.8), 24.6);
+
+// Body line 2: Not just forgiveness — charCount ~40 → targetWidth ~560
+tl.add(wipe('cr_s2_body2', 560, 0.8), 25.5);
+
+// TOP PANEL draws on: sand wavy lines then footprints
+tl.add(fadeIn('#s2_illust_top', 0.3), 26.5);
+tl.add(drawOnGroup('s2_illust_top', 2.0), 26.5);
+
+// "Before" label fades in
+tl.add(fadeIn('#s2_panel_top_label', 0.5), 27.0);
+
+// Body line 3: Like wind — charCount ~36 → ~530
+tl.add(wipe('cr_s2_body3', 530, 0.8), 28.6);
+
+// Downward arrow draws on
+tl.add(drawOn('s2_panel_arrow', 0.6), 29.5);
+
+// Arrow label 'Al-Afu' wipes in — charCount ~6, fontSize=30 → 6*30*0.55+20 = 119
+tl.add(wipe('cr_s2_arrow_label', 125, 0.5), 30.2);
+
+// BOTTOM PANEL draws on: smooth sand + wind swooshes
+tl.add(fadeIn('#s2_illust_bottom', 0.3), 30.8);
+tl.add(drawOnGroup('s2_illust_bottom', 2.0), 30.8);
+
+// "After" label fades in
+tl.add(fadeIn('#s2_panel_bot_label', 0.5), 31.5);
+
+// Body line 4: Aisha hadith — charCount ~55 → ~630
+tl.add(wipe('cr_s2_body4', 650, 1.0), 33.0);
+
+// Scroll icon fades in beside body line 4
+tl.add(fadeIn('#s2_illust_supporting', 0.8), 33.5);
+
+  // ── Scene 3 ──
+// Scene 3: At-Tawab: Ever-Returning (50s → 78s)
+
+// 50.0s — transition from scene2 to scene3
+tl.call(() => { hideScene('#scene2'); showScene('#scene3'); }, null, 50.0);
+
+// 50.2s — Rough.js decorative frame around body text area
+tl.call(() => {
+  if (rc) {
+    const frame = rc.rectangle(645, 190, 595, 225, {
+      roughness: 1.8,
+      bowing: 1.5,
+      stroke: '#8844aa',
+      strokeWidth: 2,
+      fill: 'none'
+    });
+    addRoughShape(frame, 'rough_s3_bodyframe', 'scene3');
+  }
+}, null, 50.2);
+tl.add(fadeIn('#rough_s3_bodyframe', 0.8), 50.2);
+
+// 50.5s — Title wipes in
+// charCount=24, fontSize=48, estimatedWidth=24*48*0.55+20=654, clipRect.x=640-654/2=313
+tl.add(wipe('cr_s3_title', 654, 1.4), 50.5);
+
+// 52.0s — Wavy underline draws on
+tl.add(drawOn('s3_underline', 0.5), 52.0);
+
+// 52.0s — Divider line draws on gently
+tl.add(drawOn('s3_divider', 0.8), 52.0);
+
+// 52.6s — Body line 1: Root: Tawb = to return, turn back
+// charCount~30, fontSize=34, width=30*34*0.55+20=582
+tl.add(wipe('cr_s3_body1', 582, 0.9), 52.6);
+
+// 53.5s — Body line 2: Allah turns toward the one who repents
+// charCount~39, fontSize=34, width=39*34*0.55+20=749
+tl.add(wipe('cr_s3_body2', 749, 1.0), 53.5);
+
+// 54.6s — Body line 3: Not once — again and again and again
+// charCount~37, fontSize=34, width=37*34*0.55+20=712
+tl.add(wipe('cr_s3_body3', 712, 1.0), 54.6);
+
+// 55.7s — Body line 4: Mentioned 11 times in the Quran
+// charCount~33, fontSize=34, width=33*34*0.55+20=637
+tl.add(wipe('cr_s3_body4', 637, 0.9), 55.7);
+
+// 56.7s — Draw the loop diagram (stick figure + arrows + mercy circle)
+tl.add(drawOnGroup('s3_illust_diagram', 3.0), 56.7);
+
+// 57.2s — Label: Allah's Mercy (top label)
+// charCount~13, fontSize=26, width=13*26*0.55+20=206
+tl.add(wipe('cr_s3_lbl_mercy', 206, 0.6), 57.2);
+
+// 58.0s — Label: Tawbah (left side)
+// charCount~7, fontSize=26, width=7*26*0.55+20=120
+tl.add(wipe('cr_s3_lbl_tawbah', 120, 0.5), 58.0);
+
+// 58.8s — Label: Acceptance (right side)
+// charCount~10, fontSize=26, width=10*26*0.55+20=163
+tl.add(wipe('cr_s3_lbl_accept', 163, 0.6), 58.8);
+
+// 59.5s — Label: Servant (bottom label)
+// charCount~7, fontSize=26, width=7*26*0.55+20=120
+tl.add(wipe('cr_s3_lbl_servant', 120, 0.5), 59.5);
+
+// 60.2s — Arrow from right body zone pointing toward loop
+tl.add(drawOn('s3_arrow_loop', 0.5), 60.2);
+
+// 60.8s — Infinite loop label at bottom of diagram
+// charCount~16, fontSize=28, width=16*28*0.55+20=266
+tl.add(wipe('cr_s3_infinite', 266, 0.7), 60.8);
+
+// 61.8s — Rough.js highlight box around body3 (again and again)
+tl.call(() => {
+  if (rc) {
+    const emphasis = rc.rectangle(652, 302, 530, 52, {
+      roughness: 2.2,
+      bowing: 3,
+      stroke: '#cc7722',
+      strokeWidth: 2.5,
+      fill: 'rgba(204,119,34,0.06)'
+    });
+    addRoughShape(emphasis, 'rough_s3_emphasis', 'scene3');
+  }
+}, null, 61.8);
+tl.add(fadeIn('#rough_s3_emphasis', 0.6), 61.8);
+
+// Scene ends at 78s — leaving ~15s of hold after last animation at ~62.5s
+
+  // ── Scene 4 ──
+// Scene 4: Afu vs. Tawab — 78s to 106s
+
+// Transition: hide scene3, show scene4
+tl.call(() => { hideScene('#scene3'); showScene('#scene4'); }, null, 78.0);
+
+// Rough.js decorative frame for left column
+if (rc) {
+  const leftFrame = rc.rectangle(60, 88, 555, 470, {
+    roughness: 1.8, bowing: 1.5, stroke: '#1e8c5a', strokeWidth: 1.8, fill: 'none'
+  });
+  addRoughShape(leftFrame, 'rough_s4_left', 'scene4');
+
+  const rightFrame = rc.rectangle(665, 88, 555, 470, {
+    roughness: 1.8, bowing: 1.5, stroke: '#8844aa', strokeWidth: 1.8, fill: 'none'
+  });
+  addRoughShape(rightFrame, 'rough_s4_right', 'scene4');
+}
+
+// 78.3s — Rough frames fade in
+tl.add(fadeIn('#rough_s4_left', 0.8), 78.3);
+tl.add(fadeIn('#rough_s4_right', 0.8), 78.5);
+
+// 78.8s — Title wipes in
+// charCount=29, fontSize=48 → width=29×48×0.55+20=786
+tl.add(wipe('cr_s4_title', 786, 1.4), 78.8);
+
+// 80.3s — Wavy underline draws on
+tl.add(drawOn('s4_underline', 0.6), 80.3);
+
+// 80.9s — Vertical divider draws top to bottom
+tl.add(drawOn('s4_divider', 0.8), 80.9);
+
+// 81.7s — Left header 'Al-Afu' wipes in
+// charCount=6, fontSize=44 → width=6×44×0.55+20=165; centered at x=200 → x=200-165/2=118
+tl.add(wipe('cr_s4_afu_head', 165, 0.7), 81.7);
+
+// 82.5s — Ledger illustration fades in then draws on
+tl.add(fadeIn('#s4_illust_main', 0.3), 82.5);
+tl.add(drawOnGroup('s4_illust_main', 2.2), 82.6);
+
+// 84.8s — Right header 'At-Tawab' wipes in
+// charCount=8, fontSize=44 → width=8×44×0.55+20=214; centered at x=900 → x=900-214/2=793
+tl.add(wipe('cr_s4_tawab_head', 214, 0.8), 84.8);
+
+// 85.7s — Bridge illustration fades in then draws on
+tl.add(fadeIn('#s4_illust_bridge', 0.3), 85.7);
+tl.add(drawOnGroup('s4_illust_bridge', 2.2), 85.8);
+
+// 88.0s — Left body labels wipe in
+// lbl1: 'Erases the sin record' ~36 chars × 32 × 0.55 + 20 = 653
+tl.add(wipe('cr_s4_lbl1', 420, 0.8), 88.0);
+// lbl2: 'Removes the stain' ~24 chars × 32 × 0.55 + 20 = 442
+tl.add(wipe('cr_s4_lbl2', 380, 0.8), 88.7);
+
+// 89.5s — Right body labels wipe in
+// lbl3: 'Restores the bond' ~24 chars × 32 × 0.55 + 20 = 442
+tl.add(wipe('cr_s4_lbl3', 400, 0.8), 89.5);
+// lbl4: 'Rebuilds the bridge' ~26 chars × 32 × 0.55 + 20 = 478
+tl.add(wipe('cr_s4_lbl4', 420, 0.8), 90.2);
+
+// 91.2s — Bottom bracket supporting element fades in and draws
+tl.add(fadeIn('#s4_illust_supporting', 0.4), 91.2);
+tl.add(drawOnGroup('s4_illust_supporting', 1.4), 91.4);
+
+// 92.8s — 'Complete Renewal' wipes in
+// charCount=16, fontSize=36 → width=16×36×0.55+20=337; centered at 640 → x=640-337/2=472
+tl.add(wipe('cr_s4_renewal', 337, 1.0), 92.8);
+
+// Scene holds until 106s (breathing room after 93.8s)
+
+
+  // ── Scene 5 ──
+// Scene 5: Quranic Reflections (106s → 134s)
+tl.call(() => { hideScene('#scene4'); showScene('#scene5'); }, null, 106.0);
+
+// Rough.js decorative frame around content
+if (rc) {
+  const frame5 = rc.rectangle(44, 15, 1192, 660, {
+    roughness: 1.4, bowing: 1.5, stroke: '#1a8a8a', strokeWidth: 2, fill: 'none'
+  });
+  addRoughShape(frame5, 'rough_s5_frame', 'scene5');
+}
+tl.add(fadeIn('#rough_s5_frame', 1.0), 106.0);
+
+// Title wipe in (centered at x=640, estimatedWidth=522)
+// charCount=19, fontSize=48 => 19*48*0.55+20 = 521.6 ≈ 522
+tl.add(wipe('cr_s5_title', 522, 1.4), 106.5);
+
+// Wavy underline draws on
+tl.add(drawOn('s5_underline', 0.5), 108.0);
+
+// === LEFT TEXT GROUP ===
+// Line 1: "Quran 4:99 — Afuwwan Qadira" ~44 chars, fontSize=32 => 44*32*0.55+20=795 but cap at ~560
+tl.add(wipe('cr_s5_line1', 560, 0.9), 108.7);
+
+// Line 2: "Pardoning & fully Capable of punishing" ~38 chars => 38*32*0.55+20=689 cap at ~540
+tl.add(wipe('cr_s5_line2', 540, 0.9), 109.5);
+
+// Arrow from left text down to left Quran page
+tl.add(drawOn('s5_arrow_left', 0.7), 110.5);
+
+// === MAIN QURAN ILLUSTRATION draws in ===
+tl.add(drawOnGroup('s5_illust_main', 2.5), 111.3);
+
+// === RIGHT TEXT GROUP ===
+// Line 3: "Quran 2:37 — At-Tawab Ar-Rahim" ~43 chars => ~575
+tl.add(wipe('cr_s5_line3', 520, 0.9), 113.0);
+
+// Line 4: "Accepting repentance with tender mercy" ~38 chars => ~540
+tl.add(wipe('cr_s5_line4', 540, 0.9), 113.8);
+
+// Arrow from right text down to right Quran page
+tl.add(drawOn('s5_arrow_right', 0.7), 114.8);
+
+// Page reference labels wipe in on Quran pages
+// "4:99" centered at x=500 => charCount=4, fontSize=24 => 4*24*0.55+20=72.8; clipRect.x=500-72/2=464
+// (already set in svgDefs x=330 width covers centered: adjusting: x=500-36=464, use 72 width)
+tl.add(wipe('cr_s5_ref_left', 72, 0.5), 115.7);
+
+// "2:37" centered at x=780 => same calc => x=780-36=744, width=72
+tl.add(wipe('cr_s5_ref_right', 72, 0.5), 116.3);
+
+// Heart icon fades in at bottom center
+tl.add(fadeIn('#s5_illust_supporting', 1.2), 117.0);
+
+// Brief pause for scene to breathe before ending at 134s
+
+  // ── Scene 6 ──
+// Scene 6: Why We Need Both Names (134s → 156s)
+
+// Transition: hide scene5, show scene6
+tl.call(() => { hideScene('#scene5'); showScene('#scene6'); }, null, 134.0);
+
+// Rough.js decorative frame around body text area
+tl.call(() => {
+  if (rc) {
+    const frame = rc.rectangle(80, 500, 1120, 170, {
+      roughness: 1.8,
+      bowing: 1.5,
+      stroke: '#993344',
+      strokeWidth: 1.8,
+      fill: 'none'
+    });
+    addRoughShape(frame, 'rough_s6_frame', 'scene6');
+  }
+}, null, 134.1);
+tl.add(fadeIn('#rough_s6_frame', 0.8), 134.2);
+
+// Title wipe in
+tl.add(wipe('cr_s6_title', 602, 1.4), 134.5);
+
+// Wavy underline draws on
+tl.add(drawOn('s6_underline', 0.5), 136.1);
+
+// Divider line draws
+tl.add(drawOn('s6_divider', 0.6), 136.7);
+
+// Draw the main winding path left-to-right
+tl.add(drawOn('s6_path_main', 2.5), 137.0);
+
+// Milestone 1: stumbling figure fades in, then label wipes
+tl.add(fadeIn('#s6_illust_fig1', 0.5), 137.6);
+tl.add(wipe('cr_s6_lbl1', 80, 0.5), 138.2);
+tl.add(drawOn('s6_arr1', 0.3), 138.4);
+
+// Milestone 2: kneeling figure
+tl.add(fadeIn('#s6_illust_fig2', 0.5), 138.7);
+tl.add(wipe('cr_s6_lbl2', 110, 0.5), 139.2);
+tl.add(drawOn('s6_arr2', 0.3), 139.4);
+
+// Milestone 3: dua figure
+tl.add(fadeIn('#s6_illust_fig3', 0.5), 139.7);
+tl.add(wipe('cr_s6_lbl3', 120, 0.5), 140.2);
+tl.add(drawOn('s6_arr3', 0.3), 140.4);
+
+// Milestone 4: standing tall figure with radiance
+tl.add(fadeIn('#s6_illust_fig4', 0.6), 140.7);
+tl.add(wipe('cr_s6_lbl4', 120, 0.5), 141.4);
+tl.add(drawOn('s6_arr4', 0.3), 141.6);
+
+// Body text lines wipe in sequentially
+// Line 1: Prophet hadith
+tl.add(wipe('cr_s6_body1', 780, 0.9), 142.2);
+
+// Line 2: best sinners
+tl.add(wipe('cr_s6_body2', 740, 0.9), 143.2);
+
+// Line 3: sin is the beginning
+tl.add(wipe('cr_s6_body3', 760, 0.9), 144.2);
+
+// Line 4: deeper bond
+tl.add(wipe('cr_s6_body4', 640, 0.9), 145.2);
+
+// Scene breathes until 156s — last element lands ~146s, ~10s of hold
+
+  // ── Scene 7 ──
+// Scene 7: Practice These Names Daily (156s - 180s)
+
+// Transition: hide scene6, show scene7
+tl.call(() => { hideScene('#scene6'); showScene('#scene7'); }, null, 156.0);
+
+// Title wipes in (centered at x=640, charCount=26, fontSize=48)
+// estimatedWidth = 26 * 48 * 0.55 + 20 = 706
+// clipRect.x = 640 - 706/2 = 287
+tl.add(wipe('cr_s7_title', 706, 1.4), 156.3);
+
+// Double underline draws on
+tl.add(drawOn('s7_underline1', 0.5), 157.8);
+tl.add(drawOn('s7_underline2', 0.4), 158.1);
+
+// Item 1: icon fades in, then text wipes
+// text: "1. Make dua: Allahumma innaka Afuww..." ~46 chars, fontSize=36
+// targetWidth = 46 * 36 * 0.55 + 20 = 931 -> cap at 900 for safety
+tl.add(fadeIn('#s7_illust_icon1', 0.5), 158.7);
+tl.add(wipe('cr_s7_item1', 900, 1.0), 159.0);
+
+// Item 2: icon fades in, then text wipes
+// text: "2. Forgive others — embody Al-Afu" ~34 chars, fontSize=36
+// targetWidth = 34 * 36 * 0.55 + 20 = 694
+tl.add(fadeIn('#s7_illust_icon2', 0.5), 160.2);
+tl.add(wipe('cr_s7_item2', 720, 1.0), 160.5);
+
+// Item 3: icon fades in, then text wipes
+// text: "3. Repent daily — never delay tawbah" ~37 chars, fontSize=36
+// targetWidth = 37 * 36 * 0.55 + 20 = 752
+tl.add(fadeIn('#s7_illust_icon3', 0.5), 161.7);
+tl.add(wipe('cr_s7_item3', 780, 1.0), 162.0);
+
+// Item 4: icon fades in, then text wipes
+// text: "4. Trust Allah — He always accepts you" ~38 chars, fontSize=36
+// targetWidth = 38 * 36 * 0.55 + 20 = 772
+tl.add(fadeIn('#s7_illust_icon4', 0.5), 163.2);
+tl.add(wipe('cr_s7_item4', 800, 1.0), 163.5);
+
+// Bottom banner: polygon fades in, then text wipes inside
+// "Start Tonight" centered at x=640, charCount=13, fontSize=38
+// estimatedWidth = 13 * 38 * 0.55 + 20 = 292
+// clipRect.x = 640 - 292/2 = 494 (set in defs as 490, close enough)
+tl.add(fadeIn('#s7_illust_banner', 0.8), 165.0);
+tl.add(wipe('cr_s7_banner_text', 292, 0.9), 165.5);
+
+// Sparkle effects: appear then fade out around the banner
+tl.fromTo('#s7_sparkle1', { opacity: 0, scale: 0, transformOrigin: '533px 658px' }, { opacity: 1, scale: 1.2, duration: 0.35, ease: 'back.out(2)' }, 166.6);
+tl.fromTo('#s7_sparkle1', { opacity: 1 }, { opacity: 0, duration: 0.5, ease: 'power2.in' }, 167.1);
+
+tl.fromTo('#s7_sparkle2', { opacity: 0, scale: 0, transformOrigin: '643px 608px' }, { opacity: 1, scale: 1.2, duration: 0.35, ease: 'back.out(2)' }, 166.9);
+tl.fromTo('#s7_sparkle2', { opacity: 1 }, { opacity: 0, duration: 0.5, ease: 'power2.in' }, 167.4);
+
+tl.fromTo('#s7_sparkle3', { opacity: 0, scale: 0, transformOrigin: '753px 658px' }, { opacity: 1, scale: 1.2, duration: 0.35, ease: 'back.out(2)' }, 167.2);
+tl.fromTo('#s7_sparkle3', { opacity: 1 }, { opacity: 0, duration: 0.5, ease: 'power2.in' }, 167.7);
+
+// Scene ends at 180s — natural breathing room after 168s
+
+  // Hold final frame
+  tl.to({}, { duration: 1.0 }, 179.0);
+
+  // ── Controls ──
+  btnPlay.addEventListener('click', () => {
+    if (tl.isActive()) {
+      tl.pause();
+      btnPlay.textContent = '\u25B6 Play';
+    } else {
+      tl.play();
+      btnPlay.textContent = '\u23F8 Pause';
+    }
+  });
+
+  function doReplay() {
+    // Reset all scene visibility
+    document.querySelectorAll('.scene').forEach(s => gsap.set(s, { opacity: 0 }));
+    // Reset all clip-rect widths
+    document.querySelectorAll('[id^="cr_"]').forEach(r => r.setAttribute('width', '0'));
+    // Reset all stroke draw-on elements
+    document.querySelectorAll('path[id], line[id], polyline[id]').forEach(el => {
+      if (el.getTotalLength) {
+        const len = el.getTotalLength();
+        gsap.set(el, { strokeDasharray: len, strokeDashoffset: len });
+      }
+    });
+    // Reset Rough.js shapes
+    document.querySelectorAll('[id^="rough_"]').forEach(el => {
+      gsap.set(el, { opacity: 0 });
+    });
+    // Reset illustration groups
+    document.querySelectorAll('[id*="_illust_"]').forEach(el => {
+      gsap.set(el, { opacity: 0 });
+      el.querySelectorAll('path, line, circle, ellipse, polyline, polygon, rect').forEach(child => {
+        if (child.getTotalLength) {
+          const len = child.getTotalLength();
+          gsap.set(child, { strokeDasharray: len, strokeDashoffset: len });
+        } else {
+          gsap.set(child, { opacity: 0 });
+        }
+      });
+    });
+    // Reset progress bar
+    gsap.set('#progBar', { attr: { width: 0 } });
+    // Restart
+    tl.seek(0).restart();
+    btnPlay.textContent = '\u23F8 Pause';
+  }
+
+  document.getElementById('btnReplay').addEventListener('click', doReplay);
+
+  seekBar.addEventListener('input', () => {
+    isSeeking = true;
+    tl.seek(seekBar.value / 1000).pause();
+    btnPlay.textContent = '\u25B6 Play';
+    setTimeout(() => { isSeeking = false; }, 100);
+  });
+
+  // Speed controls
+  document.querySelectorAll('.speed-group button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const speed = parseFloat(btn.dataset.speed);
+      tl.timeScale(speed);
+      document.querySelectorAll('.speed-group button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // Scene jump buttons
+  document.querySelectorAll('.scene-jump').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const time = parseFloat(btn.dataset.time);
+      tl.seek(time).pause();
+      btnPlay.textContent = '\u25B6 Play';
+    });
+  });
+
+  // Fullscreen
+  document.getElementById('btnFullscreen').addEventListener('click', () => {
+    const wrap = document.getElementById('playerWrap');
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      wrap.requestFullscreen().catch(() => {});
+    }
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT') return;
+    switch (e.key) {
+      case ' ':
+        e.preventDefault();
+        btnPlay.click();
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        tl.seek(Math.max(0, tl.time() - 2)).pause();
+        btnPlay.textContent = '\u25B6 Play';
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        tl.seek(Math.min(TOTAL, tl.time() + 2)).pause();
+        btnPlay.textContent = '\u25B6 Play';
+        break;
+      case 'r':
+      case 'R':
+        doReplay();
+        break;
+      case 'f':
+      case 'F':
+        document.getElementById('btnFullscreen').click();
+        break;
+      default:
+        const num = parseInt(e.key);
+        if (num >= 1 && num <= sceneTimes.length) {
+          tl.seek(sceneTimes[num - 1].time).pause();
+          btnPlay.textContent = '\u25B6 Play';
+        }
+    }
+  });
+
+  // Auto-play after short delay
+  setTimeout(() => {
+    tl.play();
+    btnPlay.textContent = '\u23F8 Pause';
+  }, 300);
+});
+</script>
+</body>
+</html>
