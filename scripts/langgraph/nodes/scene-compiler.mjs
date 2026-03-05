@@ -71,10 +71,10 @@ export async function sceneCompilerNode(state) {
   // Merge SVG bodies (sanitize to fix truncated paths)
   const allSvgBodies = sorted.map(s => sanitizeSvg(s.svgBody || '')).join('\n\n');
 
-  // Concatenate JS code blocks from all scenes
+  // Concatenate JS code blocks from all scenes (wrapped in try/catch per scene)
   const allJsCode = sorted.map(s => {
     const code = s.jsCode || '';
-    return `  // ── Scene ${s.sceneNumber} ──\n${code}`;
+    return `  // ── Scene ${s.sceneNumber} ──\n  try {\n${code}\n  } catch(e) { console.warn('Scene ${s.sceneNumber} JS error:', e.message); }`;
   }).join('\n\n');
 
   // Build scene data for controls
@@ -302,13 +302,13 @@ document.fonts.ready.then(() => {
   /** Show a scene group */
   function showScene(sel) {
     const el = document.querySelector(sel);
-    if (el) gsap.set(el, { opacity: 1 });
+    if (el) { el.style.display = ''; gsap.set(el, { opacity: 1 }); }
   }
 
   /** Hide a scene group */
   function hideScene(sel) {
     const el = document.querySelector(sel);
-    if (el) gsap.set(el, { opacity: 0 });
+    if (el) { gsap.set(el, { opacity: 0 }); el.style.display = 'none'; }
   }
 
   // Rough.js setup
@@ -370,7 +370,7 @@ ${allJsCode}
 
   function doReplay() {
     // Reset all scene visibility
-    document.querySelectorAll('.scene').forEach(s => gsap.set(s, { opacity: 0 }));
+    document.querySelectorAll('.scene').forEach(s => { s.style.display = 'none'; gsap.set(s, { opacity: 0 }); });
     // Reset all clip-rect widths
     document.querySelectorAll('[id^="cr_"]').forEach(r => r.setAttribute('width', '0'));
     // Reset all stroke draw-on elements
