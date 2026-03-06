@@ -1,18 +1,11 @@
 /**
  * Node: Scene Composer — ReAct agent (fan-out, one per scene).
  *
- * A tool-calling agent that autonomously:
- *   1. Decides what visuals best explain the educational content
- *   2. Calls tools to generate/fetch those assets
- *   3. Writes the complete Remotion TSX scene
- *
  * Tools available:
- *   - generate_svg      — Haiku generates hand-drawn SVG diagrams
- *   - search_icons8     — Icons8 icon search via @modelcontextprotocol/sdk
- *   - download_icon_png — Download Icons8 PNG to assets dir
- *   - generate_image    — Gemini image generation (rich illustrations)
- *
- * Audio: uses @remotion/media (installed in remotion template)
+ *   - get_shadcn_component — Fetch shadcn/ui component source as design reference
+ *   - search_icons8        — Icons8 icon search (MCP or HTTP fallback)
+ *   - download_icon_png    — Download Icons8 PNG to assets dir
+ *   - generate_image       — Gemini image generation
  */
 import fs from 'fs';
 import path from 'path';
@@ -23,7 +16,6 @@ import { z } from 'zod';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { MODELS, CANVAS, KEYS, MCP_SERVERS } from '../config.mjs';
-import { buildAssetSvgGenPrompt } from '../prompts/asset-svg-gen.mjs';
 import { buildSceneComposerPrompt } from '../prompts/scene-composer.mjs';
 
 // ── Helpers ───────────────────────────────────────────────────────
@@ -31,104 +23,83 @@ import { buildSceneComposerPrompt } from '../prompts/scene-composer.mjs';
 function extractTSX(text) {
   if (!text) return '';
   let code = text.trim();
-  const fence = code.match(/^```(?:tsx|typescript|ts|jsx|react)?\s*\n?([\s\S]*?)\n?```\s*$/);
-  if (fence) code = fence[1].trim();
-  if (code.startsWith('```')) {
-    code = code.replace(/^```[a-z]*\n?/, '').replace(/\n?```$/, '').trim();
-  }
+
+  // Strip markdown code fences
+  const fence = code.match(/```(?:tsx|typescript|ts|jsx|react)?\s*\n([\s\S]*?)\n```/);
+  if (fence) return fence[1].trim();
+
+  // Strip any preamble before the first import/comment/export
+  const importIdx = code.search(/^(?:import|\/\*\*?|\/\/|export)/m);
+  if (importIdx > 0) code = code.slice(importIdx).trim();
+
   return code;
 }
 
-// ── MCP Client for Icons8 ─────────────────────────────────────────
+// ── MCP Client helpers ────────────────────────────────────────────
 
-async function connectIcons8MCP() {
-  const cfg = MCP_SERVERS.icons8;
+async function connectMCP(cfg, name) {
   if (!cfg?.command) return null;
-
   try {
-    const client = new Client({ name: 'scene-composer-v7', version: '1.0.0' });
+    const client = new Client({ name, version: '1.0.0' });
     const transport = new StdioClientTransport({
       command: cfg.command,
       args: cfg.args || [],
       env: { ...process.env, ...(cfg.env || {}) },
     });
     await client.connect(transport);
-    console.log('    Icons8 MCP connected');
     return client;
   } catch (err) {
-    console.warn(`    Icons8 MCP unavailable (${err.message}) — using HTTP API`);
+    console.warn(`    ${name} MCP unavailable: ${err.message}`);
     return null;
   }
 }
 
+async function connectIcons8MCP() {
+  const cfg = MCP_SERVERS.icons8;
+  if (!cfg?.command) return null;
+  const client = await connectMCP(cfg, 'icons8');
+  if (client) console.log('    Icons8 MCP connected');
+  return client;
+}
+
 // ── Tool factory ──────────────────────────────────────────────────
 
-function createTools({ sceneNumber, assetsDir, theme, mcpClient }) {
-  // ── 1. generate_svg ──────────────────────────────
-  const generateSvg = tool(
-    async ({ asset_id, description, sub_elements }) => {
-      console.log(`    [tool] generate_svg: ${asset_id}`);
-      const model = new ChatAnthropic({
-        model: MODELS.assetSvgGen,
-        anthropicApiKey: KEYS.anthropic,
-        maxTokens: 4096,
-      });
-
-      const prompt = buildAssetSvgGenPrompt({
-        asset: { asset_id, description, sub_elements: sub_elements || null },
-        theme,
-      });
-
-      const response = await model.invoke([new HumanMessage(prompt)]);
-      let svg = (typeof response.content === 'string'
-        ? response.content
-        : response.content.map(c => c.text || '').join('')).trim();
-
-      if (svg.startsWith('```')) {
-        svg = svg.replace(/^```(?:svg|xml|html)?\s*\n?/, '').replace(/\n?```\s*$/, '');
+function createTools({ sceneNumber, assetsDir, mcpClient, shadcnClient }) {
+  // ── 0. get_shadcn_component ───────────────────────────────
+  const getShadcnComponent = tool(
+    async ({ componentName }) => {
+      console.log(`    [tool] get_shadcn_component: ${componentName}`);
+      if (!shadcnClient) return JSON.stringify({ error: 'shadcn MCP not available' });
+      try {
+        const result = await shadcnClient.callTool({
+          name: 'get_component',
+          arguments: { componentName },
+        });
+        return result.content?.[0]?.text || JSON.stringify(result.content);
+      } catch (err) {
+        return JSON.stringify({ error: err.message });
       }
-
-      if (!svg.includes('<svg')) return JSON.stringify({ error: 'Invalid SVG returned' });
-
-      const filePath = path.join(assetsDir, `${asset_id}.svg`);
-      fs.writeFileSync(filePath, svg, 'utf8');
-      console.log(`    [tool] saved ${asset_id}.svg (${(svg.length / 1024).toFixed(1)} KB)`);
-
-      return JSON.stringify({
-        asset_id,
-        file: `assets/${asset_id}.svg`,
-        content: svg,
-        hasSubElements: !!(sub_elements?.length),
-      });
     },
     {
-      name: 'generate_svg',
-      description: 'Generate a hand-drawn SVG diagram (flow chart, loop, comparison, annotated shape). Returns SVG content to embed inline in TSX. Use sub_elements for progressive animation.',
+      name: 'get_shadcn_component',
+      description: 'Fetch a shadcn/ui v4 component source as design reference. Use this to understand the visual structure and CSS patterns, then adapt to Remotion inline styles. Useful components: card, badge, progress, alert, separator, avatar, chart.',
       schema: z.object({
-        asset_id: z.string().describe(`Unique ID prefixed with scene number, e.g. "s${sceneNumber}_habit_loop"`),
-        description: z.string().describe('What to draw — shapes, labels, arrows, connections. Be specific.'),
-        sub_elements: z.array(z.object({
-          sub_id: z.string(),
-          description: z.string(),
-        })).optional().describe('Named <g> groups for progressive draw-on animation (max 4)'),
+        componentName: z.string().describe('e.g. "card", "badge", "progress", "alert", "chart", "avatar", "separator"'),
       }),
     }
   );
-
-  // ── 2. search_icons8 ─────────────────────────────
+  // ── 1. search_icons8 ─────────────────────────────
   const searchIcons8 = tool(
-    async ({ query, platform = 'color', amount = 5 }) => {
+    async ({ query, platform = 'color', amount = 6 }) => {
       console.log(`    [tool] search_icons8: "${query}"`);
 
-      // Try MCP first
       if (mcpClient) {
         try {
           const result = await mcpClient.callTool({
             name: 'search_icons',
             arguments: { query, amount, platform },
           });
-          const text = result.content?.[0]?.text || JSON.stringify(result.content);
-          return text;
+          return result.content?.[0]?.text || JSON.stringify(result.content);
         } catch (err) {
           console.warn(`    Icons8 MCP callTool failed: ${err.message}`);
         }
@@ -149,14 +120,14 @@ function createTools({ sceneNumber, assetsDir, theme, mcpClient }) {
       name: 'search_icons8',
       description: 'Search Icons8 for concept icons. Use simple English terms. Returns icons with id, commonName, platform.',
       schema: z.object({
-        query: z.string().describe('Simple term like "brain", "clock", "goal", "checkmark", "growth"'),
-        platform: z.string().optional().describe('Style: "color" (default), "fluent", "ios", "material"'),
-        amount: z.number().optional(),
+        query: z.string().describe('Simple term like "brain", "clock", "goal", "checkmark", "growth", "rocket", "fire", "star"'),
+        platform: z.string().optional().describe('Style: "color" (default, vivid), "fluent", "ios", "material"'),
+        amount: z.number().optional().describe('How many results (default 6)'),
       }),
     }
   );
 
-  // ── 3. download_icon_png ─────────────────────────
+  // ── 2. download_icon_png ─────────────────────────
   const downloadIconPng = tool(
     async ({ asset_id, commonName, platform = 'color', size = 256 }) => {
       console.log(`    [tool] download_icon_png: ${commonName} → ${asset_id}.png`);
@@ -174,9 +145,9 @@ function createTools({ sceneNumber, assetsDir, theme, mcpClient }) {
     },
     {
       name: 'download_icon_png',
-      description: 'Download an Icons8 icon as PNG. Call after search_icons8 to get commonName.',
+      description: 'Download an Icons8 icon as PNG. Call after search_icons8 to get commonName. Use size=128 for small icons, 256 for large.',
       schema: z.object({
-        asset_id: z.string().describe(`Like "s${sceneNumber}_brain_icon"`),
+        asset_id: z.string().describe(`Like "s${sceneNumber}_brain_icon" or "s${sceneNumber}_step1_icon"`),
         commonName: z.string().describe('commonName from search_icons8 result'),
         platform: z.string().optional().describe('Same platform as search result'),
         size: z.number().optional().describe('Pixels: 64, 128, 256 (default 256)'),
@@ -184,7 +155,7 @@ function createTools({ sceneNumber, assetsDir, theme, mcpClient }) {
     }
   );
 
-  // ── 4. generate_image ────────────────────────────
+  // ── 3. generate_image ────────────────────────────
   const generateImage = tool(
     async ({ asset_id, description }) => {
       console.log(`    [tool] generate_image: ${asset_id}`);
@@ -201,15 +172,15 @@ function createTools({ sceneNumber, assetsDir, theme, mcpClient }) {
     },
     {
       name: 'generate_image',
-      description: 'Generate a photo-realistic illustration via Gemini AI. Use sparingly — only for rich scene illustrations where SVG is insufficient.',
+      description: 'Generate a photo-realistic illustration via Gemini AI. Use only when a rich hero illustration is needed.',
       schema: z.object({
-        asset_id: z.string().describe(`Like "s${sceneNumber}_hero_illustration"`),
-        description: z.string().describe('Detailed image prompt — style, content, mood'),
+        asset_id: z.string().describe(`Like "s${sceneNumber}_hero_image"`),
+        description: z.string().describe('Detailed image prompt — style, content, mood, minimal background'),
       }),
     }
   );
 
-  return [generateSvg, searchIcons8, downloadIconPng, generateImage];
+  return [getShadcnComponent, searchIcons8, downloadIconPng, generateImage];
 }
 
 // ── Main node ─────────────────────────────────────────────────────
@@ -249,16 +220,17 @@ export async function sceneComposerNode(state) {
   const assetsDir = path.join(state.outputDir, 'remotion', 'public', 'assets');
   fs.mkdirSync(assetsDir, { recursive: true });
 
-  // Connect to Icons8 MCP (shared connection attempt)
-  const mcpClient = await connectIcons8MCP();
+  // Connect to MCP servers in parallel
+  const [mcpClient, shadcnClient] = await Promise.all([
+    connectIcons8MCP(),
+    connectMCP(MCP_SERVERS.shadcn, 'shadcn-ui').then(c => {
+      if (c) console.log('    shadcn-ui MCP connected');
+      return c;
+    }),
+  ]);
 
   // Create tool suite
-  const tools = createTools({
-    sceneNumber,
-    assetsDir,
-    theme: state.theme || {},
-    mcpClient,
-  });
+  const tools = createTools({ sceneNumber, assetsDir, mcpClient, shadcnClient });
 
   // Build prompts
   const { system, user } = buildSceneComposerPrompt({
@@ -276,12 +248,12 @@ export async function sceneComposerNode(state) {
   const model = new ChatAnthropic({
     model: MODELS.sceneComposer,
     anthropicApiKey: KEYS.anthropic,
-    maxTokens: 8192,
+    maxTokens: 8000,
   }).bindTools(tools);
 
   const messages = [new SystemMessage(system), new HumanMessage(user)];
   let iterations = 0;
-  const MAX_ITERATIONS = 6;
+  const MAX_ITERATIONS = 5;
 
   try {
     while (iterations < MAX_ITERATIONS) {
@@ -297,7 +269,6 @@ export async function sceneComposerNode(state) {
 
       console.log(`    [iter ${iterations}] Tool calls: ${toolCalls.map(tc => tc.name).join(', ')}`);
 
-      // Execute all tool calls (sequentially to avoid rate limits on SVG gen)
       for (const tc of toolCalls) {
         const t = tools.find(t => t.name === tc.name);
         let result;
@@ -315,13 +286,14 @@ export async function sceneComposerNode(state) {
       }
     }
   } finally {
-    if (mcpClient) {
-      try { await mcpClient.close(); } catch (_) { /* ignore */ }
-    }
+    if (mcpClient)   { try { await mcpClient.close();   } catch (_) {} }
+    if (shadcnClient){ try { await shadcnClient.close(); } catch (_) {} }
   }
 
   // Extract TSX from last assistant message
-  const lastMsg = messages.filter(m => m.constructor.name === 'AIMessage' || m._getType?.() === 'ai').pop();
+  const lastMsg = messages.filter(m =>
+    m.constructor.name === 'AIMessage' || m._getType?.() === 'ai'
+  ).pop();
   const rawText = typeof lastMsg?.content === 'string'
     ? lastMsg.content
     : (lastMsg?.content || []).map(c => c.text || '').join('');

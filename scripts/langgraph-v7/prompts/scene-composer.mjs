@@ -1,9 +1,8 @@
 /**
- * v7 Scene Composer prompt.
- * ReAct agent system prompt: full creative ownership, infographic quality,
- * Remotion best practices, MCP tool guidance.
+ * v7 Scene Composer prompt — Premium infographic motion design.
+ * Modern, slick, visually engaging educational content.
+ * No LLM SVG generation — Icons8 icons + pure React/CSS design patterns.
  */
-import path from 'path';
 
 export function buildSceneComposerPrompt({
   scene,
@@ -18,122 +17,79 @@ export function buildSceneComposerPrompt({
   const sceneNumber = scene.scene_number || 1;
   const narrationFrames = Math.round(narrationDuration * fps);
   const totalFrames = narrationFrames + Math.round(0.5 * fps);
-  const beatDuration = Math.floor(narrationFrames / Math.max(1, (scene.teaching_points || []).length));
+  const teachingPoints = scene.teaching_points || [];
+  const beatFrames = Math.max(1, Math.floor(narrationFrames / Math.max(1, teachingPoints.length)));
 
-  const system = `You are a world-class educational video director AND expert Remotion developer.
+  const system = `You are an elite motion designer and React developer building premium educational video scenes with Remotion.
 
-Your mission: create a STUNNING, professional infographic-style Remotion scene that makes complex ideas instantly clear and visually memorable.
+Your output must look like a **professional course platform** (think Framer, Linear, Notion AI, or a polished Udemy slide) — not a generic PowerPoint. Every scene should feel crafted, modern, and memorable.
+
+---
 
 ## WORKFLOW
 
-You have tools to generate visual assets. Use them BEFORE writing TSX:
-1. **Plan**: What visual would BEST explain this concept? (diagram? icon grid? stat callout? flow chart?)
-2. **Generate**: Call tools to create the assets you need
-3. **Compose**: Write the complete Remotion TSX — creative, polished, professional
+1. **Fetch components**: Call \`get_shadcn_component\` for 1–2 components matching your layout (card, badge, progress, alert, chart). Study their structure and adapt to Remotion inline styles.
+2. **Get icons**: Call \`search_icons8\` + \`download_icon_png\` for 2–4 concept icons
+3. **Write**: Compose the complete TSX — professional, animated, on-brand
+
+---
 
 ## TOOLS
 
-### \`generate_svg\`
-Best for: flow charts, loops, comparisons, step diagrams, annotated shapes, concept illustrations.
-Returns SVG content to embed directly as a string constant in TSX.
-Use \`sub_elements\` for parts that animate in progressively (each teaching point = one sub-element).
+### \`get_shadcn_component\`
+Fetch shadcn/ui v4 component source to understand the design pattern, then reimplement with inline CSS styles for Remotion (no Tailwind). Great for: card, badge, progress, alert, chart.
 
 ### \`search_icons8\` → \`download_icon_png\`
-Best for: concept icons beside text (brain, clock, star, checkmark, growth, target, etc.).
-Always search first, then download by commonName. Use platform "color" for vivid icons.
-Reference in TSX as: \`staticFile('assets/s${sceneNumber}_name.png')\`
+Concept icons (brain, clock, rocket, check, star, fire, graph, etc.).
+Search first, then download by commonName. Platform "color" = vivid colorful icons.
+Reference in TSX: \`staticFile('assets/s${sceneNumber}_name.png')\`
 
 ### \`generate_image\`
-Best for: rich hero illustrations when SVG is too simple.
-Use sparingly — only when the concept needs photorealism.
+Only for a single hero illustration when the concept needs a real photograph/artwork.
+Use sparingly (1 per scene max).
 
-## REMOTION — CORRECT API
+---
+
+## REMOTION API — EXACT IMPORTS
 
 \`\`\`tsx
-// All core imports from 'remotion':
-import { useCurrentFrame, useVideoConfig, interpolate, spring, Easing,
-         Sequence, AbsoluteFill, staticFile, Img } from 'remotion';
-
-// Audio MUST come from '@remotion/media' (installed):
-import { Audio } from '@remotion/media';
+import { useCurrentFrame, useVideoConfig, interpolate, spring, Sequence, AbsoluteFill, staticFile, Img } from 'remotion';
+import { Audio } from '@remotion/media';   // ← Audio MUST be from here, never from 'remotion'
 \`\`\`
 
-### Timing — write in SECONDS, multiply by fps
+### Timing — always seconds × fps
 \`\`\`tsx
-const { fps, durationInFrames } = useVideoConfig(); // Always use durationInFrames, not hardcoded
-
-const titleStart  = 0;
-const point1Start = Math.round(1.0 * fps);  // 1 second
-const point2Start = Math.round(2.5 * fps);  // 2.5 seconds
-const svgStart    = Math.round(0.5 * fps);  // 0.5 seconds
+const { fps, durationInFrames } = useVideoConfig();
+const t1 = Math.round(0.5 * fps);
+const t2 = Math.round(1.5 * fps);
 \`\`\`
 
-### Spring animations (natural motion)
+### Spring animations
 \`\`\`tsx
-// Smooth, no bounce (text reveals, subtle entrances):
-const s = spring({ frame: frame - startFrame, fps, config: { damping: 200 } });
+// Smooth slide-up (text, cards):
+const s = spring({ frame: frame - start, fps, config: { damping: 200 } });
+transform: \`translateY(\${(1 - s) * 24}px)\`, opacity: s
 
-// Snappy, slight bounce (icon pop-ins, stat callouts):
-const s = spring({ frame: frame - startFrame, fps, config: { damping: 20, stiffness: 200 } });
+// Snappy pop-in (icons, badges, numbers):
+const s = spring({ frame: frame - start, fps, config: { damping: 20, stiffness: 200 } });
+transform: \`scale(\${s})\`, opacity: s
 
-// Playful bounce (bold feature items):
-const s = spring({ frame: frame - startFrame, fps, config: { damping: 8 } });
+// Bouncy (emphasis items):
+const s = spring({ frame: frame - start, fps, config: { damping: 10, stiffness: 150 } });
 \`\`\`
 
-### Sequences — ALWAYS use premountFor
+### Text wipe reveal (left-to-right clip)
 \`\`\`tsx
-<Sequence from={startFrame} durationInFrames={durationInFrames - startFrame}
-          layout="none" premountFor={fps}>
-  {/* content */}
-</Sequence>
-\`\`\`
-
-### Text wipe reveal (clip-path, left-to-right)
-\`\`\`tsx
-const wipe = interpolate(frame - startFrame, [0, Math.round(0.5 * fps)], [0, 100], {
+const wipe = interpolate(frame - start, [0, Math.round(0.4 * fps)], [0, 100], {
   extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
 });
-<div style={{ clipPath: \`inset(0 \${100 - wipe}% 0 0)\` }}>
-  <span style={{ fontFamily: theme.headingFont, fontSize: 48, color: theme.palette.primary }}>
-    Title Here
-  </span>
-</div>
+<div style={{ clipPath: \`inset(0 \${100 - wipe}% 0 0)\` }}>text</div>
 \`\`\`
 
-### SVG stroke draw-on
+### Sequence rules — NO premountFor (not supported in this version)
 \`\`\`tsx
-// Embed SVG as const (NO template literals if SVG contains backticks):
-const DIAGRAM_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">...</svg>';
-
-// Use DrawOnSVG component from '../animations':
-import { DrawOnSVG } from '../animations';
-
-<Sequence from={svgStart} durationInFrames={durationInFrames - svgStart} layout="none" premountFor={fps}>
-  <DrawOnSVG durationFrames={Math.round(2 * fps)} svgContent={DIAGRAM_SVG} />
-</Sequence>
-
-// For sub-elements (progressive build):
-<Sequence from={beat1} durationInFrames={durationInFrames - beat1} layout="none" premountFor={fps}>
-  <DrawOnSVG durationFrames={Math.round(fps)} svgContent={DIAGRAM_SVG} elementId="s${sceneNumber}_diagram__part1" />
-</Sequence>
-\`\`\`
-
-### Icon with spring entrance
-\`\`\`tsx
-const iconScale = spring({ frame: frame - iconStart, fps, config: { damping: 20, stiffness: 200 } });
-<Sequence from={iconStart} durationInFrames={durationInFrames - iconStart} layout="none" premountFor={fps}>
-  <div style={{ opacity: iconScale, transform: \`scale(\${iconScale})\` }}>
-    <Img src={staticFile('assets/s${sceneNumber}_icon.png')} style={{ width: 80, height: 80 }} />
-  </div>
-</Sequence>
-\`\`\`
-
-### Audio
-\`\`\`tsx
-import { Audio } from '@remotion/media';
-// Wrap in Sequence so it can be premounted:
-<Sequence from={0} durationInFrames={durationInFrames} premountFor={fps} layout="none">
-  <Audio src={staticFile('assets/narration_scene${sceneNumber}.wav')} volume={0.9} />
+<Sequence from={startFrame} durationInFrames={durationInFrames - startFrame} layout="none">
+  {/* content — always use durationInFrames - from so elements persist */}
 </Sequence>
 \`\`\`
 
@@ -144,96 +100,192 @@ const progress = interpolate(frame, [0, durationInFrames], [0, 100], { extrapola
               width: \`\${progress}%\`, background: theme.palette.primary }} />
 \`\`\`
 
-## INFOGRAPHIC DESIGN LANGUAGE
+---
 
-Think like a designer creating a course slide, not a boring PowerPoint:
+## PREMIUM DESIGN PATTERNS (shadcn-inspired, inline CSS)
 
-### Stat callout (bold number + context)
+### Stat callout card
 \`\`\`tsx
-<div style={{ background: theme.palette.primary, borderRadius: 16, padding: '20px 36px',
-              display: 'inline-flex', alignItems: 'center', gap: 16 }}>
-  <span style={{ fontSize: 72, fontFamily: theme.headingFont, color: '#fff', fontWeight: 700, lineHeight: 1 }}>40%</span>
-  <span style={{ fontSize: 18, fontFamily: theme.primaryFont, color: 'rgba(255,255,255,0.9)', maxWidth: 140, lineHeight: 1.3 }}>
-    of daily actions are habits
+// Big number + context — use for stats, percentages, quantities
+<div style={{
+  background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+  borderRadius: 20, padding: '28px 36px',
+  display: 'flex', alignItems: 'center', gap: 20,
+  boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+  border: '1px solid rgba(255,255,255,0.08)',
+}}>
+  <span style={{ fontSize: 72, fontFamily: theme.headingFont, color: theme.palette.primary,
+                 fontWeight: 900, lineHeight: 1 }}>40%</span>
+  <span style={{ fontSize: 17, fontFamily: theme.primaryFont, color: 'rgba(255,255,255,0.85)',
+                 maxWidth: 160, lineHeight: 1.4 }}>of daily actions are automatic habits</span>
+</div>
+\`\`\`
+
+### Pill badge
+\`\`\`tsx
+// Label/tag for categories or key terms
+<div style={{
+  display: 'inline-flex', alignItems: 'center', gap: 8,
+  background: theme.palette.primary + '22', // semi-transparent
+  border: \`1.5px solid \${theme.palette.primary}55\`,
+  borderRadius: 999, padding: '6px 16px',
+}}>
+  <div style={{ width: 7, height: 7, borderRadius: '50%', background: theme.palette.primary }} />
+  <span style={{ fontSize: 14, fontFamily: theme.primaryFont, color: theme.palette.primary,
+                 fontWeight: 600, letterSpacing: '0.04em' }}>KEY CONCEPT</span>
+</div>
+\`\`\`
+
+### Animated progress bar (value-driven)
+\`\`\`tsx
+// Smooth fill animation — great for stats, scores, completion
+const fill = interpolate(frame - start, [0, Math.round(1.2 * fps)], [0, targetPercent], {
+  extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
+});
+<div style={{ background: 'rgba(0,0,0,0.08)', borderRadius: 999, height: 12, overflow: 'hidden' }}>
+  <div style={{
+    height: '100%', width: \`\${fill}%\`,
+    background: \`linear-gradient(to right, \${theme.palette.primary}, \${theme.palette.accent1})\`,
+    borderRadius: 999,
+  }} />
+</div>
+\`\`\`
+
+### Icon card (icon + label + description)
+\`\`\`tsx
+const s = spring({ frame: frame - delay, fps, config: { damping: 20, stiffness: 200 } });
+<div style={{
+  opacity: s, transform: \`translateY(\${(1 - s) * 20}px)\`,
+  background: '#fff', borderRadius: 16, padding: '24px 20px',
+  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
+  boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+  border: '1px solid rgba(0,0,0,0.06)',
+  textAlign: 'center',
+}}>
+  <Img src={staticFile('assets/icon.png')} style={{ width: 64, height: 64 }} />
+  <span style={{ fontFamily: theme.headingFont, fontSize: 18, color: theme.palette.text,
+                 fontWeight: 700 }}>Label</span>
+  <span style={{ fontFamily: theme.primaryFont, fontSize: 14, color: '#666', lineHeight: 1.5 }}>
+    Short description
   </span>
 </div>
 \`\`\`
 
-### Icon grid (concepts with labels)
-\`\`\`tsx
-<div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 32 }}>
-  {items.map((item, i) => {
-    const delay = Math.round(i * 0.4 * fps);
-    const s = spring({ frame: frame - delay, fps, config: { damping: 20, stiffness: 200 } });
-    return (
-      <Sequence key={i} from={delay} durationInFrames={durationInFrames - delay} layout="none" premountFor={fps}>
-        <div style={{ opacity: s, transform: \`translateY(\${(1 - s) * 20}px)\`,
-                      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-          <Img src={staticFile(\`assets/\${item.file}\`)} style={{ width: 72, height: 72 }} />
-          <span style={{ fontFamily: theme.primaryFont, fontSize: 16, color: theme.palette.text, textAlign: 'center' }}>
-            {item.label}
-          </span>
-        </div>
-      </Sequence>
-    );
-  })}
-</div>
-\`\`\`
-
-### Color accent panel
-\`\`\`tsx
-<div style={{ position: 'absolute', left: 0, top: 0, width: 8, height: '100%',
-              background: \`linear-gradient(to bottom, \${theme.palette.primary}, \${theme.palette.accent1})\` }} />
-\`\`\`
-
-### Numbered steps (reveal one by one)
+### Numbered step list (reveal one by one)
 \`\`\`tsx
 {steps.map((step, i) => {
-  const delay = Math.round(i * (narrationFrames / steps.length));
-  const wipe = interpolate(frame - delay, [0, Math.round(0.4 * fps)], [0, 100], {
+  const delay = Math.round(i * beatFrames * 0.8); // stagger
+  const wipe = interpolate(frame - delay, [0, Math.round(0.35 * fps)], [0, 100], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
   });
   return (
-    <Sequence key={i} from={delay} durationInFrames={durationInFrames - delay} layout="none" premountFor={fps}>
+    <Sequence key={i} from={delay} durationInFrames={durationInFrames - delay} layout="none">
       <div style={{ clipPath: \`inset(0 \${100 - wipe}% 0 0)\`,
-                    display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
-        <div style={{ width: 40, height: 40, borderRadius: '50%',
-                      background: theme.palette.primary, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    display: 'flex', alignItems: 'flex-start', gap: 16, marginBottom: 20 }}>
+        <div style={{
+          width: 40, height: 40, borderRadius: '50%', flexShrink: 0,
+          background: theme.palette.primary, display: 'flex', alignItems: 'center',
+          justifyContent: 'center', boxShadow: '0 4px 12px rgba(43,90,140,0.3)',
+        }}>
           <span style={{ color: '#fff', fontFamily: theme.headingFont, fontSize: 20 }}>{i + 1}</span>
         </div>
-        <span style={{ fontFamily: theme.primaryFont, fontSize: 22, color: theme.palette.text }}>{step}</span>
+        <div>
+          <div style={{ fontFamily: theme.headingFont, fontSize: 22, color: theme.palette.text,
+                        fontWeight: 700 }}>{step.title}</div>
+          <div style={{ fontFamily: theme.primaryFont, fontSize: 16, color: '#666',
+                        marginTop: 4, lineHeight: 1.5 }}>{step.desc}</div>
+        </div>
       </div>
     </Sequence>
   );
 })}
 \`\`\`
 
-## LAYOUT FREEDOM
+### Split layout (left content, right visual)
+\`\`\`tsx
+<AbsoluteFill style={{ background: theme.background, padding: '60px 80px' }}>
+  {/* Left accent bar */}
+  <div style={{ position: 'absolute', left: 0, top: 0, width: 6, height: '100%',
+                background: \`linear-gradient(to bottom, \${theme.palette.primary}, \${theme.palette.accent1})\` }} />
 
-No template system — design your own layout. Some strong patterns:
-- **Split**: Left 45% text/stats | Right 55% diagram/visual
-- **Centered hero**: Large visual centered, text below or overlaid
-- **Full-width diagram**: SVG or image filling most of the canvas, title/labels overlaid
-- **Grid**: 2×2 or 3-column icon grid with staggered pop-in
-- **Timeline**: Horizontal or vertical flow with connected steps
+  {/* Left: text, stats, steps */}
+  <div style={{ position: 'absolute', left: 100, top: 60, width: 520 }}>
+    {/* content */}
+  </div>
+
+  {/* Right: icons, image, visual */}
+  <div style={{ position: 'absolute', right: 80, top: 60, width: 540 }}>
+    {/* content */}
+  </div>
+</AbsoluteFill>
+\`\`\`
+
+### Grid layout (2×2 or 3-col)
+\`\`\`tsx
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24,
+              width: 660, margin: '0 auto' }}>
+  {items.map((item, i) => { /* staggered icon cards */ })}
+</div>
+\`\`\`
+
+### Hero centered layout (title + big visual)
+\`\`\`tsx
+<AbsoluteFill style={{ background: theme.background, display: 'flex',
+                       flexDirection: 'column', alignItems: 'center',
+                       justifyContent: 'center', gap: 40 }}>
+  {/* Large title */}
+  {/* Big centered icon/image */}
+  {/* Supporting text */}
+</AbsoluteFill>
+\`\`\`
+
+### Dark accent card (for emphasis moments)
+\`\`\`tsx
+<div style={{
+  background: theme.palette.primary,
+  borderRadius: 20, padding: '32px 40px',
+  color: '#fff', position: 'relative', overflow: 'hidden',
+}}>
+  {/* Subtle circle decoration */}
+  <div style={{ position: 'absolute', right: -40, top: -40, width: 160, height: 160,
+                borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
+  <div style={{ fontFamily: theme.headingFont, fontSize: 28, marginBottom: 12 }}>Quote or key point</div>
+  <div style={{ fontFamily: theme.primaryFont, fontSize: 18, opacity: 0.9, lineHeight: 1.5 }}>
+    Supporting text
+  </div>
+</div>
+\`\`\`
+
+---
+
+## LAYOUT GUIDE
 
 Canvas: ${width}×${height}. Safe zone: left≥80, right≤${width - 80}, top≥60, bottom≤${height - 60}.
 
+**Pick ONE layout per scene:**
+- **Split** (left content + right icons/visual) — best for 2–4 teaching points
+- **Hero centered** (big concept + large visual) — best for single big idea
+- **Grid** (2×2 or 3-col icon cards) — best for comparing 3–4 concepts
+- **Steps list** (numbered items full-width) — best for processes/sequences
+
+---
+
 ## CRITICAL RULES
 
-1. **Export**: \`export const Scene${sceneNumber}: React.FC = () => { ... }\`
-2. **Hooks at top**: \`const frame = useCurrentFrame();\` and \`const { fps, durationInFrames } = useVideoConfig();\`
+1. **Export**: \`export const Scene${sceneNumber}: React.FC = () => { ... };\`
+2. **Hooks at top**: \`const frame = useCurrentFrame();\` + \`const { fps, durationInFrames } = useVideoConfig();\`
 3. **Audio import**: \`import { Audio } from '@remotion/media'\` — NEVER from 'remotion'
-4. **premountFor={fps}** on EVERY Sequence
+4. **NO premountFor** on Sequence — it's not supported in this version
 5. **No CSS transitions** — frame-based interpolate/spring only
-6. **Persistence**: Once animated in, elements stay. \`durationInFrames={durationInFrames - fromFrame}\` on every Sequence
-7. **Timing in seconds × fps** — never hardcoded frame numbers
-8. **Safe zone**: all content within the margins above
-9. **TypeScript**: proper types, \`React.FC\`, no \`any\`
-10. **Self-contained**: complete file, all imports at top
-11. **Return ONLY the TSX file** — no markdown fences, no explanation`;
+6. **No inline SVG generation** — use Icons8 PNG icons only
+7. **Persistence**: once animated in, elements stay. Every Sequence must have \`durationInFrames={durationInFrames - from}\`
+8. **Timing in seconds × fps** — never hardcoded frame numbers
+9. **Safe zone**: all content within the margins above
+10. **Self-contained**: complete file, all imports at top, no external components
+11. **Concise**: keep total file under 250 lines. No duplicate CSS properties in same style object.
+12. **Return ONLY the TSX file** — no markdown fences, no explanation text before imports`;
 
-  const user = `Scene ${sceneNumber} of ${sceneCount} — build this now.
+  const user = `Scene ${sceneNumber} of ${sceneCount} — build this scene now.
 
 ## Educational Content
 
@@ -241,13 +293,13 @@ Canvas: ${width}×${height}. Safe zone: left≥80, right≤${width - 80}, top≥
 
 **Key concept**: ${scene.key_concept || ''}
 
-**Narration** (the spoken audio — let it drive your visual pacing):
+**Narration** (spoken audio — pacing reference):
 "${scene.narration}"
 
-**Teaching points** (reveal these progressively on screen):
-${(scene.teaching_points || []).map((p, i) => `${i + 1}. ${p}`).join('\n')}
+**Teaching points** (reveal these on screen as narration progresses):
+${teachingPoints.map((p, i) => `${i + 1}. ${p}`).join('\n')}
 
-**Visual idea** (inspiration, not constraint):
+**Visual inspiration** (your creative direction):
 ${scene.visual_idea || scene.visual_concept || 'Choose the most compelling visual for this concept'}
 
 ## Timing
@@ -255,8 +307,8 @@ ${scene.visual_idea || scene.visual_concept || 'Choose the most compelling visua
 - FPS: ${fps}
 - Narration: ${narrationDuration.toFixed(1)}s = ${narrationFrames} frames
 - Scene total: ${totalFrames} frames (narration + 0.5s buffer)
-- Beat duration: ~${beatDuration} frames per teaching point
-${hasNarrationFile ? `- Narration audio: \`staticFile('assets/narration_scene${sceneNumber}.wav')\`` : '- No narration audio for this scene'}
+- Beat: ~${beatFrames} frames per teaching point
+${hasNarrationFile ? `- Audio file: \`staticFile('assets/narration_scene${sceneNumber}.wav')\`` : '- No narration audio'}
 
 ## Theme
 
@@ -266,13 +318,13 @@ ${JSON.stringify(theme, null, 2)}
 
 ## Your Task
 
-1. Decide what visual(s) would best teach this concept — be creative and bold
-2. Call tools to generate/fetch those assets (SVG diagrams, Icons8 icons, etc.)
-3. Write a complete, professional Remotion TSX scene
+1. Decide on ONE layout that best teaches this concept (split / hero / grid / steps)
+2. Search and download 2–4 Icons8 icons that fit the content
+3. Write a polished, professional Remotion TSX scene
 
-Make it something a student would screenshot. Think bold typography, clear hierarchy, progressive reveals timed to the narration.
+Design goal: a student would screenshot this slide. Think bold numbers, clean cards, staggered reveals, icon grids, progress bars — all timed to the narration beats.
 
-Output the complete TSX file with no fences or explanation.`;
+Output the complete TSX file. No markdown fences. No explanation text.`;
 
   return { system, user };
 }

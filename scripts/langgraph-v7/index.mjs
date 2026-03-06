@@ -28,7 +28,15 @@ const maxScenes    = parseInt(getArg('--scenes=')   || '0', 10);
 const audience     = getArg('--audience=')     || '';
 const instructions = getArg('--instructions=') || '';
 const slug         = topic.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
-const outputDir    = getArg('--output=') || path.join(PATHS.output, `${slug}-v7`);
+
+// Versioned output: find next available run number to avoid overwriting previous runs
+function nextOutputDir(base) {
+  if (getArg('--output=')) return getArg('--output=');
+  let n = 1;
+  while (fs.existsSync(path.join(base, `${slug}-v7-run${n}`))) n++;
+  return path.join(base, `${slug}-v7-run${n}`);
+}
+const outputDir    = nextOutputDir(PATHS.output);
 const threadId     = getArg('--thread=') || `v7-${slug}-${Date.now()}`;
 
 // --- Banner ---

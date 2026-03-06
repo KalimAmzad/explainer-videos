@@ -26,7 +26,7 @@ export const MODELS = {
   researchPlanner: 'claude-haiku-4-5-20251001',
   assetSvgGen:     'claude-haiku-4-5-20251001',
   imageGen:        'gemini-3.1-flash-image-preview',
-  sceneComposer:   'claude-sonnet-4-6',               // Sonnet for quality Remotion code
+  sceneComposer:   'claude-haiku-4-5-20251001',         // Haiku for speed and cost
   tts:             'gemini-2.5-flash-preview-tts',     // Gemini TTS model
 };
 
@@ -60,6 +60,14 @@ export const MCP_SERVERS = {
         env: env.ICONS8_API_KEY ? { ICONS8_API_KEY: env.ICONS8_API_KEY } : {},
       }
     : null,
+
+  // shadcn-ui component library — spawned per scene-composer run
+  // Provides get_component, get_component_demo, list_components
+  shadcn: {
+    command: 'npx',
+    args: ['-y', '@jpisnice/shadcn-ui-mcp-server'],
+    env: {},
+  },
 };
 
 export const PATHS = {

@@ -343,6 +343,39 @@ function copyNarrations(narrations, assetsDir) {
   return { copied, skipped };
 }
 
+// ── TSX sanitizer ──────────────────────────────────────────────────
+
+/**
+ * Fix common LLM-generated TSX issues before writing to disk:
+ * 1. Remove duplicate CSS property keys within the same style={{ }} object
+ * 2. Remove premountFor prop (not in TypeScript types for this Remotion version)
+ */
+function sanitizeTSX(tsx) {
+  // Remove premountFor prop
+  let out = tsx.replace(/\s+premountFor=\{[^}]+\}/g, '');
+
+  // Remove duplicate keys in style objects by scanning for consecutive prop blocks
+  // Strategy: find style={{ ... }} blocks and deduplicate keys (keep last occurrence)
+  out = out.replace(/style=\{\{([\s\S]*?)\}\}/g, (match, body) => {
+    const lines = body.split('\n');
+    const seen = new Set();
+    const deduped = [];
+    // Process in reverse to keep last occurrence, then reverse back
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const keyMatch = lines[i].match(/^\s*([\w]+)\s*:/);
+      if (keyMatch) {
+        const key = keyMatch[1];
+        if (seen.has(key)) continue; // skip earlier duplicate
+        seen.add(key);
+      }
+      deduped.unshift(lines[i]);
+    }
+    return `style={{${deduped.join('\n')}}}`;
+  });
+
+  return out;
+}
+
 // ── Main node ──────────────────────────────────────────────────────
 
 /**
@@ -410,7 +443,7 @@ export async function videoCompilerNode(state) {
       continue;
     }
     const filePath = path.join(scenesDir, `Scene${scene.sceneNumber}.tsx`);
-    fs.writeFileSync(filePath, scene.tsxContent, 'utf8');
+    fs.writeFileSync(filePath, sanitizeTSX(scene.tsxContent), 'utf8');
     scenesWritten++;
   }
   console.log(`          Wrote ${scenesWritten} scene files`);
