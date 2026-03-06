@@ -253,13 +253,13 @@ export async function sceneComposerNode(state) {
   const model = new ChatGoogleGenerativeAI({
     model: MODELS.sceneComposer,
     apiKey: KEYS.gemini,
-    maxOutputTokens: 8192,
+    maxOutputTokens: 65536,
     temperature: 0.7,
   }).bindTools(tools);
 
   const messages = [new SystemMessage(system), new HumanMessage(user)];
   let iterations = 0;
-  const MAX_ITERATIONS = 8; // More iterations for richer asset fetching
+  const MAX_ITERATIONS = 12; // Enough for rich asset fetching + final TSX generation
 
   try {
     while (iterations < MAX_ITERATIONS) {

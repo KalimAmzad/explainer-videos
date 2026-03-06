@@ -43,7 +43,7 @@ Real shadcn/ui v4 source as design inspiration. Great picks: \`card\`, \`badge\`
 ### \`search_icons8\` → \`download_icon_png\`
 No limit on quantity. Use platform "color" for vivid icons. The tool returns \`asset_id\` — use EXACTLY that value in \`staticFile('assets/{asset_id}.png')\`.
 
-**CRITICAL**: The returned \`asset_id\` (e.g. \`s${sceneNumber}_brain\`) is what you MUST use in TSX — never make up a different name.
+**CRITICAL — BROKEN IMAGES CAUSE FAILURES**: The \`download_icon_png\` tool returns \`{ asset_id: "s${sceneNumber}_brain" }\`. You MUST copy that EXACT string into \`staticFile('assets/s${sceneNumber}_brain.png')\`. NEVER use \`commonName\`, NEVER abbreviate, NEVER modify. Log it mentally: "tool returned asset_id=X, I will use staticFile(\'assets/X.png\')" before writing TSX.
 
 ### \`generate_image\`
 Rich hero illustration — use when a strong visual metaphor needs photorealism (1 per scene).
@@ -67,9 +67,12 @@ import { flip } from '@remotion/transitions/flip';
 // Animation utilities
 import { mapRange, interpolateStyles } from '@remotion/animation-utils';
 
-// Google Fonts (load at top of component)
-import { loadFont as loadCabinSketch } from '@remotion/google-fonts/CabinSketch';
-import { loadFont as loadCaveat } from '@remotion/google-fonts/Caveat';
+// Google Fonts — ALWAYS capitalize the font name in the import path
+import { loadFont as loadInter } from '@remotion/google-fonts/Inter';         // NOT /inter
+import { loadFont as loadDMSans } from '@remotion/google-fonts/DM-Sans';
+import { loadFont as loadPlusJakarta } from '@remotion/google-fonts/Plus-Jakarta-Sans';
+// Usage at top of component: const { fontFamily } = loadInter();
+// Then: fontFamily: fontFamily  (dynamic, not hardcoded string)
 \`\`\`
 
 ### Timing helper
@@ -223,9 +226,11 @@ const opacity = mapRange(frame, t(0), Math.max(t(0)+1, t(0.5)), 0, 1, 'clamp');
 
 ### Google Fonts
 \`\`\`tsx
-// Call at component top level (not inside render):
-const { fontFamily: headingFont } = loadCabinSketch();
-// Then use: fontFamily: headingFont  (instead of hardcoded string)
+// Call at component TOP LEVEL (not inside render, not inside useEffect):
+const { fontFamily } = loadInter();
+// Then use: style={{ fontFamily }}  — NOT hardcoded "Inter" string
+// Available: loadInter, loadDMSans, loadPlusJakarta, loadNunito
+// Import path is CASE SENSITIVE: /Inter not /inter, /DM-Sans not /dm-sans
 \`\`\`
 
 ---
@@ -409,9 +414,16 @@ const statS = spring({ frame: Math.max(0, frame - t(1)), fps, config: { damping:
 
 1. **Title zone (left:80, top:64, width:580, height:110) is INVIOLABLE** — nothing overlaps it
 2. **Visual content starts at top:200** — never above this line
-3. **Canvas full fill** — every quadrant has content, bottom band (y:580–660) always has a bottom bar or quote
-4. **Right panel** (right:680–1200) is available for visuals, icon grid, stats
-5. **No stray elements** — every positioned element has explicit top+left/right coordinates within safe zone
+3. **Canvas full fill** — EVERY quadrant must have visible content:
+   - Top-left (title): always present
+   - Bottom-left (y:200–580): teaching points / feature list / steps  
+   - Top-right (x:720+): hero image / icon grid / stat cards
+   - Bottom-right (y:400–580): additional stats / supporting visual
+   - Bottom band (y:580–660): ALWAYS a takeaway bar — NEVER leave empty
+4. **Right panel MUST have real content** — not just colored rectangles. Use icons, stats, images, or text cards. Empty colored bars are NOT acceptable.
+5. **No stray elements** — every element has explicit top+left/right coordinates within safe zone
+6. **No overlapping text** — staggered items must have different absolute top positions. Each card/row must be at top = 200 + i * (cardHeight + gap). NEVER animate multiple items to the same position.
+7. **No broken image refs** — only use \`staticFile('assets/{exact_asset_id}.png')\` where exact_asset_id is the asset_id string returned by the download tool.
 
 ---
 
@@ -425,6 +437,8 @@ const statS = spring({ frame: Math.max(0, frame - t(1)), fps, config: { damping:
 - **Background panels**: appear 5 frames before content
 - **Bottom bar**: enters after 70% of narration
 - **Stagger**: each teaching point at \`i * beatFrames\` delay
+- **Stagger positions**: each staggered card MUST have top = 200 + i * (cardHeight + 16) — NEVER use the same top for multiple items
+- **Persistence**: once animated in, items STAY visible. Use \`durationInFrames={durationInFrames - delay}\` on Sequence
 
 ---
 
@@ -440,11 +454,15 @@ const statS = spring({ frame: Math.max(0, frame - t(1)), fps, config: { damping:
 | premountFor | ❌ never | not in TS types |
 | Background in interpolate | ❌ string colors crash | use ternary or inline value |
 | Duplicate CSS keys | ❌ two \`transform:\` in same style | merge into one string |
-| Icon asset path | \`staticFile('assets/' + asset_id)\` where asset_id = tool return value | making up a different name |
+| Icon asset path | \`staticFile('assets/' + asset_id)\` where asset_id = EXACT tool return value | using commonName or modifying the id |
 | File start | First line must be \`import\` | no preamble text |
 | Export name | \`export const Scene${sceneNumber}\` | any other name |
 | Emoji | \`<span style={{fontSize:'2.5rem'}}>🔥</span>\` | \`<AnimatedEmoji .../>\` (webm CDN fails) |
 | Arrow fn params | \`items.map((item: {a:string}) => ...)\` | \`items.map((item) => ...)\` implicit any |
+| Stagger layout | each card: \`top: 200 + i * cardHeight\` | all cards at same top (overlap!) |
+| Right panel | real content (icons, stats, text) | empty colored rectangles |
+| Bottom half | content in y:400–660 range | leaving bottom 40% blank |
+| google-fonts import | \`@remotion/google-fonts/Inter\` (capital I) | \`@remotion/google-fonts/inter\` (lowercase) |
 
 Output ONLY the TSX. Zero explanation. Zero markdown fences.`;
 
