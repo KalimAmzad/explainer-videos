@@ -377,6 +377,12 @@ function sanitizeTSX(tsx) {
   // Remove premountFor prop
   out = out.replace(/\s+premountFor=\{[^}]+\}/g, '');
 
+  // Remove Gemini response artifacts (ctrl characters, malformed tags)
+  out = out.replace(/<ctrl\d+>/g, '').replace(/<\/ctrl\d+>/g, '');
+
+  // Fix google-fonts import casing: /inter → /Inter, /caveat → /Caveat etc.
+  out = out.replace(/@remotion\/google-fonts\/([a-z])/g, (m, c) => `@remotion/google-fonts/${c.toUpperCase()}`);
+
   // Remove AnimatedEmoji import (webm CDN fetch fails in Remotion Studio/render)
   out = out.replace(/import\s*\{[^}]*AnimatedEmoji[^}]*\}\s*from\s*['"]@remotion\/animated-emoji['"];?\n?/g, '');
 
