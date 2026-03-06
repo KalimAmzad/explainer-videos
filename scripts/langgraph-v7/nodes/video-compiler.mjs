@@ -6,7 +6,7 @@
  * an edit manifest.
  *
  * Input:  state.compiledScenes, state.narrations, state.theme,
- *         state.sceneDesigns, state.outputDir, state.slug, state.assets
+ *         state.outputDir, state.slug, state.assets
  * Output: { videoPath, editManifest }
  */
 import fs from 'fs';
@@ -136,14 +136,13 @@ function generateRootTSX(compiledScenes, narrations, totalFrames) {
     return lines.join('\n');
   }).join('\n');
 
-  // Remotion imports — include Audio and staticFile if we have narrations
+  // Build Remotion import list (Audio comes from @remotion/media, not remotion)
   const remotionImports = ['Composition', 'Sequence'];
-  if (hasNarrations) {
-    remotionImports.push('Audio', 'staticFile');
-  }
+  if (hasNarrations) remotionImports.push('staticFile');
 
   return `import React from 'react';
 import { ${remotionImports.join(', ')} } from 'remotion';
+${hasNarrations ? "import { Audio } from '@remotion/media';" : ''}
 import { ThemeContext } from './ThemeContext';
 import { theme } from './theme';
 ${sceneImports}
@@ -182,13 +181,12 @@ export const RemotionRoot: React.FC = () => (
  * Generate an edit manifest (JSON) describing all scenes, their assets,
  * and narration for future editing UI integration.
  *
- * @param {Array} compiledScenes - Compiled scene data from scene_writer
- * @param {Array} sceneDesigns - Original scene designs from scene_designer
+ * @param {Array} compiledScenes - Compiled scene data from scene_composer
  * @param {Array} narrations - Narration data from narration_generator
  * @param {Array} assets - Generated assets
  * @param {string} slug - Project slug
  */
-function generateEditManifest(compiledScenes, sceneDesigns, narrations, assets, slug) {
+function generateEditManifest(compiledScenes, narrations, assets, slug) {
   // Build narration lookup
   const narrationMap = {};
   for (const n of narrations) {
@@ -204,16 +202,14 @@ function generateEditManifest(compiledScenes, sceneDesigns, narrations, assets, 
   let frameOffset = 0;
   const scenes = sortedScenes.map(scene => {
     const dur = scene.durationFrames || 150;
-    const design = sceneDesigns.find(d => d.scene_number === scene.sceneNumber);
     const narration = narrationMap[scene.sceneNumber];
 
     const entry = {
       scene_number: scene.sceneNumber,
-      layout_template: design?.layout_template || 'unknown',
       start_frame: frameOffset,
       total_frames: dur,
       has_narration: !!narration,
-      narration_file: narration ? path.basename(narration.filePath) : null,
+      narration_file: narration?.filePath ? path.basename(narration.filePath) : null,
       editable: true,
     };
 
@@ -369,7 +365,6 @@ export async function videoCompilerNode(state) {
 
   const compiledScenes = state.compiledScenes || [];
   const narrations = state.narrations || [];
-  const sceneDesigns = state.sceneDesigns || [];
   const theme = state.theme || {};
   const assets = state.assets || [];
   const outputDir = state.outputDir;
@@ -449,7 +444,7 @@ export async function videoCompilerNode(state) {
   // ── Step 7: Generate edit manifest ──
 
   console.log('    [7/7] Generating edit manifest...');
-  const editManifest = generateEditManifest(compiledScenes, sceneDesigns, narrations, assets, slug);
+  const editManifest = generateEditManifest(compiledScenes, narrations, assets, slug);
   const manifestPath = path.join(outputDir, 'edit-manifest.json');
   fs.writeFileSync(manifestPath, JSON.stringify(editManifest, null, 2), 'utf8');
   console.log(`          Manifest: ${editManifest.scenes.length} scenes, ${editManifest.total_frames} total frames`);

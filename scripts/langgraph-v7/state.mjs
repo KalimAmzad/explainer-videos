@@ -1,7 +1,7 @@
 /**
  * LangGraph v7 state schema.
- * 10 nodes: theme → research → scene_design → [asset_gen × M] → merge_assets
- *         → [narration_gen × N] → merge_narrations → [scene_writer × N] → merge_scenes → compiler
+ * 9 nodes: theme → research → [narration_gen × N] → merge_narrations
+ *        → [asset_gen × M] → merge_assets → [scene_composer × N] → merge_scenes → compiler
  */
 import { Annotation } from '@langchain/langgraph';
 
@@ -27,9 +27,7 @@ export const VideoState = Annotation.Root({
   theme:          Annotation({ reducer: replace, default: () => null }),
   // Node 2: Research Planner
   researchNotes:  Annotation({ reducer: replace, default: () => null }),
-  // Node 3: Scene Designer
-  sceneDesigns:   Annotation({ reducer: replace, default: () => null }),
-  // Node 4: Asset Generator (fan-in via concatReducer)
+  // Node 3: Asset Generator (fan-in via concatReducer)
   assets:         Annotation({ reducer: concatReducer, default: () => [] }),
   // Node 5: Narration Generator (fan-in via concatReducer)
   narrations:     Annotation({ reducer: concatReducer, default: () => [] }),

@@ -1,15 +1,14 @@
 /**
- * LangGraph v7 StateGraph — Remotion + Template Layout pipeline.
+ * LangGraph v7 StateGraph — Remotion + LLM Scene Composer pipeline.
  *
  * Flow:
  *   START → theme_designer
  *         → research_planner
- *         → scene_designer
- *         → [asset_generator × M] (fan-out per non-text asset)
- *         → merge_assets (sync barrier)
- *         → [narration_generator × N] (fan-out per scene for TTS)
+ *         → [narration_generator × N] (fan-out per scene — TTS first so real durations are known)
  *         → merge_narrations (sync barrier)
- *         → [scene_writer × N] (fan-out per scene, LLM writes Remotion TSX)
+ *         → [asset_generator × M] (fan-out per asset from research_planner.assets_needed)
+ *         → merge_assets (sync barrier)
+ *         → [scene_composer × N] (fan-out per scene — LLM writes Remotion TSX with full creative freedom)
  *         → merge_scenes (sync barrier)
  *         → video_compiler (deterministic)
  *         → END
@@ -18,51 +17,17 @@ import { StateGraph, START, END, Send, MemorySaver } from '@langchain/langgraph'
 import { VideoState } from './state.mjs';
 import { themeDesignerNode } from './nodes/theme-designer.mjs';
 import { researchPlannerNode } from './nodes/research-planner.mjs';
-import { sceneDesignerNode } from './nodes/scene-designer.mjs';
 import { assetGeneratorNode } from './nodes/asset-generator.mjs';
 import { narrationGeneratorNode } from './nodes/narration-generator.mjs';
-import { sceneWriterNode } from './nodes/scene-writer.mjs';
+import { sceneComposerNode } from './nodes/scene-composer.mjs';
 import { videoCompilerNode } from './nodes/video-compiler.mjs';
 
 /**
- * Fan-out: after scene_designer, create one Send per non-text asset.
- * Text assets are rendered directly by Remotion — no generation needed.
- */
-function fanOutAssets(state) {
-  const designs = state.sceneDesigns || [];
-  const assetsToGenerate = [];
-
-  for (const scene of designs) {
-    for (const block of scene.sync_blocks || []) {
-      const v = block.visual;
-      if (v && v.asset_type !== 'text') {
-        assetsToGenerate.push({
-          asset_id: v.asset_id,
-          asset_type: v.asset_type,
-          description: v.description || '',
-          generation_method: v.generation_method || 'llm_svg',
-          sub_elements: v.sub_elements || null,
-        });
-      }
-    }
-  }
-
-  if (assetsToGenerate.length === 0) {
-    return [new Send('merge_assets', state)];
-  }
-
-  console.log(`\n  Fanning out ${assetsToGenerate.length} asset generators...`);
-  return assetsToGenerate.map((asset, i) =>
-    new Send('asset_generator', { ...state, _asset: asset, _sceneIndex: i })
-  );
-}
-
-/**
- * Fan-out: after merge_assets, create one Send per scene for TTS narration.
- * Each Send carries _sceneIndex (0-based) so the node knows which scene to process.
+ * Fan-out: after research_planner, create one Send per scene for TTS narration.
+ * Narrations run FIRST so real audio durations feed into scene_composer timing.
  */
 function fanOutNarrations(state) {
-  const scenes = state.sceneDesigns || [];
+  const scenes = state.researchNotes?.scenes || [];
 
   if (scenes.length === 0) {
     return [new Send('merge_narrations', state)];
@@ -75,19 +40,37 @@ function fanOutNarrations(state) {
 }
 
 /**
- * Fan-out: after merge_narrations, create one Send per scene for LLM scene writing.
- * Each Send carries _sceneIndex (0-based) so the node knows which scene to process.
+ * Fan-out: after merge_narrations, create one Send per asset.
+ * Reads assets_needed from each scene in researchNotes.
  */
-function fanOutSceneWriters(state) {
-  const scenes = state.sceneDesigns || [];
+function fanOutAssets(state) {
+  const scenes = state.researchNotes?.scenes || [];
+  const allAssets = scenes.flatMap(s => s.assets_needed || []);
+
+  if (allAssets.length === 0) {
+    return [new Send('merge_assets', state)];
+  }
+
+  console.log(`\n  Fanning out ${allAssets.length} asset generators...`);
+  return allAssets.map((asset, i) =>
+    new Send('asset_generator', { ...state, _asset: asset, _sceneIndex: i })
+  );
+}
+
+/**
+ * Fan-out: after merge_assets, create one Send per scene for LLM scene composition.
+ * Scene composer has narration durations + all assets — full creative freedom in TSX.
+ */
+function fanOutSceneComposers(state) {
+  const scenes = state.researchNotes?.scenes || [];
 
   if (scenes.length === 0) {
     return [new Send('merge_scenes', state)];
   }
 
-  console.log(`\n  Fanning out ${scenes.length} scene writers...`);
+  console.log(`\n  Fanning out ${scenes.length} scene composers...`);
   return scenes.map((_, i) =>
-    new Send('scene_writer', { ...state, _sceneIndex: i })
+    new Send('scene_composer', { ...state, _sceneIndex: i })
   );
 }
 
@@ -98,31 +81,29 @@ export function buildGraph() {
   const workflow = new StateGraph(VideoState)
     .addNode('theme_designer', themeDesignerNode)
     .addNode('research_planner', researchPlannerNode)
-    .addNode('scene_designer', sceneDesignerNode)
-    .addNode('asset_generator', assetGeneratorNode)
-    .addNode('merge_assets', mergeNode)
     .addNode('narration_generator', narrationGeneratorNode)
     .addNode('merge_narrations', mergeNode)
-    .addNode('scene_writer', sceneWriterNode)
+    .addNode('asset_generator', assetGeneratorNode)
+    .addNode('merge_assets', mergeNode)
+    .addNode('scene_composer', sceneComposerNode)
     .addNode('merge_scenes', mergeNode)
     .addNode('video_compiler', videoCompilerNode)
 
-    // Linear chain: theme → research → scene_designer
+    // Linear: theme → research
     .addEdge(START, 'theme_designer')
     .addEdge('theme_designer', 'research_planner')
-    .addEdge('research_planner', 'scene_designer')
 
-    // Fan-out assets: scene_designer → [asset_generator × M] → merge_assets
-    .addConditionalEdges('scene_designer', fanOutAssets, ['asset_generator', 'merge_assets'])
-    .addEdge('asset_generator', 'merge_assets')
-
-    // Fan-out narrations: merge_assets → [narration_generator × N] → merge_narrations
-    .addConditionalEdges('merge_assets', fanOutNarrations, ['narration_generator', 'merge_narrations'])
+    // Fan-out narrations: research_planner → [narration_generator × N] → merge_narrations
+    .addConditionalEdges('research_planner', fanOutNarrations, ['narration_generator', 'merge_narrations'])
     .addEdge('narration_generator', 'merge_narrations')
 
-    // Fan-out scene writers: merge_narrations → [scene_writer × N] → merge_scenes
-    .addConditionalEdges('merge_narrations', fanOutSceneWriters, ['scene_writer', 'merge_scenes'])
-    .addEdge('scene_writer', 'merge_scenes')
+    // Fan-out assets: merge_narrations → [asset_generator × M] → merge_assets
+    .addConditionalEdges('merge_narrations', fanOutAssets, ['asset_generator', 'merge_assets'])
+    .addEdge('asset_generator', 'merge_assets')
+
+    // Fan-out scene composers: merge_assets → [scene_composer × N] → merge_scenes
+    .addConditionalEdges('merge_assets', fanOutSceneComposers, ['scene_composer', 'merge_scenes'])
+    .addEdge('scene_composer', 'merge_scenes')
 
     // Final: merge_scenes → video_compiler → END
     .addEdge('merge_scenes', 'video_compiler')

@@ -59,17 +59,17 @@ function estimateDurationFromText(text) {
 
 export async function narrationGeneratorNode(state) {
   const sceneIndex = state._sceneIndex;
-  const sceneDesigns = state.sceneDesigns || [];
+  const scenes = state.researchNotes?.scenes || [];
 
-  if (sceneIndex < 0 || sceneIndex >= sceneDesigns.length) {
-    const msg = `narration-generator: invalid _sceneIndex ${sceneIndex} (${sceneDesigns.length} scenes)`;
+  if (sceneIndex < 0 || sceneIndex >= scenes.length) {
+    const msg = `narration-generator: invalid _sceneIndex ${sceneIndex} (${scenes.length} scenes)`;
     console.error(`    ${msg}`);
     return { errors: [msg] };
   }
 
-  const sceneDesign = sceneDesigns[sceneIndex];
-  const sceneNumber = sceneDesign.scene_number || sceneIndex + 1;
-  const narrationText = (sceneDesign.narration_full || '').trim();
+  const scene = scenes[sceneIndex];
+  const sceneNumber = scene.scene_number || sceneIndex + 1;
+  const narrationText = (scene.narration || '').trim();
 
   console.log(`\n  ── Narration Generator [Scene ${sceneNumber}] ──`);
 
@@ -181,21 +181,38 @@ async function generateTTS(text, outputPath) {
   const mimeType = audioData.mimeType || 'audio/wav';
   console.log(`    Received audio: ${mimeType}`);
 
-  // Decode and save
-  const buffer = Buffer.from(audioData.data, 'base64');
-  fs.writeFileSync(outputPath, buffer);
+  // Decode raw PCM data from Gemini
+  const rawPcm = Buffer.from(audioData.data, 'base64');
 
-  const sizeKB = (buffer.length / 1024).toFixed(1);
+  // Gemini returns raw PCM (L16/mono/24kHz) — wrap in WAV header for Remotion playback
+  const sampleRate = 24000;
+  const numChannels = 1;
+  const bitsPerSample = 16;
+  const byteRate = sampleRate * numChannels * (bitsPerSample / 8);
+  const blockAlign = numChannels * (bitsPerSample / 8);
+  const dataSize = rawPcm.length;
 
-  // Calculate duration
-  let duration;
-  if (mimeType.includes('wav') || mimeType.includes('pcm')) {
-    duration = getWavDuration(outputPath);
-  } else {
-    // For non-WAV formats, estimate from word count as fallback
-    console.warn(`    Unexpected mime type ${mimeType}, estimating duration from text`);
-    duration = estimateDurationFromText(text);
-  }
+  // Create WAV header (44 bytes)
+  const wavHeader = Buffer.alloc(44);
+  wavHeader.write('RIFF', 0);
+  wavHeader.writeUInt32LE(36 + dataSize, 4);  // file size - 8
+  wavHeader.write('WAVE', 8);
+  wavHeader.write('fmt ', 12);
+  wavHeader.writeUInt32LE(16, 16);             // fmt chunk size
+  wavHeader.writeUInt16LE(1, 20);              // PCM format
+  wavHeader.writeUInt16LE(numChannels, 22);
+  wavHeader.writeUInt32LE(sampleRate, 24);
+  wavHeader.writeUInt32LE(byteRate, 28);
+  wavHeader.writeUInt16LE(blockAlign, 32);
+  wavHeader.writeUInt16LE(bitsPerSample, 34);
+  wavHeader.write('data', 36);
+  wavHeader.writeUInt32LE(dataSize, 40);
+
+  const wavBuffer = Buffer.concat([wavHeader, rawPcm]);
+  fs.writeFileSync(outputPath, wavBuffer);
+
+  const sizeKB = (wavBuffer.length / 1024).toFixed(1);
+  const duration = dataSize / byteRate;
 
   console.log(`    Saved: ${path.basename(outputPath)} (${sizeKB} KB, ${duration.toFixed(1)}s)`);
 

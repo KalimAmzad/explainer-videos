@@ -1,7 +1,7 @@
 /**
  * v7 Research Planner prompt.
- * Haiku plans CONTENT ONLY — no layout, no assets, no positions, no animations.
- * Pure educational content planning and narration scripting.
+ * Haiku plans content AND specifies assets per scene.
+ * No layout, no positions, no animation types — but DOES specify what assets to generate.
  */
 export function buildResearchPlannerPrompt({ topic, duration, audience, instructions }) {
   const sceneCount = Math.max(3, Math.min(8, Math.round((duration || 60) / 12)));
@@ -9,7 +9,7 @@ export function buildResearchPlannerPrompt({ topic, duration, audience, instruct
   return `You are a senior educational content director planning a whiteboard explainer video.
 
 ## Task
-Plan the educational content for a whiteboard-style explainer video.
+Plan the educational content AND asset requirements for a whiteboard-style explainer video.
 
 Topic: "${topic}"
 Duration: ${duration || 60} seconds
@@ -29,46 +29,63 @@ Return a JSON object:
       "duration": 12,
       "key_concept": "One sentence summary of what this scene teaches",
       "teaching_points": [
-        "First teaching point with key terms emphasized",
+        "First teaching point",
         "Second teaching point",
         "Third teaching point"
       ],
-      "visual_approach": "Brief description of what visual approach would best explain this concept",
-      "narration": "Full narration script — exactly what the narrator says for this scene."
+      "visual_concept": "Freeform description of what to show visually — diagrams, icons, illustrations. Describe the visual narrative, not positions or sizes.",
+      "narration": "Full narration script — exactly what the narrator says for this scene.",
+      "assets_needed": [
+        {
+          "asset_id": "s1_diagram_name",
+          "asset_type": "svg",
+          "generation_method": "llm_svg",
+          "description": "Detailed description for the SVG generator. Include shapes, labels, connections.",
+          "sub_elements": [
+            { "sub_id": "part1", "description": "First animatable part" },
+            { "sub_id": "part2", "description": "Second animatable part" }
+          ]
+        }
+      ]
     }
   ]
 }
 
 ## Rules
 
+### Scene structure
 1. **Scene count**: Plan ${sceneCount} to ${sceneCount + 2} scenes for a ${duration || 60}s video. Each scene should be 8-15 seconds.
+2. Scene 1 hooks the viewer. Middle scenes teach core concepts. Final scene summarizes or calls to action.
+3. **teaching_points**: 2-4 concise bullet points per scene. These become on-screen text.
 
-2. **Scene structure**:
-   - Scene 1 should introduce the topic and hook the viewer.
-   - Middle scenes teach the core concepts, one per scene.
-   - Final scene should summarize or provide a call-to-action.
-
-3. **teaching_points**: 2-4 concise bullet points per scene. These become the on-screen text.
-
-4. **visual_approach**: Describe WHAT to show, not HOW to show it. Examples:
-   - "A circular flow diagram connecting three stages"
-   - "Side-by-side comparison of before and after"
-   - "A numbered list with icons for each step"
-   Do NOT mention specific positions, coordinates, fonts, colors, or animation types.
-
-5. **narration**: Write natural, conversational narration. Aim for ~2.5 words per second.
+### Narration
+4. **narration**: Natural, conversational speech. ~2.5 words/second pace.
    - A 12-second scene = ~30 words of narration.
-   - Use simple language appropriate for the audience.
-   - Each sentence should align with a visual element on screen.
+   - Write complete sentences. Each sentence aligns with a visual element.
 
-6. **Duration allocation**: Distribute the ${duration || 60} seconds across scenes. Ensure total equals ${duration || 60}.
+### Visual concept
+5. **visual_concept**: Describe WHAT to show, not HOW or WHERE. Examples:
+   - "A circular flow diagram connecting three stages with labels Cue, Routine, Reward"
+   - "Side-by-side contrast: old messy desk vs organized desk with labels"
+   - "A numbered checklist building up item by item with icons beside each"
 
-## Focus on CONTENT and PEDAGOGY only
-Do NOT specify any of the following (these are handled by later pipeline stages):
-- Layout or positioning (no x, y, width, height)
-- Specific assets, icons, or images
+### Assets
+6. **assets_needed**: Specify 0-3 visual assets per scene. Only request assets you'll actually show.
+   - Use **llm_svg** for: diagrams, flow charts, icons, simple illustrations, geometric concepts
+   - Use **icons8** for: single concept icons (productivity, brain, clock, goal, etc.)
+   - Use **nano_banana** for: rich photo-realistic illustrations only (rarely needed)
+   - Text and simple styled text need NO asset — the scene composer handles text directly.
+   - **asset_id** format: "s{scene_number}_{descriptive_name}" (e.g., "s1_habit_loop", "s2_brain_icon")
+   - For SVGs with multiple animatable parts, specify sub_elements (max 4 per asset).
+   - For icons/images, sub_elements is null or omitted.
+
+### Duration
+7. Distribute the ${duration || 60} seconds across scenes. Ensure total equals ${duration || 60}.
+
+## Do NOT specify
+- Layout positions (x, y, width, height, left, right)
 - Animation types or timing
-- Colors, fonts, or styling
+- Colors, fonts, or styling (handled by theme system)
 - Technical implementation details
 
 Return ONLY the JSON object. No markdown fences, no explanation.`;

@@ -65,13 +65,15 @@ ${subElementsSection}
 1. Use <path> elements with hand-drawn d attributes (slightly wobbly control points).
 2. For circles, use <ellipse> or <path> with slight irregularity — not perfect <circle>.
 3. For rectangles, use <path> with rounded, imperfect corners — not <rect>.
-4. Include stroke="..." and fill="..." attributes on shapes. Use fill="none" for outlined shapes.
+4. ALL stroked paths MUST have explicit stroke="..." AND fill="none" attributes.
 5. Add slight variations in stroke-width (e.g., 2.3, 2.7 instead of always 2.5).
 6. Keep the SVG clean and semantic — no unnecessary wrappers or empty groups.
 7. Ensure all text has appropriate font-size (14-22px range for labels, 24-32px for titles).
 8. Use text-anchor="middle" for centered labels.
 9. Include xmlns="http://www.w3.org/2000/svg" on the root <svg> element.
 10. Total SVG size should be reasonable — aim for under 5KB.
+11. ALL elements MUST be within the viewBox bounds — nothing outside the declared dimensions.
+12. Leave at least 10px padding from all viewBox edges so strokes aren't clipped.
 
 ## OUTPUT
 
