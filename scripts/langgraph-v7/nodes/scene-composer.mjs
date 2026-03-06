@@ -9,7 +9,7 @@
  */
 import fs from 'fs';
 import path from 'path';
-import { ChatGoogle } from '@langchain/google';
+import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 import { HumanMessage, SystemMessage, ToolMessage } from '@langchain/core/messages';
 import { tool } from '@langchain/core/tools';
 import { z } from 'zod';
@@ -250,7 +250,7 @@ export async function sceneComposerNode(state) {
   });
 
   // ReAct agent loop
-  const model = new ChatGoogle({
+  const model = new ChatGoogleGenerativeAI({
     model: MODELS.sceneComposer,
     apiKey: KEYS.gemini,
     maxOutputTokens: 8192,
