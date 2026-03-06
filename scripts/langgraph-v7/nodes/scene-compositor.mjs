@@ -127,15 +127,18 @@ function renderTextBlock(block) {
 }
 
 /**
- * Generate TSX for an SVG block with draw_on animation.
+ * Generate TSX for an SVG block.
+ * Routes to DrawOnSVG for draw_on animation, or wraps SVGAsset in the
+ * appropriate animation component for other animation types.
  * If the block has sub_animations, generates staggered Sequences per sub-element.
  */
 function renderSVGBlock(block, asset) {
   const lines = [];
   const svgContent = asset ? escapeForTemplateLiteral(asset.content || '') : '';
+  const anim = block.animation || 'draw_on';
 
   if (block.sub_animations && block.sub_animations.length > 0) {
-    // Progressive/stagger: one Sequence per sub-element
+    // Progressive/stagger: one Sequence per sub-element (always draw_on)
     for (const sub of block.sub_animations) {
       const elementId = `${block.asset_id}__${sub.sub_id}`;
       lines.push(
@@ -145,14 +148,27 @@ function renderSVGBlock(block, asset) {
         `        </Sequence>`,
       );
     }
-  } else {
-    // Single draw_on for the entire SVG
+  } else if (anim === 'draw_on') {
+    // draw_on: use DrawOnSVG component
     const from = block.visual_start_frame;
     const dur = block.visual_duration_frames;
     lines.push(
       `        {/* ${block.block_id}: draw_on in ${block.slot} slot */}`,
       `        <Sequence from={${from}} durationInFrames={${dur}} layout="none">`,
       `          <DrawOnSVG durationFrames={${dur}} svgContent={\`${svgContent}\`} />`,
+      `        </Sequence>`,
+    );
+  } else {
+    // Other animations: wrap SVGAsset in animation component
+    const component = ANIMATION_COMPONENTS[anim] || 'FadeIn';
+    const from = block.visual_start_frame;
+    const dur = block.visual_duration_frames;
+    lines.push(
+      `        {/* ${block.block_id}: ${anim} in ${block.slot} slot */}`,
+      `        <Sequence from={${from}} durationInFrames={${dur}} layout="none">`,
+      `          <${component} durationFrames={${dur}}>`,
+      `            <SVGAsset content={\`${svgContent}\`} />`,
+      `          </${component}>`,
       `        </Sequence>`,
     );
   }
@@ -268,7 +284,10 @@ function collectImports(blocks, assets) {
         components.add('StyledText');
         break;
       case 'svg':
-        // DrawOnSVG handles SVG rendering directly
+        // DrawOnSVG handles SVG rendering directly, but other anims need SVGAsset
+        if (anim !== 'draw_on' && !(block.sub_animations && block.sub_animations.length > 0)) {
+          components.add('SVGAsset');
+        }
         break;
       case 'image':
       case 'png':

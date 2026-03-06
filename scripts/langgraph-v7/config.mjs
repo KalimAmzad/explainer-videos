@@ -26,7 +26,7 @@ export const MODELS = {
   researchPlanner: 'claude-haiku-4-5-20251001',
   sceneDesigner:   'claude-haiku-4-5-20251001',
   assetSvgGen:     'claude-haiku-4-5-20251001',
-  imageGen:        'gemini-2.0-flash-exp',
+  imageGen:        'gemini-3.1-flash-image-preview',
 };
 
 export const KEYS = {
