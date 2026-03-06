@@ -238,16 +238,16 @@ const { fontFamily: headingFont } = loadCabinSketch();
 // Glowing stat on dark background — most impactful for numbers
 const statS = spring({ frame: Math.max(0, frame - t(1)), fps, config: { damping: 14, stiffness: 180 } });
 <div style={{
-  opacity: statS, transform: \`scale(${0.8 + 0.2 * statS})\`,
-  background: \`linear-gradient(135deg, ${theme.palette.primary}25, ${theme.palette.primary}10)\`,
-  border: \`1px solid ${theme.palette.primary}45\`,
+  opacity: statS, transform: \`scale(\${0.8 + 0.2 * statS})\`,
+  background: \`linear-gradient(135deg, \${theme.palette.primary}25, \${theme.palette.primary}10)\`,
+  border: \`1px solid \${theme.palette.primary}45\`,
   borderRadius: 28, padding: '32px 48px',
   display: 'inline-flex', alignItems: 'center', gap: 28,
-  boxShadow: \`0 0 60px ${theme.palette.primary}30, 0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)\`,
+  boxShadow: \`0 0 60px \${theme.palette.primary}30, 0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)\`,
 }}>
   <span style={{ fontSize: 96, fontFamily: theme.headingFont, color: theme.palette.primary,
                  fontWeight: 900, lineHeight: 1,
-                 textShadow: \`0 0 40px ${theme.palette.primary}80\` }}>67%</span>
+                 textShadow: \`0 0 40px \${theme.palette.primary}80\` }}>67%</span>
   <span style={{ fontSize: 19, fontFamily: theme.primaryFont, color: theme.palette.text,
                  maxWidth: 200, lineHeight: 1.5, opacity: 0.85 }}>
     context text
@@ -370,10 +370,10 @@ const statS = spring({ frame: Math.max(0, frame - t(1)), fps, config: { damping:
   <Sequence from={t(narrationFrames * 0.7)} durationInFrames={Math.max(1, durationInFrames - t(narrationFrames * 0.7))} layout="none">
     <div style={{
       position:'absolute', bottom:24, left:80, right:80, borderRadius:16,
-      background: \`linear-gradient(135deg, ${theme.palette.primary}28, ${theme.palette.accent1}18)\`,
-      border: \`1px solid ${theme.palette.primary}40\`,
+      background: \`linear-gradient(135deg, \${theme.palette.primary}28, \${theme.palette.accent1}18)\`,
+      border: \`1px solid \${theme.palette.primary}40\`,
       padding:'18px 28px', display:'flex', alignItems:'center', gap:16,
-      boxShadow: \`0 8px 32px ${theme.palette.primary}25, inset 0 1px 0 rgba(255,255,255,0.06)\`,
+      boxShadow: \`0 8px 32px \${theme.palette.primary}25, inset 0 1px 0 rgba(255,255,255,0.06)\`,
     }}>
       <span style={{ fontSize: '1.5rem', lineHeight: 1 }}>💡</span>
       <span style={{ fontFamily:theme.primaryFont, fontSize:17, color:theme.palette.text, lineHeight:1.4 }}>

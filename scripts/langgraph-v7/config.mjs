@@ -26,7 +26,7 @@ export const MODELS = {
   researchPlanner: 'claude-haiku-4-5-20251001',
   assetSvgGen:     'claude-haiku-4-5-20251001',
   imageGen:        'gemini-3.1-flash-image-preview',
-  sceneComposer:   'gemini-3.1-flash-lite-preview-04-17', // Gemini flash-lite for scene composition
+  sceneComposer:   'gemini-2.0-flash-lite', // Gemini flash-lite for scene composition
   tts:             'gemini-2.5-flash-preview-tts',     // Gemini TTS model
 };
 
