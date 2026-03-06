@@ -10,9 +10,9 @@
 import fs from 'fs';
 import path from 'path';
 import { GoogleGenAI } from '@google/genai';
-import { KEYS } from '../config.mjs';
+import { KEYS, MODELS } from '../config.mjs';
 
-const TTS_MODEL = 'gemini-2.5-flash-preview-tts';
+const TTS_MODEL = MODELS.tts;
 const TTS_VOICE = 'Kore'; // Clear, professional voice
 const WORDS_PER_SECOND = 2.5; // 150 wpm
 

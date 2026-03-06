@@ -86,7 +86,7 @@ function resolveNarrationFirst(blockCursor, drawDuration, narrationDuration) {
  * Asset builds piece by piece, each sub-element synced to a narration beat.
  * Returns sub_animations array and total blockDuration.
  */
-function resolveProgressiveSync(blockCursor, globalFrameOffset, visual, narration) {
+function resolveProgressiveSync(blockCursor, _globalFrameOffset, visual, narration) {
   const subElements = visual.sub_elements || [];
   const beats = narration.beats || [];
   const subAnimations = [];
@@ -102,7 +102,7 @@ function resolveProgressiveSync(blockCursor, globalFrameOffset, visual, narratio
 
     subAnimations.push({
       sub_id: sub.sub_id || `part_${i}`,
-      start_frame: secondsToFrames(beatCursor) + globalFrameOffset,
+      start_frame: secondsToFrames(beatCursor),
       duration_frames: secondsToFrames(subDraw),
     });
 
@@ -120,7 +120,7 @@ function resolveProgressiveSync(blockCursor, globalFrameOffset, visual, narratio
  * Resolve a "stagger_reveal" block.
  * List items revealed one by one, evenly spaced across narration duration.
  */
-function resolveStaggerReveal(blockCursor, globalFrameOffset, visual, narrationDuration) {
+function resolveStaggerReveal(blockCursor, _globalFrameOffset, visual, narrationDuration) {
   const items = visual.sub_elements || [];
   const itemCount = items.length || 1;
   const beatInterval = narrationDuration / itemCount;
@@ -130,7 +130,7 @@ function resolveStaggerReveal(blockCursor, globalFrameOffset, visual, narrationD
     const sub = items[i] || {};
     subAnimations.push({
       sub_id: sub.sub_id || `item_${i}`,
-      start_frame: secondsToFrames(blockCursor + i * beatInterval) + globalFrameOffset,
+      start_frame: secondsToFrames(blockCursor + i * beatInterval),
       duration_frames: secondsToFrames(sub.draw_duration || beatInterval * 0.8),
     });
   }
@@ -194,7 +194,7 @@ export async function timingResolverNode(state) {
           asset_id: visual.asset_id,
           asset_type: visual.asset_type || 'svg',
           content: visual.content,
-          visual_start_frame: secondsToFrames(blockCursor) + globalFrameOffset,
+          visual_start_frame: secondsToFrames(blockCursor),
           visual_duration_frames: secondsToFrames(drawDuration),
           sub_animations: result.subAnimations,
         });
@@ -214,7 +214,7 @@ export async function timingResolverNode(state) {
           asset_id: visual.asset_id,
           asset_type: visual.asset_type,
           content: visual.content,
-          visual_start_frame: secondsToFrames(blockCursor) + globalFrameOffset,
+          visual_start_frame: secondsToFrames(blockCursor),
           visual_duration_frames: secondsToFrames(result.blockDuration),
           sub_animations: result.subAnimations,
         });
@@ -245,7 +245,7 @@ export async function timingResolverNode(state) {
         asset_id: visual.asset_id,
         asset_type: visual.asset_type || 'text',
         content: visual.content,
-        visual_start_frame: secondsToFrames(resolved.visualStart) + globalFrameOffset,
+        visual_start_frame: secondsToFrames(resolved.visualStart),
         visual_duration_frames: secondsToFrames(drawDuration),
       });
 

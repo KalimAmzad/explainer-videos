@@ -191,7 +191,7 @@ const totalProgress = interpolate(frame, [0, durationInFrames], [0, 100], { extr
 9. **SVG animation**: SVGs SHOULD use stroke draw-on animation (DrawOnSVG component) when the SVG has stroked paths.
 10. **Image animation**: Images should fade+scale in using FadeScale component or custom spring.
 11. **Narration sync**: Time animation starts to match the narration beats from the scene design.
-12. **Audio**: If a narration audio file is provided, include an \`<Audio src={staticFile('narration/scene${sceneNumber}.wav')} volume={0.9} />\` component.
+12. **Audio**: If a narration audio file is provided, include an \`<Audio src={staticFile('assets/narration_scene${sceneNumber}.wav')} volume={0.9} />\` component.
 13. **Font loading**: Use \`@remotion/google-fonts\` for custom Google Fonts if needed, imported at the top of the file.
 14. **No layout prop drilling**: You can either use the LAYOUTS system (import LAYOUTS, pick one, pass slots) OR do your own layout with absolute positioning. Choose whichever produces a better result for the scene content.
 15. **Self-contained**: The TSX file must be complete and self-contained — no external dependencies beyond what's listed above.
@@ -232,7 +232,7 @@ ${JSON.stringify(theme, null, 2)}
 - FPS: ${fps}
 - Scene duration: ${sceneDuration} seconds (${totalFrames} frames)
 ${narrationDuration > 0 ? `- Narration audio duration: ${narrationDuration.toFixed(1)}s` : '- No narration audio file'}
-${narrationFile ? `- Narration file: staticFile('narration/scene${sceneNumber}.wav')` : ''}
+${narrationFile ? `- Narration file: staticFile('assets/narration_scene${sceneNumber}.wav')` : ''}
 
 ### Instructions:
 

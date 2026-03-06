@@ -97,18 +97,20 @@ function escapeJSXAttr(str) {
 
 /**
  * Generate TSX for a text block with animation wrapper.
+ * Sequence persists until end of scene so content stays visible after animating in.
  */
-function renderTextBlock(block) {
+function renderTextBlock(block, sceneTotalFrames) {
   const variant = inferTextVariant(block.slot, block.content);
   const anim = block.animation || 'wipe';
   const component = ANIMATION_COMPONENTS[anim] || 'WipeReveal';
   const from = block.visual_start_frame;
   const dur = block.visual_duration_frames;
+  const seqDur = sceneTotalFrames - from; // persist until scene ends
 
   if (anim === 'typewriter') {
     return [
       `        {/* ${block.block_id}: ${anim} in ${block.slot} slot */}`,
-      `        <Sequence from={${from}} durationInFrames={${dur}} layout="none">`,
+      `        <Sequence from={${from}} durationInFrames={${seqDur}} layout="none">`,
       `          <Typewriter durationFrames={${dur}} text="${escapeJSXAttr(block.content || '')}" />`,
       `        </Sequence>`,
     ].join('\n');
@@ -118,7 +120,7 @@ function renderTextBlock(block) {
 
   return [
     `        {/* ${block.block_id}: ${anim} in ${block.slot} slot */}`,
-    `        <Sequence from={${from}} durationInFrames={${dur}} layout="none">`,
+    `        <Sequence from={${from}} durationInFrames={${seqDur}} layout="none">`,
     `          <${component} durationFrames={${dur}}>`,
     `            <StyledText variant="${variant}">${escapedContent}</StyledText>`,
     `          </${component}>`,
@@ -131,8 +133,9 @@ function renderTextBlock(block) {
  * Routes to DrawOnSVG for draw_on animation, or wraps SVGAsset in the
  * appropriate animation component for other animation types.
  * If the block has sub_animations, generates staggered Sequences per sub-element.
+ * Sequences persist until end of scene so drawn content stays visible.
  */
-function renderSVGBlock(block, asset) {
+function renderSVGBlock(block, asset, sceneTotalFrames) {
   const lines = [];
   const svgContent = asset ? escapeForTemplateLiteral(asset.content || '') : '';
   const anim = block.animation || 'draw_on';
@@ -141,9 +144,10 @@ function renderSVGBlock(block, asset) {
     // Progressive/stagger: one Sequence per sub-element (always draw_on)
     for (const sub of block.sub_animations) {
       const elementId = `${block.asset_id}__${sub.sub_id}`;
+      const seqDur = sceneTotalFrames - sub.start_frame;
       lines.push(
         `        {/* ${block.block_id}/${sub.sub_id}: draw_on in ${block.slot} slot */}`,
-        `        <Sequence from={${sub.start_frame}} durationInFrames={${sub.duration_frames}} layout="none">`,
+        `        <Sequence from={${sub.start_frame}} durationInFrames={${seqDur}} layout="none">`,
         `          <DrawOnSVG durationFrames={${sub.duration_frames}} svgContent={\`${svgContent}\`} elementId="${escapeJSXAttr(elementId)}" />`,
         `        </Sequence>`,
       );
@@ -152,9 +156,10 @@ function renderSVGBlock(block, asset) {
     // draw_on: use DrawOnSVG component
     const from = block.visual_start_frame;
     const dur = block.visual_duration_frames;
+    const seqDur = sceneTotalFrames - from;
     lines.push(
       `        {/* ${block.block_id}: draw_on in ${block.slot} slot */}`,
-      `        <Sequence from={${from}} durationInFrames={${dur}} layout="none">`,
+      `        <Sequence from={${from}} durationInFrames={${seqDur}} layout="none">`,
       `          <DrawOnSVG durationFrames={${dur}} svgContent={\`${svgContent}\`} />`,
       `        </Sequence>`,
     );
@@ -163,9 +168,10 @@ function renderSVGBlock(block, asset) {
     const component = ANIMATION_COMPONENTS[anim] || 'FadeIn';
     const from = block.visual_start_frame;
     const dur = block.visual_duration_frames;
+    const seqDur = sceneTotalFrames - from;
     lines.push(
       `        {/* ${block.block_id}: ${anim} in ${block.slot} slot */}`,
-      `        <Sequence from={${from}} durationInFrames={${dur}} layout="none">`,
+      `        <Sequence from={${from}} durationInFrames={${seqDur}} layout="none">`,
       `          <${component} durationFrames={${dur}}>`,
       `            <SVGAsset content={\`${svgContent}\`} />`,
       `          </${component}>`,
@@ -178,12 +184,14 @@ function renderSVGBlock(block, asset) {
 
 /**
  * Generate TSX for an image/PNG block with animation wrapper.
+ * Sequence persists until end of scene so image stays visible after animating in.
  */
-function renderImageBlock(block, asset) {
+function renderImageBlock(block, asset, sceneTotalFrames) {
   const anim = block.animation || 'fade_scale';
   const component = ANIMATION_COMPONENTS[anim] || 'FadeScale';
   const from = block.visual_start_frame;
   const dur = block.visual_duration_frames;
+  const seqDur = sceneTotalFrames - from;
 
   const fileName = asset && asset.filePath
     ? path.basename(asset.filePath)
@@ -191,7 +199,7 @@ function renderImageBlock(block, asset) {
 
   return [
     `        {/* ${block.block_id}: ${anim} in ${block.slot} slot */}`,
-    `        <Sequence from={${from}} durationInFrames={${dur}} layout="none">`,
+    `        <Sequence from={${from}} durationInFrames={${seqDur}} layout="none">`,
     `          <${component} durationFrames={${dur}}>`,
     `            <ImageAsset src={staticFile('assets/${escapeJSXAttr(fileName)}')} />`,
     `          </${component}>`,
@@ -202,12 +210,12 @@ function renderImageBlock(block, asset) {
 /**
  * Generate TSX for a generic/unknown block with fade_in fallback.
  */
-function renderFallbackBlock(block, asset) {
+function renderFallbackBlock(block, asset, sceneTotalFrames) {
   if (asset && asset.content) {
-    return renderSVGBlock(block, asset);
+    return renderSVGBlock(block, asset, sceneTotalFrames);
   }
   if (asset && asset.filePath) {
-    return renderImageBlock(block, asset);
+    return renderImageBlock(block, asset, sceneTotalFrames);
   }
 
   // Last resort: render content or block_id as text
@@ -215,10 +223,11 @@ function renderFallbackBlock(block, asset) {
   const component = ANIMATION_COMPONENTS[anim] || 'FadeIn';
   const from = block.visual_start_frame;
   const dur = block.visual_duration_frames;
+  const seqDur = sceneTotalFrames - from;
 
   return [
     `        {/* ${block.block_id}: ${anim} in ${block.slot} slot (fallback) */}`,
-    `        <Sequence from={${from}} durationInFrames={${dur}} layout="none">`,
+    `        <Sequence from={${from}} durationInFrames={${seqDur}} layout="none">`,
     `          <${component} durationFrames={${dur}}>`,
     `            <StyledText variant="body">${escapeJSXChildren(block.content || block.block_id)}</StyledText>`,
     `          </${component}>`,
@@ -231,22 +240,23 @@ function renderFallbackBlock(block, asset) {
 /**
  * Dispatch a block to the appropriate renderer based on asset_type.
  */
-function renderBlock(block, assets) {
+function renderBlock(block, assets, sceneTotalFrames) {
   const asset = findAsset(assets, block.asset_id);
   const assetType = block.asset_type || (asset ? asset.type : 'text');
 
   switch (assetType) {
     case 'text':
-      return renderTextBlock(block);
+      return renderTextBlock(block, sceneTotalFrames);
     case 'svg':
-      return renderSVGBlock(block, asset);
+      return renderSVGBlock(block, asset, sceneTotalFrames);
     case 'image':
     case 'png':
-      return renderImageBlock(block, asset);
+    case 'nano_banana':
+      return renderImageBlock(block, asset, sceneTotalFrames);
     case 'icon':
-      return renderImageBlock(block, asset);
+      return renderImageBlock(block, asset, sceneTotalFrames);
     default:
-      return renderFallbackBlock(block, asset);
+      return renderFallbackBlock(block, asset, sceneTotalFrames);
   }
 }
 
@@ -292,6 +302,7 @@ function collectImports(blocks, assets) {
       case 'image':
       case 'png':
       case 'icon':
+      case 'nano_banana':
         components.add('ImageAsset');
         needsStaticFile = true;
         break;
@@ -322,6 +333,7 @@ function collectImports(blocks, assets) {
 function generateSceneTSX(sceneTimeline, assets, sceneNumber) {
   const blocks = sceneTimeline.blocks || [];
   const layoutTemplate = sceneTimeline.layout_template || 'title-and-body';
+  const sceneTotalFrames = sceneTimeline.total_frames || 300;
   const { animations, components, needsStaticFile } = collectImports(blocks, assets);
 
   // ── Build imports ──
@@ -364,7 +376,7 @@ function generateSceneTSX(sceneTimeline, assets, sceneNumber) {
 
   const slotEntries = [];
   for (const [slotName, slotBlockList] of Object.entries(slotBlocks)) {
-    const blocksTSX = slotBlockList.map(b => renderBlock(b, assets)).join('\n');
+    const blocksTSX = slotBlockList.map(b => renderBlock(b, assets, sceneTotalFrames)).join('\n');
     slotEntries.push(
       `      '${slotName}': (\n        <>\n${blocksTSX}\n        </>\n      )`,
     );

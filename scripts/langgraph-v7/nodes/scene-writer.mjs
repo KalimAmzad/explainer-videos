@@ -62,6 +62,8 @@ export async function sceneWriterNode(state) {
 
   const sceneDesign = sceneDesigns[sceneIndex];
   const sceneNumber = sceneDesign.scene_number || sceneIndex + 1;
+  const sceneDuration = sceneDesign.duration || 10; // seconds
+  const durationFrames = Math.round(sceneDuration * CANVAS.fps);
 
   console.log(`\n  ── Scene Writer [Scene ${sceneNumber}] ──`);
 
@@ -80,9 +82,9 @@ export async function sceneWriterNode(state) {
   );
   console.log(`    Found ${sceneAssets.length} assets for scene ${sceneNumber}`);
 
-  // Get narration info if available
+  // Get narration info if available (find by sceneNumber since fan-out order is not guaranteed)
   const narrations = state.narrations || [];
-  const narration = narrations[sceneIndex] || narrations.find(n => n?.sceneNumber === sceneNumber) || null;
+  const narration = narrations.find(n => n?.sceneNumber === sceneNumber) || null;
   const narrationDuration = narration?.duration || 0;
   const narrationFile = narration?.filePath || '';
 
@@ -128,7 +130,7 @@ export async function sceneWriterNode(state) {
     if (!tsxContent) {
       console.error(`    Scene ${sceneNumber}: LLM returned empty content`);
       return {
-        compiledScenes: [{ sceneNumber, tsxContent: '', error: 'LLM returned empty content' }],
+        compiledScenes: [{ sceneNumber, tsxContent: '', durationFrames, error: 'LLM returned empty content' }],
         errors: [`scene-writer [Scene ${sceneNumber}]: empty response`],
       };
     }
@@ -153,14 +155,14 @@ export async function sceneWriterNode(state) {
     }
 
     return {
-      compiledScenes: [{ sceneNumber, tsxContent }],
+      compiledScenes: [{ sceneNumber, tsxContent, durationFrames }],
     };
   } catch (err) {
     console.error(`    Scene ${sceneNumber} FAILED: ${err.message}`);
 
     // Return error state but don't crash the pipeline
     return {
-      compiledScenes: [{ sceneNumber, tsxContent: '', error: err.message }],
+      compiledScenes: [{ sceneNumber, tsxContent: '', durationFrames, error: err.message }],
       errors: [`scene-writer [Scene ${sceneNumber}]: ${err.message}`],
     };
   }

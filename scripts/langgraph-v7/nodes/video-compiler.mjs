@@ -79,7 +79,7 @@ export default DEFAULT_THEME;
  * components, and wraps everything in a Composition.
  *
  * @param {Array} compiledScenes - Scene data with sceneNumber and durationFrames
- * @param {Array} narrations - Narration data with sceneNumber and audioFile
+ * @param {Array} narrations - Narration data with sceneNumber and filePath
  * @param {number} totalFrames - Total video duration in frames
  * @returns {string} Root.tsx content
  */
@@ -92,7 +92,7 @@ function generateRootTSX(compiledScenes, narrations, totalFrames) {
   // Build a lookup of narration files by scene number
   const narrationMap = {};
   for (const n of narrations) {
-    if (n && n.sceneNumber && n.audioFile) {
+    if (n && n.sceneNumber && n.filePath) {
       narrationMap[n.sceneNumber] = n;
     }
   }
@@ -127,7 +127,7 @@ function generateRootTSX(compiledScenes, narrations, totalFrames) {
     // Add narration Audio if available for this scene
     const narration = narrationMap[s.sceneNumber];
     if (narration) {
-      const audioFileName = path.basename(narration.audioFile);
+      const audioFileName = path.basename(narration.filePath);
       lines.push(`        <Sequence from={${s.startFrame}} durationInFrames={${s.durationFrames}} name="Narration ${s.sceneNumber}">`);
       lines.push(`          <Audio src={staticFile('assets/${audioFileName}')} volume={0.9} />`);
       lines.push(`        </Sequence>`);
@@ -139,15 +139,11 @@ function generateRootTSX(compiledScenes, narrations, totalFrames) {
   // Remotion imports — include Audio and staticFile if we have narrations
   const remotionImports = ['Composition', 'Sequence'];
   if (hasNarrations) {
-    remotionImports.push('Audio');
+    remotionImports.push('Audio', 'staticFile');
   }
 
-  const staticFileImport = hasNarrations
-    ? `\nimport { staticFile } from 'remotion';`
-    : '';
-
   return `import React from 'react';
-import { ${remotionImports.join(', ')} } from 'remotion';${staticFileImport}
+import { ${remotionImports.join(', ')} } from 'remotion';
 import { ThemeContext } from './ThemeContext';
 import { theme } from './theme';
 ${sceneImports}
@@ -217,7 +213,7 @@ function generateEditManifest(compiledScenes, sceneDesigns, narrations, assets, 
       start_frame: frameOffset,
       total_frames: dur,
       has_narration: !!narration,
-      narration_file: narration ? path.basename(narration.audioFile) : null,
+      narration_file: narration ? path.basename(narration.filePath) : null,
       editable: true,
     };
 
@@ -332,12 +328,12 @@ function copyNarrations(narrations, assetsDir) {
   let skipped = 0;
 
   for (const narration of narrations) {
-    if (!narration || !narration.audioFile) {
+    if (!narration || !narration.filePath) {
       skipped++;
       continue;
     }
 
-    const srcPath = narration.audioFile;
+    const srcPath = narration.filePath;
     if (!fs.existsSync(srcPath)) {
       console.log(`          WARNING: Narration file not found: ${srcPath}`);
       skipped++;
