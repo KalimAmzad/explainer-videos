@@ -9,6 +9,8 @@
     "langgraph": "node scripts/langgraph/index.mjs",
     "langgraph4": "node scripts/langgraph-v4/index.mjs",
     "langgraph5": "node scripts/langgraph-v5/index.mjs",
+    "langgraph6": "node scripts/langgraph-v6/index.mjs",
+    "langgraph7": "node scripts/langgraph-v7/index.mjs",
     "capture": "node scripts/capture-video.mjs"
   },
   "dependencies": {
@@ -20,6 +22,10 @@
     "@langchain/google": "^0.1.5",
     "@langchain/langgraph": "^1.2.0",
     "@playwright/test": "^1.58.2",
+    "@remotion/cli": "^4.0.434",
+    "@remotion/google-fonts": "^4.0.434",
+    "@remotion/paths": "^4.0.434",
+    "@remotion/transitions": "^4.0.434",
     "@revideo/2d": "^0.10.4",
     "@revideo/core": "^0.10.4",
     "@revideo/ffmpeg": "^0.10.4",
@@ -27,6 +33,7 @@
     "@revideo/vite-plugin": "^0.10.4",
     "langsmith": "^0.5.7",
     "potrace": "^2.1.8",
+    "remotion": "^4.0.434",
     "sharp": "^0.34.5",
     "svg2roughjs": "^3.2.2",
     "zod": "^4.3.6"

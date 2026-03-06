@@ -37,9 +37,21 @@ function generateThemeTS(theme) {
     strokeWidth: theme?.strokeWidth ?? 2.5,
   };
 
-  return `import type { Theme } from './ThemeContext';
+  return `export type Theme = {
+  background: string;
+  primaryFont: string;
+  headingFont: string;
+  palette: {
+    primary: string;
+    secondary: string;
+    accent1: string;
+    accent2: string;
+    text: string;
+  };
+  strokeWidth: number;
+};
 
-export const theme: Theme = {
+export const DEFAULT_THEME: Theme = {
   background: '${t.background}',
   primaryFont: '${t.primaryFont}',
   headingFont: '${t.headingFont}',
@@ -53,10 +65,9 @@ export const theme: Theme = {
   strokeWidth: ${t.strokeWidth},
 };
 
-export type { Theme } from './ThemeContext';
-export const DEFAULT_THEME = theme;
-export const defaultTheme = theme;
-export default theme;
+export const theme = DEFAULT_THEME;
+export const defaultTheme = DEFAULT_THEME;
+export default DEFAULT_THEME;
 `;
 }
 
