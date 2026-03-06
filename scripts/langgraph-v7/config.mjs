@@ -27,6 +27,8 @@ export const MODELS = {
   sceneDesigner:   'claude-haiku-4-5-20251001',
   assetSvgGen:     'claude-haiku-4-5-20251001',
   imageGen:        'gemini-3.1-flash-image-preview',
+  sceneWriter:     'claude-sonnet-4-6',               // Sonnet for quality Remotion code
+  tts:             'gemini-2.5-flash-preview-tts',     // Gemini TTS model
 };
 
 export const KEYS = {

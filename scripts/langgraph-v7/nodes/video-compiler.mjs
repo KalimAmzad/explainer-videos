@@ -1,11 +1,12 @@
 /**
- * Node 7: Video Compiler — DETERMINISTIC (no LLM calls).
+ * Node: Video Compiler — DETERMINISTIC (no LLM calls).
  *
- * Scaffolds the Remotion project from compiled scenes, writes all files,
- * and generates an edit manifest. Optionally renders to MP4.
+ * Scaffolds the Remotion project from LLM-written scene TSX files,
+ * narration audio, and generated assets. Writes all files and generates
+ * an edit manifest.
  *
- * Input:  state.compiledScenes, state.theme, state.resolvedTimeline,
- *         state.outputDir, state.slug, state.assets
+ * Input:  state.compiledScenes, state.narrations, state.theme,
+ *         state.sceneDesigns, state.outputDir, state.slug, state.assets
  * Output: { videoPath, editManifest }
  */
 import fs from 'fs';
@@ -74,26 +75,79 @@ export default DEFAULT_THEME;
 // ── Root.tsx generator ─────────────────────────────────────────────
 
 /**
- * Generate Root.tsx that imports all scenes and wraps in a Composition.
- * @param {Array} resolvedTimeline - Scene timing data
+ * Generate Root.tsx that imports all scenes, includes narration Audio
+ * components, and wraps everything in a Composition.
+ *
+ * @param {Array} compiledScenes - Scene data with sceneNumber and durationFrames
+ * @param {Array} narrations - Narration data with sceneNumber and audioFile
  * @param {number} totalFrames - Total video duration in frames
  * @returns {string} Root.tsx content
  */
-function generateRootTSX(resolvedTimeline, totalFrames) {
-  const sceneImports = resolvedTimeline
-    .map(s => `import { Scene${s.scene_number} } from './scenes/Scene${s.scene_number}';`)
+function generateRootTSX(compiledScenes, narrations, totalFrames) {
+  // Sort scenes by scene number for deterministic ordering
+  const sortedScenes = [...compiledScenes]
+    .filter(s => s.tsxContent)
+    .sort((a, b) => a.sceneNumber - b.sceneNumber);
+
+  // Build a lookup of narration files by scene number
+  const narrationMap = {};
+  for (const n of narrations) {
+    if (n && n.sceneNumber && n.audioFile) {
+      narrationMap[n.sceneNumber] = n;
+    }
+  }
+
+  const hasNarrations = Object.keys(narrationMap).length > 0;
+
+  // Build scene imports
+  const sceneImports = sortedScenes
+    .map(s => `import { Scene${s.sceneNumber} } from './scenes/Scene${s.sceneNumber}';`)
     .join('\n');
 
-  const sceneSequences = resolvedTimeline
-    .map(s => {
-      return `        <Sequence from={${s.scene_start_frame}} durationInFrames={${s.total_frames}} name="Scene ${s.scene_number}">
-          <Scene${s.scene_number} />
-        </Sequence>`;
-    })
-    .join('\n');
+  // Calculate scene start frames and durations
+  let frameOffset = 0;
+  const sceneLayout = sortedScenes.map(s => {
+    const dur = s.durationFrames || 150; // fallback ~5s at 30fps
+    const entry = {
+      sceneNumber: s.sceneNumber,
+      startFrame: frameOffset,
+      durationFrames: dur,
+    };
+    frameOffset += dur;
+    return entry;
+  });
+
+  // Build scene Sequence elements (visual + narration audio)
+  const sceneSequences = sceneLayout.map(s => {
+    const lines = [];
+    lines.push(`        <Sequence from={${s.startFrame}} durationInFrames={${s.durationFrames}} name="Scene ${s.sceneNumber}">`);
+    lines.push(`          <Scene${s.sceneNumber} />`);
+    lines.push(`        </Sequence>`);
+
+    // Add narration Audio if available for this scene
+    const narration = narrationMap[s.sceneNumber];
+    if (narration) {
+      const audioFileName = path.basename(narration.audioFile);
+      lines.push(`        <Sequence from={${s.startFrame}} durationInFrames={${s.durationFrames}} name="Narration ${s.sceneNumber}">`);
+      lines.push(`          <Audio src={staticFile('assets/${audioFileName}')} volume={0.9} />`);
+      lines.push(`        </Sequence>`);
+    }
+
+    return lines.join('\n');
+  }).join('\n');
+
+  // Remotion imports — include Audio and staticFile if we have narrations
+  const remotionImports = ['Composition', 'Sequence'];
+  if (hasNarrations) {
+    remotionImports.push('Audio');
+  }
+
+  const staticFileImport = hasNarrations
+    ? `\nimport { staticFile } from 'remotion';`
+    : '';
 
   return `import React from 'react';
-import { Composition, Sequence } from 'remotion';
+import { ${remotionImports.join(', ')} } from 'remotion';${staticFileImport}
 import { ThemeContext } from './ThemeContext';
 import { theme } from './theme';
 ${sceneImports}
@@ -129,44 +183,49 @@ export const RemotionRoot: React.FC = () => (
 // ── Edit manifest generator ────────────────────────────────────────
 
 /**
- * Generate an edit manifest (JSON) describing all scenes and their
- * editable assets for future editing UI integration.
+ * Generate an edit manifest (JSON) describing all scenes, their assets,
+ * and narration for future editing UI integration.
+ *
+ * @param {Array} compiledScenes - Compiled scene data from scene_writer
+ * @param {Array} sceneDesigns - Original scene designs from scene_designer
+ * @param {Array} narrations - Narration data from narration_generator
+ * @param {Array} assets - Generated assets
+ * @param {string} slug - Project slug
  */
-function generateEditManifest(resolvedTimeline, assets, slug) {
-  const scenes = resolvedTimeline.map(scene => {
-    const sceneAssets = (scene.blocks || []).map(block => {
-      const asset = assets.find(a => a.asset_id === block.asset_id);
-      const entry = {
-        asset_id: block.asset_id,
-        type: block.asset_type || 'text',
-        slot: block.slot,
-        animation: block.animation,
-        start_frame: block.visual_start_frame,
-        duration_frames: block.visual_duration_frames,
-        editable: true,
-      };
+function generateEditManifest(compiledScenes, sceneDesigns, narrations, assets, slug) {
+  // Build narration lookup
+  const narrationMap = {};
+  for (const n of narrations) {
+    if (n && n.sceneNumber) {
+      narrationMap[n.sceneNumber] = n;
+    }
+  }
 
-      if (block.asset_type === 'text') {
-        entry.current_value = block.content || '';
-      } else if (asset && asset.filePath) {
-        entry.file = path.basename(asset.filePath);
-      }
+  const sortedScenes = [...compiledScenes]
+    .filter(s => s.tsxContent)
+    .sort((a, b) => a.sceneNumber - b.sceneNumber);
 
-      if (block.sub_animations) {
-        entry.sub_animations = block.sub_animations;
-      }
+  let frameOffset = 0;
+  const scenes = sortedScenes.map(scene => {
+    const dur = scene.durationFrames || 150;
+    const design = sceneDesigns.find(d => d.scene_number === scene.sceneNumber);
+    const narration = narrationMap[scene.sceneNumber];
 
-      return entry;
-    });
-
-    return {
-      scene_number: scene.scene_number,
-      layout_template: scene.layout_template,
-      start_frame: scene.scene_start_frame,
-      total_frames: scene.total_frames,
-      assets: sceneAssets,
+    const entry = {
+      scene_number: scene.sceneNumber,
+      layout_template: design?.layout_template || 'unknown',
+      start_frame: frameOffset,
+      total_frames: dur,
+      has_narration: !!narration,
+      narration_file: narration ? path.basename(narration.audioFile) : null,
+      editable: true,
     };
+
+    frameOffset += dur;
+    return entry;
   });
+
+  const totalFrames = frameOffset;
 
   return {
     slug,
@@ -174,7 +233,7 @@ function generateEditManifest(resolvedTimeline, assets, slug) {
     fps: CANVAS.fps,
     width: CANVAS.width,
     height: CANVAS.height,
-    total_frames: resolvedTimeline.reduce((sum, s) => sum + s.total_frames, 0),
+    total_frames: totalFrames,
     scenes,
   };
 }
@@ -257,6 +316,42 @@ function copyAssets(assets, assetsDir) {
   return { copied, written };
 }
 
+// ── Narration copier ───────────────────────────────────────────────
+
+/**
+ * Copy narration audio files to the Remotion public/assets directory.
+ *
+ * @param {Array} narrations - Narration data from narration_generator
+ * @param {string} assetsDir - Destination public/assets directory
+ * @returns {{ copied: number, skipped: number }}
+ */
+function copyNarrations(narrations, assetsDir) {
+  fs.mkdirSync(assetsDir, { recursive: true });
+
+  let copied = 0;
+  let skipped = 0;
+
+  for (const narration of narrations) {
+    if (!narration || !narration.audioFile) {
+      skipped++;
+      continue;
+    }
+
+    const srcPath = narration.audioFile;
+    if (!fs.existsSync(srcPath)) {
+      console.log(`          WARNING: Narration file not found: ${srcPath}`);
+      skipped++;
+      continue;
+    }
+
+    const destFile = path.join(assetsDir, path.basename(srcPath));
+    fs.copyFileSync(srcPath, destFile);
+    copied++;
+  }
+
+  return { copied, skipped };
+}
+
 // ── Main node ──────────────────────────────────────────────────────
 
 /**
@@ -264,10 +359,11 @@ function copyAssets(assets, assetsDir) {
  *
  * 1. Copies remotion-template to output directory
  * 2. Writes theme.ts with actual theme values
- * 3. Writes each Scene TSX file from compiledScenes
+ * 3. Writes each Scene TSX file from compiledScenes (LLM-generated)
  * 4. Copies asset files to public/assets/
- * 5. Generates Root.tsx with scene imports and Composition
- * 6. Generates edit-manifest.json
+ * 5. Copies narration audio files to public/assets/
+ * 6. Generates Root.tsx with scene imports, Composition, and Audio
+ * 7. Generates edit-manifest.json
  *
  * @param {object} state - LangGraph state
  * @returns {{ videoPath: string, editManifest: object }}
@@ -276,7 +372,8 @@ export async function videoCompilerNode(state) {
   console.log('\n  ── Video Compiler (deterministic) ──');
 
   const compiledScenes = state.compiledScenes || [];
-  const resolvedTimeline = state.resolvedTimeline || [];
+  const narrations = state.narrations || [];
+  const sceneDesigns = state.sceneDesigns || [];
   const theme = state.theme || {};
   const assets = state.assets || [];
   const outputDir = state.outputDir;
@@ -294,7 +391,7 @@ export async function videoCompilerNode(state) {
 
   // ── Step 1: Copy Remotion template ──
 
-  console.log('    [1/6] Copying Remotion template...');
+  console.log('    [1/7] Copying Remotion template...');
   try {
     copyTemplate(remotionDir);
     console.log(`          Template copied to ${remotionDir}`);
@@ -305,15 +402,15 @@ export async function videoCompilerNode(state) {
 
   // ── Step 2: Write theme.ts ──
 
-  console.log('    [2/6] Writing theme.ts...');
+  console.log('    [2/7] Writing theme.ts...');
   const themeContent = generateThemeTS(theme);
   const themePath = path.join(srcDir, 'theme.ts');
   fs.writeFileSync(themePath, themeContent, 'utf8');
   console.log(`          Theme: ${theme.headingFont || 'default'} / ${theme.primaryFont || 'default'}, primary=${theme.palette?.primary || '#2b7ec2'}`);
 
-  // ── Step 3: Write Scene TSX files ──
+  // ── Step 3: Write Scene TSX files (from LLM scene_writer) ──
 
-  console.log('    [3/6] Writing scene files...');
+  console.log('    [3/7] Writing scene files...');
   fs.mkdirSync(scenesDir, { recursive: true });
 
   let scenesWritten = 0;
@@ -330,24 +427,33 @@ export async function videoCompilerNode(state) {
 
   // ── Step 4: Copy asset files ──
 
-  console.log('    [4/6] Copying assets...');
+  console.log('    [4/7] Copying assets...');
   const { copied, written } = copyAssets(assets, assetsDir);
   console.log(`          Copied ${copied} files, wrote ${written} inline assets`);
 
-  // ── Step 5: Generate Root.tsx ──
+  // ── Step 5: Copy narration audio files ──
 
-  console.log('    [5/6] Generating Root.tsx...');
-  const totalFrames = resolvedTimeline.reduce((sum, s) => sum + s.total_frames, 0);
-  const rootContent = generateRootTSX(resolvedTimeline, totalFrames);
+  console.log('    [5/7] Copying narration audio...');
+  const narrationResult = copyNarrations(narrations, assetsDir);
+  console.log(`          Copied ${narrationResult.copied} narration files, skipped ${narrationResult.skipped}`);
+
+  // ── Step 6: Generate Root.tsx ──
+
+  console.log('    [6/7] Generating Root.tsx...');
+  const sortedScenes = [...compiledScenes]
+    .filter(s => s.tsxContent)
+    .sort((a, b) => a.sceneNumber - b.sceneNumber);
+  const totalFrames = sortedScenes.reduce((sum, s) => sum + (s.durationFrames || 150), 0);
+  const rootContent = generateRootTSX(compiledScenes, narrations, totalFrames);
   const rootPath = path.join(srcDir, 'Root.tsx');
   fs.writeFileSync(rootPath, rootContent, 'utf8');
   const totalSeconds = (totalFrames / CANVAS.fps).toFixed(1);
-  console.log(`          Total: ${totalFrames} frames (${totalSeconds}s) across ${resolvedTimeline.length} scenes`);
+  console.log(`          Total: ${totalFrames} frames (${totalSeconds}s) across ${sortedScenes.length} scenes`);
 
-  // ── Step 6: Generate edit manifest ──
+  // ── Step 7: Generate edit manifest ──
 
-  console.log('    [6/6] Generating edit manifest...');
-  const editManifest = generateEditManifest(resolvedTimeline, assets, slug);
+  console.log('    [7/7] Generating edit manifest...');
+  const editManifest = generateEditManifest(compiledScenes, sceneDesigns, narrations, assets, slug);
   const manifestPath = path.join(outputDir, 'edit-manifest.json');
   fs.writeFileSync(manifestPath, JSON.stringify(editManifest, null, 2), 'utf8');
   console.log(`          Manifest: ${editManifest.scenes.length} scenes, ${editManifest.total_frames} total frames`);

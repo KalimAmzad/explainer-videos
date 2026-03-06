@@ -39,7 +39,7 @@ export const VideoState = Annotation.Root({
   videoPath:      Annotation({ reducer: replace, default: () => '' }),
   editManifest:   Annotation({ reducer: replace, default: () => null }),
 
-  // Send-private (used by fan-out for asset_generator)
+  // Send-private (used by fan-out for asset_generator, narration_generator, scene_writer)
   _asset:       Annotation({ reducer: replace, default: () => null }),
   _sceneIndex:  Annotation({ reducer: replace, default: () => -1 }),
 
