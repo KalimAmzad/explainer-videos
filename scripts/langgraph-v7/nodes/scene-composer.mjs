@@ -9,7 +9,7 @@
  */
 import fs from 'fs';
 import path from 'path';
-import { ChatAnthropic } from '@langchain/anthropic';
+import { ChatGoogle } from '@langchain/google';
 import { HumanMessage, SystemMessage, ToolMessage } from '@langchain/core/messages';
 import { tool } from '@langchain/core/tools';
 import { z } from 'zod';
@@ -250,10 +250,11 @@ export async function sceneComposerNode(state) {
   });
 
   // ReAct agent loop
-  const model = new ChatAnthropic({
+  const model = new ChatGoogle({
     model: MODELS.sceneComposer,
-    anthropicApiKey: KEYS.anthropic,
-    maxTokens: 8000,
+    apiKey: KEYS.gemini,
+    maxOutputTokens: 8192,
+    temperature: 0.7,
   }).bindTools(tools);
 
   const messages = [new SystemMessage(system), new HumanMessage(user)];

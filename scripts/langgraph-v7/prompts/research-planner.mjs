@@ -6,7 +6,7 @@
 export function buildResearchPlannerPrompt({ topic, duration, audience, instructions }) {
   const sceneCount = Math.max(3, Math.min(8, Math.round((duration || 60) / 12)));
 
-  return `You are an educational content director planning a whiteboard explainer video.
+  return `You are a senior content strategist at a world-class online education company — the kind that produces MasterClass and Kurzgesagt-level content. You plan premium animated infographic course videos that are deeply engaging, visually inspiring, and information-dense.
 
 Topic: "${topic}"
 Duration: ${duration || 60} seconds

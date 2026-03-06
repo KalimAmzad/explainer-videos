@@ -19,9 +19,11 @@ export function buildSceneComposerPrompt({
   const pointCount = Math.max(1, teachingPoints.length);
   const beatFrames = Math.max(30, Math.floor(narrationFrames / pointCount));
 
-  const system = `You are an elite motion designer producing **broadcast-quality educational videos** — think MasterClass meets Linear.app meets Apple Keynote.
+  const system = `You are the lead motion designer at a world-class creative studio. You produce **stunning premium animated infographic course videos** — the kind seen on MasterClass, Kurzgesagt, 3Blue1Brown, and Apple Keynotes. Think cinematic depth, bold typography, vibrant colors on dark backgrounds, fluid animations, and information-rich layouts.
 
-Every scene must be visually stunning, fill the entire canvas, and animate with professional motion design.
+**Every scene is a premium product slide.** Dense, beautiful, animated. No whiteboard. No hand-drawn. No chalk. Think: dark background, glowing gradients, glassmorphism cards, vivid icon grids, bold stat callouts, smooth spring animations.
+
+Every scene must fill the entire canvas with purposeful content and animate with broadcast-quality motion design.
 
 ---
 
@@ -61,9 +63,6 @@ import { fade } from '@remotion/transitions/fade';
 import { slide } from '@remotion/transitions/slide';
 import { wipe } from '@remotion/transitions/wipe';
 import { flip } from '@remotion/transitions/flip';
-
-// Animated emoji (fun, engaging moments)
-import { AnimatedEmoji } from '@remotion/animated-emoji';
 
 // Animation utilities
 import { mapRange, interpolateStyles } from '@remotion/animation-utils';
@@ -138,28 +137,38 @@ Canvas: ${width}×${height}. Safe zone: left≥80, right≤${width-80}, top≥60
 
 **The bottom band (y:580–660) must always have content** — a bottom bar, quote, tip, or progress strip.
 
-### Background — always textured
+### Background — always rich and layered
 \`\`\`tsx
-// Radial gradient blobs (modern feel)
+// Premium dark background with glowing radial blobs
 <AbsoluteFill style={{
   background: \`
-    radial-gradient(ellipse 600px 400px at 10% 60%, \${theme.palette.primary}0a 0%, transparent 70%),
-    radial-gradient(ellipse 400px 300px at 90% 20%, \${theme.palette.accent1}0a 0%, transparent 60%),
+    radial-gradient(ellipse 700px 500px at 15% 50%, \${theme.palette.primary}22 0%, transparent 70%),
+    radial-gradient(ellipse 500px 400px at 85% 20%, \${theme.palette.accent1}18 0%, transparent 65%),
+    radial-gradient(ellipse 400px 300px at 60% 90%, \${theme.palette.secondary}12 0%, transparent 60%),
     \${theme.background}
   \`,
+  overflow: 'hidden',
 }}>
 
-// Or: right panel accent
+// Right panel with glassmorphism border
 <div style={{
-  position: 'absolute', right: 0, top: 0, width: 480, height: '100%',
-  background: \`linear-gradient(160deg, \${theme.palette.primary}0e 0%, \${theme.palette.accent1}08 100%)\`,
-  borderLeft: \`1px solid \${theme.palette.primary}12\`,
+  position: 'absolute', right: 0, top: 0, width: 500, height: '100%',
+  background: \`linear-gradient(160deg, \${theme.palette.primary}14 0%, \${theme.palette.accent2}08 100%)\`,
+  borderLeft: \`1px solid \${theme.palette.primary}28\`,
+  backdropFilter: 'blur(20px)',
 }} />
 
-// Always add top accent strip
+// Top gradient accent strip (always include)
 <div style={{
-  position: 'absolute', top: 0, left: 0, right: 0, height: 5,
+  position: 'absolute', top: 0, left: 0, right: 0, height: 3,
   background: \`linear-gradient(to right, \${theme.palette.primary}, \${theme.palette.accent1}, \${theme.palette.secondary})\`,
+}} />
+
+// Grid overlay for depth (optional)
+<div style={{
+  position: 'absolute', inset: 0, opacity: 0.03,
+  backgroundImage: \`linear-gradient(\${theme.palette.text}40 1px, transparent 1px), linear-gradient(90deg, \${theme.palette.text}40 1px, transparent 1px)\`,
+  backgroundSize: '60px 60px',
 }} />
 \`\`\`
 
@@ -188,24 +197,20 @@ Canvas: ${width}×${height}. Safe zone: left≥80, right≤${width-80}, top≥60
 // wipe({ direction: 'from-left' }), flip({ direction: 'from-right' })
 \`\`\`
 
-### AnimatedEmoji
+### Native Emoji (for personality moments)
 \`\`\`tsx
-// CRITICAL: emoji prop must be a NAME STRING from the approved list below.
-// NEVER use actual emoji characters (💡 ✨ 🧠) — those crash TypeScript.
-import { AnimatedEmoji } from '@remotion/animated-emoji';
+// Use native emoji in a styled span — NOT AnimatedEmoji (it loads webm from CDN, unreliable)
+// Great for key moments: achievements, rewards, emphasis points
+<span style={{ fontSize: '2.5rem', lineHeight: 1 }}>💡</span>
+<span style={{ fontSize: '3rem', lineHeight: 1 }}>🔥</span>
+<span style={{ fontSize: '2.5rem', lineHeight: 1 }}>✨</span>
 
-<Sequence from={t(2)} durationInFrames={Math.max(1, durationInFrames - t(2))} layout="none">
-  <div style={{ position: 'absolute', right: 120, top: 200, width: 80, height: 80 }}>
-    <AnimatedEmoji emoji="fire" />
-  </div>
-</Sequence>
+// Animate with opacity/scale spring for entrance effect:
+<div style={{ opacity: emojiS, transform: \`scale(\${0.5 + 0.5 * emojiS})\` }}>
+  <span style={{ fontSize: '3rem', lineHeight: 1 }}>🚀</span>
+</div>
 
-// Valid emoji names (use ONLY these):
-// "fire" "rocket" "sparkles" "party-popper" "muscle" "light-bulb" "direct-hit"
-// "gear" "graduation-cap" "thumbs-up" "raising-hands" "star-struck" "glowing-star"
-// "heart-grow" "100" "check-mark" "eyes" "clap" "rainbow" "electricity" "balloon"
-// "folded-hands" "trophy" — Wait: no "trophy". Use "direct-hit" for target/goal.
-// "red-heart" "sparkling-heart" "alarm-clock" "plant" "hot-beverage" "thinking-face"
+// DO NOT import or use AnimatedEmoji from @remotion/animated-emoji
 \`\`\`
 
 ### mapRange (animation-utils)
@@ -225,7 +230,30 @@ const { fontFamily: headingFont } = loadCabinSketch();
 
 ---
 
-## PRODUCTION DESIGN PATTERNS
+## PREMIUM DESIGN PATTERNS
+> Style reference: MasterClass × Kurzgesagt × Linear.app. Dark backgrounds, glowing elements, glassmorphism cards, bold typography.
+
+### Glassmorphism stat card
+\`\`\`tsx
+// Glowing stat on dark background — most impactful for numbers
+const statS = spring({ frame: Math.max(0, frame - t(1)), fps, config: { damping: 14, stiffness: 180 } });
+<div style={{
+  opacity: statS, transform: \`scale(${0.8 + 0.2 * statS})\`,
+  background: \`linear-gradient(135deg, ${theme.palette.primary}25, ${theme.palette.primary}10)\`,
+  border: \`1px solid ${theme.palette.primary}45\`,
+  borderRadius: 28, padding: '32px 48px',
+  display: 'inline-flex', alignItems: 'center', gap: 28,
+  boxShadow: \`0 0 60px ${theme.palette.primary}30, 0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)\`,
+}}>
+  <span style={{ fontSize: 96, fontFamily: theme.headingFont, color: theme.palette.primary,
+                 fontWeight: 900, lineHeight: 1,
+                 textShadow: \`0 0 40px ${theme.palette.primary}80\` }}>67%</span>
+  <span style={{ fontSize: 19, fontFamily: theme.primaryFont, color: theme.palette.text,
+                 maxWidth: 200, lineHeight: 1.5, opacity: 0.85 }}>
+    context text
+  </span>
+</div>
+\`\`\`
 
 ### Large stat callout
 \`\`\`tsx
@@ -244,7 +272,7 @@ const statS = spring({ frame: Math.max(0, frame - t(1)), fps, config: { damping:
 </div>
 \`\`\`
 
-### Icon card row (3 across, staggered)
+### Icon card row (3 across, staggered) — glassmorphism style
 \`\`\`tsx
 {items.map((item, i) => {
   const delay = Math.round(i * t(0.35));
@@ -253,20 +281,24 @@ const statS = spring({ frame: Math.max(0, frame - t(1)), fps, config: { damping:
     <Sequence key={i} from={delay} durationInFrames={Math.max(1, durationInFrames - delay)} layout="none">
       <div style={{
         opacity: s, transform: \`translateY(\${(1-s)*32}px) scale(\${0.88+0.12*s})\`,
-        background: '#fff', borderRadius: 20, padding: '28px 20px',
+        background: \`linear-gradient(135deg, \${theme.palette.primary}18, \${theme.palette.primary}08)\`,
+        borderRadius: 20, padding: '28px 20px',
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14,
-        boxShadow: '0 8px 32px rgba(0,0,0,0.09)', border: '1px solid rgba(0,0,0,0.05)',
+        border: \`1px solid \${theme.palette.primary}30\`,
+        boxShadow: \`0 8px 32px \${theme.palette.primary}20, inset 0 1px 0 \${theme.palette.primary}20\`,
         textAlign: 'center',
       }}>
         <div style={{
           width: 72, height: 72, borderRadius: 18,
-          background: \`linear-gradient(135deg, \${item.color}20, \${item.color}35)\`,
+          background: \`linear-gradient(135deg, \${item.color}40, \${item.color}20)\`,
+          border: \`1px solid \${item.color}50\`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: \`0 0 20px \${item.color}30\`,
         }}>
           <Img src={staticFile(\`assets/\${item.assetId}.png\`)} style={{ width: 46, height: 46 }} />
         </div>
         <span style={{ fontFamily: theme.headingFont, fontSize: 20, color: theme.palette.text, fontWeight: 700 }}>{item.title}</span>
-        <span style={{ fontFamily: theme.primaryFont, fontSize: 14, color: '#777', lineHeight: 1.5 }}>{item.desc}</span>
+        <span style={{ fontFamily: theme.primaryFont, fontSize: 14, color: \`\${theme.palette.text}99\`, lineHeight: 1.5 }}>{item.desc}</span>
       </div>
     </Sequence>
   );
@@ -334,15 +366,17 @@ const statS = spring({ frame: Math.max(0, frame - t(1)), fps, config: { damping:
     {/* icon grid / stat cards / image */}
   </div>
 
-  {/* BOTTOM BAR: y:600–660 */}
+  {/* BOTTOM BAR: y:600–660 — glassmorphism takeaway bar */}
   <Sequence from={t(narrationFrames * 0.7)} durationInFrames={Math.max(1, durationInFrames - t(narrationFrames * 0.7))} layout="none">
     <div style={{
-      position:'absolute', bottom:24, left:80, right:80, borderRadius:14,
-      background: \`linear-gradient(135deg, \${theme.palette.primary}, \${theme.palette.primary}dd)\`,
+      position:'absolute', bottom:24, left:80, right:80, borderRadius:16,
+      background: \`linear-gradient(135deg, ${theme.palette.primary}28, ${theme.palette.accent1}18)\`,
+      border: \`1px solid ${theme.palette.primary}40\`,
       padding:'18px 28px', display:'flex', alignItems:'center', gap:16,
+      boxShadow: \`0 8px 32px ${theme.palette.primary}25, inset 0 1px 0 rgba(255,255,255,0.06)\`,
     }}>
-      <AnimatedEmoji emoji="light-bulb" />
-      <span style={{ fontFamily:theme.primaryFont, fontSize:17, color:'#fff', lineHeight:1.4 }}>
+      <span style={{ fontSize: '1.5rem', lineHeight: 1 }}>💡</span>
+      <span style={{ fontFamily:theme.primaryFont, fontSize:17, color:theme.palette.text, lineHeight:1.4 }}>
         Key takeaway text here
       </span>
     </div>
@@ -365,8 +399,7 @@ const statS = spring({ frame: Math.max(0, frame - t(1)), fps, config: { damping:
     <Img src={staticFile('assets/hero.png')} style={{ width:220, height:220, borderRadius:32 }} />
   </div>
   <div style={{ fontFamily:theme.headingFont, fontSize:48, marginTop:24, color:theme.palette.primary }}>Big stat or label</div>
-  {/* AnimatedEmoji for emphasis */}
-  <AnimatedEmoji emoji="rocket" />
+  <span style={{ fontSize: '3rem', lineHeight: 1 }}>🚀</span>
 </div>
 \`\`\`
 
@@ -410,7 +443,7 @@ const statS = spring({ frame: Math.max(0, frame - t(1)), fps, config: { damping:
 | Icon asset path | \`staticFile('assets/' + asset_id)\` where asset_id = tool return value | making up a different name |
 | File start | First line must be \`import\` | no preamble text |
 | Export name | \`export const Scene${sceneNumber}\` | any other name |
-| AnimatedEmoji | \`emoji="fire"\` (name string) | \`emoji="🔥"\` (emoji char crashes) |
+| Emoji | \`<span style={{fontSize:'2.5rem'}}>🔥</span>\` | \`<AnimatedEmoji .../>\` (webm CDN fails) |
 | Arrow fn params | \`items.map((item: {a:string}) => ...)\` | \`items.map((item) => ...)\` implicit any |
 
 Output ONLY the TSX. Zero explanation. Zero markdown fences.`;
@@ -446,7 +479,7 @@ ${JSON.stringify(theme, null, 2)}
 2. Download all icons — **use the returned \`asset_id\` exactly in TSX**
 3. Choose layout (split recommended) — title zone top-left, content below y:200, fill every quadrant
 4. Animate everything: title wipe, card slides, icon pops, bottom bar entrance, progress bar
-5. Add \`AnimatedEmoji\` for 1–2 key moments
+5. Add native emoji spans (e.g. \`<span style={{fontSize:'2.5rem'}}>💡</span>\`) for 1–2 key moments
 
 Target: a $2000-course-quality slide that fills every pixel.`;
 

@@ -4,10 +4,10 @@
  * Decided once, injected into every downstream prompt and template.
  */
 export function buildThemeDesignerPrompt({ topic, audience, instructions }) {
-  return `You are a visual brand designer for educational whiteboard explainer videos.
+  return `You are a world-class motion design art director for premium online courses — think MasterClass, Kurzgesagt, and Linear.app combined.
 
 ## Task
-Design a cohesive visual theme for a whiteboard-style explainer video.
+Design a stunning, modern visual theme for a premium animated infographic video.
 
 Topic: "${topic}"
 Audience: ${audience || 'general audience'}
@@ -17,47 +17,56 @@ ${instructions ? `Special instructions: ${instructions}` : ''}
 Return a JSON object with exactly these fields:
 
 {
-  "background": "#f5f3ef",
-  "primaryFont": "Caveat",
-  "headingFont": "Cabin Sketch",
+  "background": "#0f1117",
+  "primaryFont": "Inter",
+  "headingFont": "Inter",
   "palette": {
-    "primary": "#2b7ec2",
-    "secondary": "#cc3333",
-    "accent1": "#1e8c5a",
-    "accent2": "#cc7722",
-    "text": "#333333"
+    "primary": "#6366f1",
+    "secondary": "#f59e0b",
+    "accent1": "#10b981",
+    "accent2": "#ec4899",
+    "text": "#f1f5f9"
   },
-  "strokeWidth": 2.5
+  "strokeWidth": 2
 }
 
 ## Rules
 
-1. **background**: A warm, off-white or cream color for a whiteboard feel. Stay within #f0-#f8 range for R/G/B. Examples: #f5f3ef, #faf8f5, #f3f1eb.
+1. **background**: Rich, deep background — dark themes look premium and cinematic.
+   - Dark options: #0f1117, #0d1117, #111827, #0f172a, #1a1a2e, #0e0e1a
+   - Light options (only for uplifting/kids topics): #f8fafc, #ffffff, #f0fdf4
+   - Default to DARK. Dark backgrounds make colors pop and look professional.
 
-2. **primaryFont**: The body text font. Choose ONE from:
-   - "Caveat" — casual handwriting, friendly and approachable
-   - "Patrick Hand" — clean handwriting, legible and warm
-   - "Permanent Marker" — bold marker style, energetic and punchy
+2. **primaryFont**: Modern clean font. Choose ONE:
+   - "Inter" — ultra-clean, modern, used by Vercel/Linear (best default)
+   - "DM Sans" — geometric, tech-forward, slightly more personality
+   - "Plus Jakarta Sans" — elegant, works great for course content
+   - "Nunito" — friendly and rounded, great for approachable topics
 
-3. **headingFont**: The heading/title font. Choose ONE from:
-   - "Cabin Sketch" — sketchy block letters, classic whiteboard feel
-   - "Permanent Marker" — bold marker headers, strong emphasis
+3. **headingFont**: Same as or complementary to primaryFont. Choose ONE:
+   - Same as primaryFont (unified look) — recommended
+   - "Space Grotesk" — bold tech feel for titles
 
-4. **palette**: Exactly 5 named colors:
-   - "primary" — Main title and heading color. Should feel authoritative.
-   - "secondary" — Key terms, emphasis, highlights. Contrasts with primary.
-   - "accent1" — First concept group color. Distinct from primary/secondary.
-   - "accent2" — Second concept group color. Distinct from all above.
-   - "text" — Body text color. Dark but not pure black (#333-#444 range).
-   All colors must have sufficient contrast against the background.
-   Choose colors that evoke the topic domain (e.g., greens for nature, blues for tech).
+4. **palette**: 5 colors that work against the background:
+   - "primary" — Hero color: vibrant, high-contrast against background. Used for titles, CTAs, key highlights.
+   - "secondary" — Warm accent: yellow, orange, amber. Used for emphasis, stats, callouts.
+   - "accent1" — Cool accent: teal, green, emerald. Used for positive concepts.
+   - "accent2" — Pop accent: pink, purple, coral. Used for surprising moments.
+   - "text" — Light text: near-white (#e2e8f0 to #f8fafc range for dark BG, #1e293b for light BG).
 
-5. **strokeWidth**: Default stroke width for hand-drawn SVG elements. Range 2-3px.
-   Use 2 for detailed/delicate topics, 2.5 for general, 3 for bold/energetic.
+5. **strokeWidth**: 2 for modern/minimal look. Never higher than 2.5.
+
+## Color Philosophy
+Match the emotional tone of the topic:
+- Productivity/Business: Deep navy + electric indigo + amber (#0f172a + #6366f1 + #f59e0b)
+- Health/Wellbeing: Dark green + emerald + coral (#0d1f16 + #10b981 + #f43f5e)
+- Tech/Science: Dark space + cyan + electric blue (#0a0a0f + #22d3ee + #3b82f6)
+- Psychology/Mind: Deep purple + violet + rose (#1a0a2e + #8b5cf6 + #ec4899)
+- Finance/Growth: Dark navy + gold + green (#0f1729 + #f59e0b + #22c55e)
+- General: Default dark + indigo primary
 
 ## Important
-- Match the color mood to the topic and audience.
-- Ensure all 5 palette colors are visually distinct from each other.
-- Ensure good contrast: all colors must be readable against the background.
+- ALL colors must be vivid and high-contrast against the background — NO muted/pastel colors on dark backgrounds.
+- Make it look like a $2000 MasterClass course, not a classroom slideshow.
 - Return ONLY the JSON object. No markdown fences, no explanation.`;
 }

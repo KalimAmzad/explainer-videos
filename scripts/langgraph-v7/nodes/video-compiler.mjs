@@ -163,7 +163,7 @@ ${sceneSequences}
 export const RemotionRoot: React.FC = () => (
   <>
     <Composition
-      id="WhiteboardVideo"
+      id="CourseVideo"
       component={Main}
       durationInFrames={${totalFrames}}
       fps={${CANVAS.fps}}
@@ -352,19 +352,19 @@ function copyNarrations(narrations, assetsDir) {
  * 3. Fix interpolate() calls that pass string color values (TS type error)
  * 4. Strip preamble text before the first import statement
  */
-// Map of emoji characters → valid @remotion/animated-emoji name strings
-const EMOJI_NAME_MAP = {
-  '💡': 'light-bulb', '✨': 'sparkles', '🧠': 'glowing-star', '🪨': 'direct-hit',
-  '🔥': 'fire', '🚀': 'rocket', '⭐': 'glowing-star', '🌟': 'glowing-star',
-  '🎉': 'party-popper', '🎊': 'party-popper', '💪': 'muscle', '🎯': 'direct-hit',
-  '🏆': 'clinking-glasses', '👍': 'thumbs-up', '🎓': 'graduation-cap',
-  '❤️': 'red-heart', '💖': 'sparkling-heart', '⚡': 'electricity', '⚙️': 'gear',
-  '🔗': 'gear', '👁️': 'eye', '👀': 'eyes', '☕': 'hot-beverage',
-  '🌱': 'plant', '🌈': 'rainbow', '⏰': 'alarm-clock', '🧘': 'folded-hands',
-  '📈': 'rocket', '✅': 'check-mark', '❌': 'cross-mark', '🤔': 'thinking-face',
-  '😊': 'smile', '😀': 'grinning', '🎁': 'wrapped-gift', '🔑': 'gem-stone',
-  '💎': 'gem-stone', '🌍': 'globe-showing-europe-africa', '🎵': 'musical-notes',
-  '🌊': 'ocean', '🦋': 'butterfly', '🌺': 'rose', '💫': 'sparkles',
+// Map of AnimatedEmoji name strings → native emoji characters (for safe replacement)
+// AnimatedEmoji loads .webm files from CDN which fails in Remotion Studio — use native emoji instead
+const ANIMATED_EMOJI_TO_NATIVE = {
+  'light-bulb': '💡', 'sparkles': '✨', 'glowing-star': '🌟', 'direct-hit': '🎯',
+  'fire': '🔥', 'rocket': '🚀', 'star-struck': '🤩', 'party-popper': '🎉',
+  'muscle': '💪', 'graduation-cap': '🎓', 'thumbs-up': '👍', 'raising-hands': '🙌',
+  'check-mark': '✅', 'cross-mark': '❌', 'clap': '👏', 'rainbow': '🌈',
+  'electricity': '⚡', 'gear': '⚙️', 'eyes': '👀', 'eye': '👁️',
+  'hot-beverage': '☕', 'plant': '🌱', 'alarm-clock': '⏰', 'folded-hands': '🙏',
+  'thinking-face': '🤔', 'red-heart': '❤️', 'sparkling-heart': '💖',
+  'heart-grow': '❤️', '100': '💯', 'balloon': '🎈', 'clinking-glasses': '🥂',
+  'gem-stone': '💎', 'musical-notes': '🎵', 'ocean': '🌊', 'butterfly': '🦋',
+  'rose': '🌹', 'smile': '😊', 'grinning': '😀', 'wrapped-gift': '🎁',
 };
 
 function sanitizeTSX(tsx) {
@@ -377,12 +377,16 @@ function sanitizeTSX(tsx) {
   // Remove premountFor prop
   out = out.replace(/\s+premountFor=\{[^}]+\}/g, '');
 
-  // Fix AnimatedEmoji: replace emoji character literals with valid name strings
-  // e.g. emoji="💡" → emoji="light-bulb"
-  out = out.replace(/emoji="([^"]+)"/g, (match, val) => {
-    if (EMOJI_NAME_MAP[val]) return `emoji="${EMOJI_NAME_MAP[val]}"`;
-    return match; // already a valid name string, keep as-is
+  // Remove AnimatedEmoji import (webm CDN fetch fails in Remotion Studio/render)
+  out = out.replace(/import\s*\{[^}]*AnimatedEmoji[^}]*\}\s*from\s*['"]@remotion\/animated-emoji['"];?\n?/g, '');
+
+  // Replace <AnimatedEmoji emoji="name" .../> with a native emoji span
+  out = out.replace(/<AnimatedEmoji\s+emoji="([^"]+)"[^/]*/g, (match, name) => {
+    const native = ANIMATED_EMOJI_TO_NATIVE[name] || '✨';
+    return `<span style={{fontSize: '2.5rem', lineHeight: 1}}>${native}</span`;
   });
+  // Also handle self-closing with attributes after emoji
+  out = out.replace(/<AnimatedEmoji[^/]*\/>/g, '<span style={{fontSize: "2.5rem", lineHeight: 1}}>✨</span>');
 
   // Fix interpolate() with string color values → replace with theme color directly
   // Pattern: background: interpolate(frame, [...], ['#...', '#...'], ...)
@@ -533,7 +537,7 @@ export async function videoCompilerNode(state) {
   const videoPath = path.join(outputDir, `${slug}.mp4`);
   console.log(`\n    Remotion project scaffolded at: ${remotionDir}`);
   console.log(`    To preview:  cd ${remotionDir} && npm install && npm start`);
-  console.log(`    To render:   cd ${remotionDir} && npx remotion render WhiteboardVideo ${videoPath}`);
+  console.log(`    To render:   cd ${remotionDir} && npx remotion render CourseVideo ${videoPath}`);
 
   return {
     videoPath,

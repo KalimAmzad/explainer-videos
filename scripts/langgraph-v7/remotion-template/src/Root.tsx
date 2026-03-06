@@ -11,7 +11,7 @@ import { Composition } from 'remotion';
 export const RemotionRoot: React.FC = () => {
   return (
     <Composition
-      id="WhiteboardVideo"
+      id="CourseVideo"
       component={() => (
         <div
           style={{
