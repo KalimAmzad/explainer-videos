@@ -7,8 +7,10 @@
  *         → scene_designer
  *         → [asset_generator × M] (fan-out per non-text asset)
  *         → merge_assets (sync barrier)
- *         → timing_resolver (deterministic)
- *         → scene_compositor (deterministic)
+ *         → [narration_generator × N] (fan-out per scene for TTS)
+ *         → merge_narrations (sync barrier)
+ *         → [scene_writer × N] (fan-out per scene, LLM writes Remotion TSX)
+ *         → merge_scenes (sync barrier)
  *         → video_compiler (deterministic)
  *         → END
  */
@@ -18,8 +20,8 @@ import { themeDesignerNode } from './nodes/theme-designer.mjs';
 import { researchPlannerNode } from './nodes/research-planner.mjs';
 import { sceneDesignerNode } from './nodes/scene-designer.mjs';
 import { assetGeneratorNode } from './nodes/asset-generator.mjs';
-import { timingResolverNode } from './nodes/timing-resolver.mjs';
-import { sceneCompositorNode } from './nodes/scene-compositor.mjs';
+import { narrationGeneratorNode } from './nodes/narration-generator.mjs';
+import { sceneWriterNode } from './nodes/scene-writer.mjs';
 import { videoCompilerNode } from './nodes/video-compiler.mjs';
 
 /**
@@ -55,7 +57,41 @@ function fanOutAssets(state) {
   );
 }
 
-/** Sync barrier — no-op node that waits for all asset_generator sends to complete. */
+/**
+ * Fan-out: after merge_assets, create one Send per scene for TTS narration.
+ * Each Send carries _sceneIndex (0-based) so the node knows which scene to process.
+ */
+function fanOutNarrations(state) {
+  const scenes = state.sceneDesigns || [];
+
+  if (scenes.length === 0) {
+    return [new Send('merge_narrations', state)];
+  }
+
+  console.log(`\n  Fanning out ${scenes.length} narration generators...`);
+  return scenes.map((_, i) =>
+    new Send('narration_generator', { ...state, _sceneIndex: i })
+  );
+}
+
+/**
+ * Fan-out: after merge_narrations, create one Send per scene for LLM scene writing.
+ * Each Send carries _sceneIndex (0-based) so the node knows which scene to process.
+ */
+function fanOutSceneWriters(state) {
+  const scenes = state.sceneDesigns || [];
+
+  if (scenes.length === 0) {
+    return [new Send('merge_scenes', state)];
+  }
+
+  console.log(`\n  Fanning out ${scenes.length} scene writers...`);
+  return scenes.map((_, i) =>
+    new Send('scene_writer', { ...state, _sceneIndex: i })
+  );
+}
+
+/** Sync barrier — no-op node that waits for all fan-out sends to complete. */
 function mergeNode() { return {}; }
 
 export function buildGraph() {
@@ -65,18 +101,31 @@ export function buildGraph() {
     .addNode('scene_designer', sceneDesignerNode)
     .addNode('asset_generator', assetGeneratorNode)
     .addNode('merge_assets', mergeNode)
-    .addNode('timing_resolver', timingResolverNode)
-    .addNode('scene_compositor', sceneCompositorNode)
+    .addNode('narration_generator', narrationGeneratorNode)
+    .addNode('merge_narrations', mergeNode)
+    .addNode('scene_writer', sceneWriterNode)
+    .addNode('merge_scenes', mergeNode)
     .addNode('video_compiler', videoCompilerNode)
 
+    // Linear chain: theme → research → scene_designer
     .addEdge(START, 'theme_designer')
     .addEdge('theme_designer', 'research_planner')
     .addEdge('research_planner', 'scene_designer')
+
+    // Fan-out assets: scene_designer → [asset_generator × M] → merge_assets
     .addConditionalEdges('scene_designer', fanOutAssets, ['asset_generator', 'merge_assets'])
     .addEdge('asset_generator', 'merge_assets')
-    .addEdge('merge_assets', 'timing_resolver')
-    .addEdge('timing_resolver', 'scene_compositor')
-    .addEdge('scene_compositor', 'video_compiler')
+
+    // Fan-out narrations: merge_assets → [narration_generator × N] → merge_narrations
+    .addConditionalEdges('merge_assets', fanOutNarrations, ['narration_generator', 'merge_narrations'])
+    .addEdge('narration_generator', 'merge_narrations')
+
+    // Fan-out scene writers: merge_narrations → [scene_writer × N] → merge_scenes
+    .addConditionalEdges('merge_narrations', fanOutSceneWriters, ['scene_writer', 'merge_scenes'])
+    .addEdge('scene_writer', 'merge_scenes')
+
+    // Final: merge_scenes → video_compiler → END
+    .addEdge('merge_scenes', 'video_compiler')
     .addEdge('video_compiler', END);
 
   return workflow.compile({ checkpointer: new MemorySaver() });
