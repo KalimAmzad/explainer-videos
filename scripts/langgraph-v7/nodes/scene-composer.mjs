@@ -253,7 +253,7 @@ export async function sceneComposerNode(state) {
 
   const messages = [new SystemMessage(system), new HumanMessage(user)];
   let iterations = 0;
-  const MAX_ITERATIONS = 5;
+  const MAX_ITERATIONS = 8; // More iterations for richer asset fetching
 
   try {
     while (iterations < MAX_ITERATIONS) {

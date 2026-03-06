@@ -347,25 +347,43 @@ function copyNarrations(narrations, assetsDir) {
 
 /**
  * Fix common LLM-generated TSX issues before writing to disk:
- * 1. Remove duplicate CSS property keys within the same style={{ }} object
- * 2. Remove premountFor prop (not in TypeScript types for this Remotion version)
+ * 1. Remove premountFor prop (not in TypeScript types for this Remotion version)
+ * 2. Remove duplicate CSS property keys within the same style={{ }} object
+ * 3. Fix interpolate() calls that pass string color values (TS type error)
+ * 4. Strip preamble text before the first import statement
  */
 function sanitizeTSX(tsx) {
-  // Remove premountFor prop
-  let out = tsx.replace(/\s+premountFor=\{[^}]+\}/g, '');
+  let out = tsx.trim();
 
-  // Remove duplicate keys in style objects by scanning for consecutive prop blocks
-  // Strategy: find style={{ ... }} blocks and deduplicate keys (keep last occurrence)
+  // Strip preamble text before first import/export/comment
+  const importIdx = out.search(/^(?:import|export|\/\*|\/\/)/m);
+  if (importIdx > 0) out = out.slice(importIdx).trim();
+
+  // Remove premountFor prop
+  out = out.replace(/\s+premountFor=\{[^}]+\}/g, '');
+
+  // Fix interpolate() with string color values → replace with theme color directly
+  // Pattern: background: interpolate(frame, [...], ['#...', '#...'], ...)
+  out = out.replace(
+    /interpolate\([^,]+,\s*\[[^\]]+\],\s*\['[^']*'[^)]*\)\s*/g,
+    (match) => {
+      // Can't safely rewrite color interpolations — replace with a safe fallback
+      // Extract first color value as static fallback
+      const colorMatch = match.match(/'(#[0-9a-fA-F]+|rgba?[^']+)'/);
+      return colorMatch ? `'${colorMatch[1]}'` : "'transparent'";
+    }
+  );
+
+  // Remove duplicate keys in style objects (keep last occurrence)
   out = out.replace(/style=\{\{([\s\S]*?)\}\}/g, (match, body) => {
     const lines = body.split('\n');
     const seen = new Set();
     const deduped = [];
-    // Process in reverse to keep last occurrence, then reverse back
     for (let i = lines.length - 1; i >= 0; i--) {
       const keyMatch = lines[i].match(/^\s*([\w]+)\s*:/);
       if (keyMatch) {
         const key = keyMatch[1];
-        if (seen.has(key)) continue; // skip earlier duplicate
+        if (seen.has(key)) continue;
         seen.add(key);
       }
       deduped.unshift(lines[i]);
@@ -417,6 +435,13 @@ export async function videoCompilerNode(state) {
   console.log('    [1/7] Copying Remotion template...');
   try {
     copyTemplate(remotionDir);
+    // Symlink node_modules from the template to avoid re-installing every run
+    const templateModules = path.join(TEMPLATE_DIR, 'node_modules');
+    const destModules = path.join(remotionDir, 'node_modules');
+    if (fs.existsSync(templateModules) && !fs.existsSync(destModules)) {
+      fs.symlinkSync(templateModules, destModules);
+      console.log(`          Symlinked node_modules from template (no install needed)`);
+    }
     console.log(`          Template copied to ${remotionDir}`);
   } catch (err) {
     console.error(`          ERROR copying template: ${err.message}`);
