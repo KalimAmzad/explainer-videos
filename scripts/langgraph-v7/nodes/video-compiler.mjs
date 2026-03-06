@@ -352,6 +352,21 @@ function copyNarrations(narrations, assetsDir) {
  * 3. Fix interpolate() calls that pass string color values (TS type error)
  * 4. Strip preamble text before the first import statement
  */
+// Map of emoji characters → valid @remotion/animated-emoji name strings
+const EMOJI_NAME_MAP = {
+  '💡': 'light-bulb', '✨': 'sparkles', '🧠': 'glowing-star', '🪨': 'direct-hit',
+  '🔥': 'fire', '🚀': 'rocket', '⭐': 'glowing-star', '🌟': 'glowing-star',
+  '🎉': 'party-popper', '🎊': 'party-popper', '💪': 'muscle', '🎯': 'direct-hit',
+  '🏆': 'clinking-glasses', '👍': 'thumbs-up', '🎓': 'graduation-cap',
+  '❤️': 'red-heart', '💖': 'sparkling-heart', '⚡': 'electricity', '⚙️': 'gear',
+  '🔗': 'gear', '👁️': 'eye', '👀': 'eyes', '☕': 'hot-beverage',
+  '🌱': 'plant', '🌈': 'rainbow', '⏰': 'alarm-clock', '🧘': 'folded-hands',
+  '📈': 'rocket', '✅': 'check-mark', '❌': 'cross-mark', '🤔': 'thinking-face',
+  '😊': 'smile', '😀': 'grinning', '🎁': 'wrapped-gift', '🔑': 'gem-stone',
+  '💎': 'gem-stone', '🌍': 'globe-showing-europe-africa', '🎵': 'musical-notes',
+  '🌊': 'ocean', '🦋': 'butterfly', '🌺': 'rose', '💫': 'sparkles',
+};
+
 function sanitizeTSX(tsx) {
   let out = tsx.trim();
 
@@ -361,6 +376,13 @@ function sanitizeTSX(tsx) {
 
   // Remove premountFor prop
   out = out.replace(/\s+premountFor=\{[^}]+\}/g, '');
+
+  // Fix AnimatedEmoji: replace emoji character literals with valid name strings
+  // e.g. emoji="💡" → emoji="light-bulb"
+  out = out.replace(/emoji="([^"]+)"/g, (match, val) => {
+    if (EMOJI_NAME_MAP[val]) return `emoji="${EMOJI_NAME_MAP[val]}"`;
+    return match; // already a valid name string, keep as-is
+  });
 
   // Fix interpolate() with string color values → replace with theme color directly
   // Pattern: background: interpolate(frame, [...], ['#...', '#...'], ...)

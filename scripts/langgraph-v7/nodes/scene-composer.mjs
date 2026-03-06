@@ -130,18 +130,23 @@ function createTools({ sceneNumber, assetsDir, mcpClient, shadcnClient }) {
   // ── 2. download_icon_png ─────────────────────────
   const downloadIconPng = tool(
     async ({ asset_id, commonName, platform = 'color', size = 256 }) => {
-      console.log(`    [tool] download_icon_png: ${commonName} → ${asset_id}.png`);
+      // Auto-correct asset_id if agent passed a numeric/hash ID instead of a descriptive name
+      const isHashId = /^[0-9]+$/.test(asset_id) || /^[a-zA-Z0-9]{10,}$/.test(asset_id);
+      const safeId = isHashId
+        ? `s${sceneNumber}_${commonName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`
+        : asset_id;
+      console.log(`    [tool] download_icon_png: ${commonName} → ${safeId}.png`);
 
       const url = `https://img.icons8.com/${platform}/${size}/${commonName}.png`;
       const res = await fetch(url);
       if (!res.ok) return JSON.stringify({ error: `Icons8 download failed: ${res.status}` });
 
       const buffer = Buffer.from(await res.arrayBuffer());
-      const filePath = path.join(assetsDir, `${asset_id}.png`);
+      const filePath = path.join(assetsDir, `${safeId}.png`);
       fs.writeFileSync(filePath, buffer);
-      console.log(`    [tool] saved ${asset_id}.png (${(buffer.length / 1024).toFixed(1)} KB)`);
+      console.log(`    [tool] saved ${safeId}.png (${(buffer.length / 1024).toFixed(1)} KB)`);
 
-      return JSON.stringify({ asset_id, file: `assets/${asset_id}.png`, size });
+      return JSON.stringify({ asset_id: safeId, file: `assets/${safeId}.png`, size });
     },
     {
       name: 'download_icon_png',

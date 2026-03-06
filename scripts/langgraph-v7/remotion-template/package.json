@@ -8,8 +8,12 @@
     "upgrade": "remotion upgrade"
   },
   "dependencies": {
+    "@remotion/animated-emoji": "^4.0.434",
+    "@remotion/animation-utils": "^4.0.434",
     "@remotion/cli": "^4.0.434",
+    "@remotion/gif": "^4.0.434",
     "@remotion/google-fonts": "^4.0.434",
+    "@remotion/lottie": "^4.0.434",
     "@remotion/media": "^4.0.434",
     "@remotion/paths": "^4.0.434",
     "@remotion/transitions": "^4.0.434",
