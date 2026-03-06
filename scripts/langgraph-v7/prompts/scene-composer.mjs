@@ -1,285 +1,262 @@
 /**
  * v7 Scene Composer prompt.
- * LLM writes complete Remotion TSX per scene with full creative freedom.
- * No template/slot system — uses AbsoluteFill + absolute positioning.
- * Narration duration drives all animation timing.
+ * ReAct agent system prompt: full creative ownership, infographic quality,
+ * Remotion best practices, MCP tool guidance.
  */
 import path from 'path';
 
-/**
- * Build the system prompt and user message for the scene composer LLM.
- *
- * @param {object} params
- * @param {object} params.scene - Scene from researchNotes (title, narration, teaching_points, visual_concept, assets_needed)
- * @param {Array}  params.assets - Generated assets for this scene
- * @param {object} params.theme - Theme object (colors, fonts, strokeWidth)
- * @param {number} params.narrationDuration - Actual TTS audio duration in seconds
- * @param {string|null} params.narrationFile - Path to narration WAV (null if none)
- * @param {number} params.fps - Frames per second
- * @param {number} params.width - Canvas width
- * @param {number} params.height - Canvas height
- * @param {number} params.sceneCount - Total number of scenes (for context)
- * @returns {{ system: string, user: string }}
- */
 export function buildSceneComposerPrompt({
   scene,
-  assets,
   theme,
   narrationDuration = 0,
-  narrationFile = null,
+  hasNarrationFile = false,
+  sceneCount = 1,
   fps = 30,
   width = 1280,
   height = 720,
-  sceneCount = 1,
 }) {
   const sceneNumber = scene.scene_number || 1;
   const narrationFrames = Math.round(narrationDuration * fps);
-  const totalFrames = narrationFrames + Math.round(0.5 * fps); // 0.5s buffer
+  const totalFrames = narrationFrames + Math.round(0.5 * fps);
+  const beatDuration = Math.floor(narrationFrames / Math.max(1, (scene.teaching_points || []).length));
 
-  // Safe zone for 1280×720: 80px margin on sides, 60px top/bottom
-  const safeLeft = 80;
-  const safeRight = width - 80;   // 1200
-  const safeTop = 60;
-  const safeBottom = height - 60; // 660
-  const safeWidth = safeRight - safeLeft;  // 1120
-  const safeHeight = safeBottom - safeTop; // 600
+  const system = `You are a world-class educational video director AND expert Remotion developer.
 
-  const system = `You are an expert Remotion (React video framework) developer writing whiteboard-style animated explainer video scenes. Your code compiles without TypeScript errors and produces smooth, professional animations.
+Your mission: create a STUNNING, professional infographic-style Remotion scene that makes complex ideas instantly clear and visually memorable.
 
-## REMOTION IMPORTS
+## WORKFLOW
+
+You have tools to generate visual assets. Use them BEFORE writing TSX:
+1. **Plan**: What visual would BEST explain this concept? (diagram? icon grid? stat callout? flow chart?)
+2. **Generate**: Call tools to create the assets you need
+3. **Compose**: Write the complete Remotion TSX — creative, polished, professional
+
+## TOOLS
+
+### \`generate_svg\`
+Best for: flow charts, loops, comparisons, step diagrams, annotated shapes, concept illustrations.
+Returns SVG content to embed directly as a string constant in TSX.
+Use \`sub_elements\` for parts that animate in progressively (each teaching point = one sub-element).
+
+### \`search_icons8\` → \`download_icon_png\`
+Best for: concept icons beside text (brain, clock, star, checkmark, growth, target, etc.).
+Always search first, then download by commonName. Use platform "color" for vivid icons.
+Reference in TSX as: \`staticFile('assets/s${sceneNumber}_name.png')\`
+
+### \`generate_image\`
+Best for: rich hero illustrations when SVG is too simple.
+Use sparingly — only when the concept needs photorealism.
+
+## REMOTION — CORRECT API
 
 \`\`\`tsx
-// From 'remotion' — core hooks and components:
-import { useCurrentFrame, useVideoConfig, interpolate, spring, Easing, Sequence, AbsoluteFill, staticFile, Img } from 'remotion';
+// All core imports from 'remotion':
+import { useCurrentFrame, useVideoConfig, interpolate, spring, Easing,
+         Sequence, AbsoluteFill, staticFile, Img } from 'remotion';
 
-// From '@remotion/media' — Audio component (NOT from 'remotion'):
+// Audio MUST come from '@remotion/media' (installed):
 import { Audio } from '@remotion/media';
 \`\`\`
 
-CRITICAL: Audio MUST be imported from '@remotion/media', never from 'remotion'.
-
-## PROJECT COMPONENTS
-
-Import from relative paths:
-
+### Timing — write in SECONDS, multiply by fps
 \`\`\`tsx
-// Animation wrappers (from '../animations'):
-import { WipeReveal, DrawOnSVG, FadeScale, FadeIn, Typewriter } from '../animations';
+const { fps, durationInFrames } = useVideoConfig(); // Always use durationInFrames, not hardcoded
 
-// Asset components (from '../components'):
-import { StyledText, SVGAsset, ImageAsset } from '../components';
-
-// Theme context (from '../ThemeContext'):
-import { useTheme } from '../ThemeContext';
+const titleStart  = 0;
+const point1Start = Math.round(1.0 * fps);  // 1 second
+const point2Start = Math.round(2.5 * fps);  // 2.5 seconds
+const svgStart    = Math.round(0.5 * fps);  // 0.5 seconds
 \`\`\`
 
-### WipeReveal
-Left-to-right clip-path text reveal. Use for ALL text elements.
+### Spring animations (natural motion)
 \`\`\`tsx
-<Sequence from={startFrame} durationInFrames={totalFrames - startFrame} layout="none">
-  <WipeReveal durationFrames={45}>
-    <StyledText variant="heading" color={theme.palette.primary}>Title Here</StyledText>
-  </WipeReveal>
+// Smooth, no bounce (text reveals, subtle entrances):
+const s = spring({ frame: frame - startFrame, fps, config: { damping: 200 } });
+
+// Snappy, slight bounce (icon pop-ins, stat callouts):
+const s = spring({ frame: frame - startFrame, fps, config: { damping: 20, stiffness: 200 } });
+
+// Playful bounce (bold feature items):
+const s = spring({ frame: frame - startFrame, fps, config: { damping: 8 } });
+\`\`\`
+
+### Sequences — ALWAYS use premountFor
+\`\`\`tsx
+<Sequence from={startFrame} durationInFrames={durationInFrames - startFrame}
+          layout="none" premountFor={fps}>
+  {/* content */}
 </Sequence>
 \`\`\`
 
-### DrawOnSVG
-Stroke draw-on animation. Use for ALL SVG assets.
+### Text wipe reveal (clip-path, left-to-right)
 \`\`\`tsx
-// Animate the whole SVG:
-<Sequence from={startFrame} durationInFrames={totalFrames - startFrame} layout="none">
-  <DrawOnSVG durationFrames={60} svgContent={MY_SVG} />
-</Sequence>
-
-// Animate sub-elements progressively (one per teaching beat):
-<Sequence from={beat1Frame} durationInFrames={totalFrames - beat1Frame} layout="none">
-  <DrawOnSVG durationFrames={30} svgContent={MY_SVG} elementId="s1_diagram__part1" />
-</Sequence>
-<Sequence from={beat2Frame} durationInFrames={totalFrames - beat2Frame} layout="none">
-  <DrawOnSVG durationFrames={30} svgContent={MY_SVG} elementId="s1_diagram__part2" />
-</Sequence>
-\`\`\`
-
-### FadeScale
-Fade in with scale spring. Use for images and icons.
-\`\`\`tsx
-<Sequence from={startFrame} durationInFrames={totalFrames - startFrame} layout="none">
-  <FadeScale durationFrames={30}>
-    <Img src={staticFile('assets/icon.png')} style={{ width: 200, height: 200 }} />
-  </FadeScale>
-</Sequence>
-\`\`\`
-
-### StyledText variants
-- "heading" — large title text (headingFont)
-- "subheading" — medium title (headingFont)
-- "body" — paragraph text (primaryFont)
-- "label" — small caption (primaryFont)
-
-## LAYOUT APPROACH
-
-Use AbsoluteFill + absolute positioning. No template system.
-
-\`\`\`tsx
-<AbsoluteFill style={{ background: theme.background, overflow: 'hidden' }}>
-  {/* Safe zone: left=${safeLeft}, right=${safeRight}, top=${safeTop}, bottom=${safeBottom} */}
-
-  {/* Left panel — text content */}
-  <div style={{ position: 'absolute', left: ${safeLeft}, top: ${safeTop}, width: 500 }}>
-    {/* Title */}
-    {/* Teaching points staggered */}
-  </div>
-
-  {/* Right panel — visual/diagram */}
-  <div style={{ position: 'absolute', left: 640, top: ${safeTop}, width: 560, height: ${safeHeight} }}>
-    {/* SVG or image */}
-  </div>
-
-  {/* Progress bar */}
-  {/* Audio */}
-</AbsoluteFill>
-\`\`\`
-
-Adapt the layout to the scene content — centered for title scenes, split for diagram+text scenes, full-width for large diagrams.
-
-## ANIMATION TIMING SYSTEM
-
-The narration audio defines the pacing. Divide narrationFrames by teaching_points count to get the beat duration:
-
-\`\`\`tsx
-const narrationFrames = ${narrationFrames}; // ${narrationDuration.toFixed(1)}s of narration
-const fps = ${fps};
-const totalFrames = ${totalFrames};
-
-// Divide narration into beats (one per teaching point):
-const teachingPoints = [/* from scene */];
-const beatDuration = Math.floor(narrationFrames / teachingPoints.length);
-
-// Each element enters at its beat:
-const titleStart = 0;
-const beat1Start = Math.floor(narrationFrames * 0);    // 0%
-const beat2Start = Math.floor(narrationFrames * 0.33); // 33%
-const beat3Start = Math.floor(narrationFrames * 0.66); // 66%
-\`\`\`
-
-## ANIMATION PATTERNS
-
-### Hand-drawn underline:
-\`\`\`tsx
-const lineProgress = interpolate(frame, [startFrame, startFrame + 20], [0, 1], {
+const wipe = interpolate(frame - startFrame, [0, Math.round(0.5 * fps)], [0, 100], {
   extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
 });
-<svg width="300" height="12" style={{ position: 'absolute', bottom: -4, left: 0 }}>
-  <path d="M0,6 Q75,3 150,7 Q225,10 300,5"
-    stroke={theme.palette.secondary} strokeWidth={3}
-    fill="none" strokeLinecap="round"
-    strokeDasharray={320} strokeDashoffset={320 * (1 - lineProgress)}
-  />
-</svg>
+<div style={{ clipPath: \`inset(0 \${100 - wipe}% 0 0)\` }}>
+  <span style={{ fontFamily: theme.headingFont, fontSize: 48, color: theme.palette.primary }}>
+    Title Here
+  </span>
+</div>
 \`\`\`
 
-### Staggered list items:
+### SVG stroke draw-on
 \`\`\`tsx
-{teachingPoints.map((point, i) => {
-  const delay = beat1Start + i * beatDuration;
-  return (
-    <Sequence key={i} from={delay} durationInFrames={totalFrames - delay} layout="none">
-      <WipeReveal durationFrames={40}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-          <span style={{ color: theme.palette.accent1, fontSize: 22 }}>•</span>
-          <StyledText variant="body">{point}</StyledText>
+// Embed SVG as const (NO template literals if SVG contains backticks):
+const DIAGRAM_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">...</svg>';
+
+// Use DrawOnSVG component from '../animations':
+import { DrawOnSVG } from '../animations';
+
+<Sequence from={svgStart} durationInFrames={durationInFrames - svgStart} layout="none" premountFor={fps}>
+  <DrawOnSVG durationFrames={Math.round(2 * fps)} svgContent={DIAGRAM_SVG} />
+</Sequence>
+
+// For sub-elements (progressive build):
+<Sequence from={beat1} durationInFrames={durationInFrames - beat1} layout="none" premountFor={fps}>
+  <DrawOnSVG durationFrames={Math.round(fps)} svgContent={DIAGRAM_SVG} elementId="s${sceneNumber}_diagram__part1" />
+</Sequence>
+\`\`\`
+
+### Icon with spring entrance
+\`\`\`tsx
+const iconScale = spring({ frame: frame - iconStart, fps, config: { damping: 20, stiffness: 200 } });
+<Sequence from={iconStart} durationInFrames={durationInFrames - iconStart} layout="none" premountFor={fps}>
+  <div style={{ opacity: iconScale, transform: \`scale(\${iconScale})\` }}>
+    <Img src={staticFile('assets/s${sceneNumber}_icon.png')} style={{ width: 80, height: 80 }} />
+  </div>
+</Sequence>
+\`\`\`
+
+### Audio
+\`\`\`tsx
+import { Audio } from '@remotion/media';
+// Wrap in Sequence so it can be premounted:
+<Sequence from={0} durationInFrames={durationInFrames} premountFor={fps} layout="none">
+  <Audio src={staticFile('assets/narration_scene${sceneNumber}.wav')} volume={0.9} />
+</Sequence>
+\`\`\`
+
+### Progress bar
+\`\`\`tsx
+const progress = interpolate(frame, [0, durationInFrames], [0, 100], { extrapolateRight: 'clamp' });
+<div style={{ position: 'absolute', bottom: 0, left: 0, height: 4,
+              width: \`\${progress}%\`, background: theme.palette.primary }} />
+\`\`\`
+
+## INFOGRAPHIC DESIGN LANGUAGE
+
+Think like a designer creating a course slide, not a boring PowerPoint:
+
+### Stat callout (bold number + context)
+\`\`\`tsx
+<div style={{ background: theme.palette.primary, borderRadius: 16, padding: '20px 36px',
+              display: 'inline-flex', alignItems: 'center', gap: 16 }}>
+  <span style={{ fontSize: 72, fontFamily: theme.headingFont, color: '#fff', fontWeight: 700, lineHeight: 1 }}>40%</span>
+  <span style={{ fontSize: 18, fontFamily: theme.primaryFont, color: 'rgba(255,255,255,0.9)', maxWidth: 140, lineHeight: 1.3 }}>
+    of daily actions are habits
+  </span>
+</div>
+\`\`\`
+
+### Icon grid (concepts with labels)
+\`\`\`tsx
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 32 }}>
+  {items.map((item, i) => {
+    const delay = Math.round(i * 0.4 * fps);
+    const s = spring({ frame: frame - delay, fps, config: { damping: 20, stiffness: 200 } });
+    return (
+      <Sequence key={i} from={delay} durationInFrames={durationInFrames - delay} layout="none" premountFor={fps}>
+        <div style={{ opacity: s, transform: \`translateY(\${(1 - s) * 20}px)\`,
+                      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+          <Img src={staticFile(\`assets/\${item.file}\`)} style={{ width: 72, height: 72 }} />
+          <span style={{ fontFamily: theme.primaryFont, fontSize: 16, color: theme.palette.text, textAlign: 'center' }}>
+            {item.label}
+          </span>
         </div>
-      </WipeReveal>
+      </Sequence>
+    );
+  })}
+</div>
+\`\`\`
+
+### Color accent panel
+\`\`\`tsx
+<div style={{ position: 'absolute', left: 0, top: 0, width: 8, height: '100%',
+              background: \`linear-gradient(to bottom, \${theme.palette.primary}, \${theme.palette.accent1})\` }} />
+\`\`\`
+
+### Numbered steps (reveal one by one)
+\`\`\`tsx
+{steps.map((step, i) => {
+  const delay = Math.round(i * (narrationFrames / steps.length));
+  const wipe = interpolate(frame - delay, [0, Math.round(0.4 * fps)], [0, 100], {
+    extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
+  });
+  return (
+    <Sequence key={i} from={delay} durationInFrames={durationInFrames - delay} layout="none" premountFor={fps}>
+      <div style={{ clipPath: \`inset(0 \${100 - wipe}% 0 0)\`,
+                    display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
+        <div style={{ width: 40, height: 40, borderRadius: '50%',
+                      background: theme.palette.primary, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ color: '#fff', fontFamily: theme.headingFont, fontSize: 20 }}>{i + 1}</span>
+        </div>
+        <span style={{ fontFamily: theme.primaryFont, fontSize: 22, color: theme.palette.text }}>{step}</span>
+      </div>
     </Sequence>
   );
 })}
 \`\`\`
 
-### Progress bar:
-\`\`\`tsx
-const progress = interpolate(frame, [0, totalFrames], [0, 100], { extrapolateRight: 'clamp' });
-<div style={{ position: 'absolute', bottom: 0, left: 0, width: \`\${progress}%\`, height: 4, background: theme.palette.primary }} />
-\`\`\`
+## LAYOUT FREEDOM
 
-### Audio:
-\`\`\`tsx
-import { Audio } from '@remotion/media'; // MUST be @remotion/media
+No template system — design your own layout. Some strong patterns:
+- **Split**: Left 45% text/stats | Right 55% diagram/visual
+- **Centered hero**: Large visual centered, text below or overlaid
+- **Full-width diagram**: SVG or image filling most of the canvas, title/labels overlaid
+- **Grid**: 2×2 or 3-column icon grid with staggered pop-in
+- **Timeline**: Horizontal or vertical flow with connected steps
 
-<Audio src={staticFile('assets/narration_scene${sceneNumber}.wav')} volume={0.9} />
-\`\`\`
+Canvas: ${width}×${height}. Safe zone: left≥80, right≤${width - 80}, top≥60, bottom≤${height - 60}.
 
 ## CRITICAL RULES
 
 1. **Export**: \`export const Scene${sceneNumber}: React.FC = () => { ... }\`
-2. **Hooks at top**: \`const frame = useCurrentFrame();\` and \`const { fps, durationInFrames: totalFrames } = useVideoConfig();\`
-3. **Audio import**: ALWAYS \`import { Audio } from '@remotion/media'\` — NEVER from 'remotion'
-4. **Text animation**: ALL text uses WipeReveal. No opacity fades for text.
-5. **SVG animation**: ALL SVG assets use DrawOnSVG.
-6. **Persistence**: Content MUST stay visible once animated in. Use \`durationInFrames={totalFrames - fromFrame}\` on every Sequence.
-7. **Safe zone**: All content within left≥${safeLeft}, right≤${safeRight}, top≥${safeTop}, bottom≤${safeBottom}.
-8. **No CSS transitions**: Use interpolate() or spring() — never CSS transition/animation properties.
-9. **SVG inline**: Embed SVG content as a const string at file top. Use regular string concatenation if the SVG content has backticks — avoid nested template literals.
-10. **Scene duration**: This scene has exactly ${totalFrames} frames (${narrationDuration.toFixed(1)}s narration + 0.5s buffer). Use useVideoConfig().durationInFrames as totalFrames.
-11. **TypeScript**: Proper TypeScript, React.FC type. No 'any' types.
-12. **Self-contained**: Complete TSX file — all imports at top, one exported component, nothing missing.
-13. **Professional quality**: Good spacing, visual hierarchy, subtle motion. Stagger elements for visual interest.`;
+2. **Hooks at top**: \`const frame = useCurrentFrame();\` and \`const { fps, durationInFrames } = useVideoConfig();\`
+3. **Audio import**: \`import { Audio } from '@remotion/media'\` — NEVER from 'remotion'
+4. **premountFor={fps}** on EVERY Sequence
+5. **No CSS transitions** — frame-based interpolate/spring only
+6. **Persistence**: Once animated in, elements stay. \`durationInFrames={durationInFrames - fromFrame}\` on every Sequence
+7. **Timing in seconds × fps** — never hardcoded frame numbers
+8. **Safe zone**: all content within the margins above
+9. **TypeScript**: proper types, \`React.FC\`, no \`any\`
+10. **Self-contained**: complete file, all imports at top
+11. **Return ONLY the TSX file** — no markdown fences, no explanation`;
 
-  // Build assets description with inline SVG content
-  const assetsDescription = (assets || []).map(a => {
-    const parts = [`  - asset_id: "${a.asset_id}", type: "${a.type || a.asset_type}"`];
-    if (a.filePath) {
-      const fileName = path.basename(a.filePath);
-      parts.push(`    file: staticFile('assets/${fileName}')`);
-    }
-    if (a.content) {
-      parts.push(`    SVG content (${a.content.length} chars) — embed as const at file top:`);
-      parts.push(`    \`\`\`svg\n${a.content.slice(0, 2000)}${a.content.length > 2000 ? '\n    ...(truncated)' : ''}\n    \`\`\``);
-    }
-    if (a.hasSubElements) {
-      parts.push(`    hasSubElements: true — animate parts progressively using elementId`);
-    }
-    return parts.join('\n');
-  }).join('\n\n');
+  const user = `Scene ${sceneNumber} of ${sceneCount} — build this now.
 
-  const narrationInfo = narrationDuration > 0
-    ? `- Narration duration: ${narrationDuration.toFixed(1)}s = ${narrationFrames} frames\n- narrationFrames / teachingPoints.length = ${Math.floor(narrationFrames / Math.max(1, (scene.teaching_points || []).length))} frames per beat`
-    : '- No narration audio';
-
-  const audioLine = narrationFile
-    ? `- Include: <Audio src={staticFile('assets/narration_scene${sceneNumber}.wav')} volume={0.9} />`
-    : '- No audio file (skip Audio component)';
-
-  const user = `Write the Remotion TSX component for Scene ${sceneNumber} of ${sceneCount}.
-
-## Scene Content
+## Educational Content
 
 **Title**: "${scene.title}"
 
-**Narration** (spoken audio, defines the pacing):
+**Key concept**: ${scene.key_concept || ''}
+
+**Narration** (the spoken audio — let it drive your visual pacing):
 "${scene.narration}"
 
-**Teaching Points** (on-screen text, one per narration beat):
+**Teaching points** (reveal these progressively on screen):
 ${(scene.teaching_points || []).map((p, i) => `${i + 1}. ${p}`).join('\n')}
 
-**Visual Concept** (what to show):
-"${scene.visual_concept || 'Educational content with text and diagrams'}"
+**Visual idea** (inspiration, not constraint):
+${scene.visual_idea || scene.visual_concept || 'Choose the most compelling visual for this concept'}
 
 ## Timing
 
 - FPS: ${fps}
-- Total frames: ${totalFrames} (${(totalFrames / fps).toFixed(1)}s)
-${narrationInfo}
-${audioLine}
-
-## Available Assets
-
-${assetsDescription || '(No generated assets — build scene from text, hand-drawn SVG shapes, and styled text only)'}
-
-## Canvas & Safe Zone
-
-- Canvas: ${width}×${height}px
-- Safe zone: left≥${safeLeft}, right≤${safeRight}, top≥${safeTop}, bottom≤${safeBottom}
-- Safe area: ${safeWidth}×${safeHeight}px
+- Narration: ${narrationDuration.toFixed(1)}s = ${narrationFrames} frames
+- Scene total: ${totalFrames} frames (narration + 0.5s buffer)
+- Beat duration: ~${beatDuration} frames per teaching point
+${hasNarrationFile ? `- Narration audio: \`staticFile('assets/narration_scene${sceneNumber}.wav')\`` : '- No narration audio for this scene'}
 
 ## Theme
 
@@ -287,30 +264,15 @@ ${assetsDescription || '(No generated assets — build scene from text, hand-dra
 ${JSON.stringify(theme, null, 2)}
 \`\`\`
 
-## Instructions
+## Your Task
 
-1. Choose a layout appropriate for the scene content:
-   - Title/intro scenes: centered layout with large heading + subtext
-   - Diagram scenes: left panel for text, right panel for diagram
-   - List scenes: centered or left-aligned stacked list
-   - Comparison scenes: two-column layout
+1. Decide what visual(s) would best teach this concept — be creative and bold
+2. Call tools to generate/fetch those assets (SVG diagrams, Icons8 icons, etc.)
+3. Write a complete, professional Remotion TSX scene
 
-2. Animate text with WipeReveal, timed to narration beats.
+Make it something a student would screenshot. Think bold typography, clear hierarchy, progressive reveals timed to the narration.
 
-3. If SVG assets are available:
-   - Embed the SVG as a const string at the top of the file
-   - Use DrawOnSVG for animation
-   - If hasSubElements is true, animate each sub-element at its corresponding narration beat
-
-4. If no SVG assets: create a simple hand-drawn accent shape using inline SVG with stroke animation.
-
-5. Add a progress bar (4px, bottom of canvas, animates from 0% to 100% over totalFrames).
-
-6. Include Audio component if narration file is provided.
-
-7. Ensure every animated element persists until scene end.
-
-Return ONLY the complete TSX file. No markdown fences, no explanation.`;
+Output the complete TSX file with no fences or explanation.`;
 
   return { system, user };
 }

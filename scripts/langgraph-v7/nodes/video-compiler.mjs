@@ -136,7 +136,7 @@ function generateRootTSX(compiledScenes, narrations, totalFrames) {
     return lines.join('\n');
   }).join('\n');
 
-  // Build Remotion import list (Audio comes from @remotion/media, not remotion)
+  // Build Remotion import list (Audio from @remotion/media per Remotion best practices)
   const remotionImports = ['Composition', 'Sequence'];
   if (hasNarrations) remotionImports.push('staticFile');
 
@@ -249,12 +249,11 @@ function copyTemplate(destDir) {
     recursive: true,
     force: true,
     filter: (src) => {
-      // Skip any existing scenes directory in the template
-      // (we generate scene files from compiled state)
       const rel = path.relative(TEMPLATE_DIR, src);
-      if (rel.startsWith('src/scenes') && rel !== 'src/scenes') {
-        return false;
-      }
+      // Skip template scene stubs (pipeline writes real scenes)
+      if (rel.startsWith('src/scenes') && rel !== 'src/scenes') return false;
+      // Skip public/assets — narrations + generated assets already live there
+      if (rel.startsWith('public/assets') && rel !== 'public/assets') return false;
       return true;
     },
   });

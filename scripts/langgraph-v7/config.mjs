@@ -44,6 +44,24 @@ export const LANGSMITH = {
 
 export const CANVAS = { width: 1280, height: 720, fps: 30 };
 
+/**
+ * MCP server configurations for scene_composer agent tools.
+ * Set ICONS8_MCP_COMMAND in .env to enable direct MCP connection.
+ * Falls back to Icons8 HTTP API automatically when not set.
+ *
+ * Example .env entry:
+ *   ICONS8_MCP_COMMAND=uvx icons8-mcp
+ */
+export const MCP_SERVERS = {
+  icons8: env.ICONS8_MCP_COMMAND
+    ? {
+        command: env.ICONS8_MCP_COMMAND.split(' ')[0],
+        args: env.ICONS8_MCP_COMMAND.split(' ').slice(1),
+        env: env.ICONS8_API_KEY ? { ICONS8_API_KEY: env.ICONS8_API_KEY } : {},
+      }
+    : null,
+};
+
 export const PATHS = {
   root: PROJECT_ROOT,
   output: path.join(PROJECT_ROOT, 'output'),

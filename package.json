@@ -21,6 +21,8 @@
     "@langchain/core": "^1.1.30",
     "@langchain/google": "^0.1.5",
     "@langchain/langgraph": "^1.2.0",
+    "@langchain/mcp-adapters": "^1.1.3",
+    "@modelcontextprotocol/sdk": "^1.27.1",
     "@playwright/test": "^1.58.2",
     "@remotion/cli": "^4.0.434",
     "@remotion/google-fonts": "^4.0.434",

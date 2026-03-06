@@ -27,9 +27,7 @@ export const VideoState = Annotation.Root({
   theme:          Annotation({ reducer: replace, default: () => null }),
   // Node 2: Research Planner
   researchNotes:  Annotation({ reducer: replace, default: () => null }),
-  // Node 3: Asset Generator (fan-in via concatReducer)
-  assets:         Annotation({ reducer: concatReducer, default: () => [] }),
-  // Node 5: Narration Generator (fan-in via concatReducer)
+  // Node 3: Narration Generator (fan-in via concatReducer)
   narrations:     Annotation({ reducer: concatReducer, default: () => [] }),
   // Node 6: Scene Writer (fan-in via concatReducer)
   compiledScenes: Annotation({ reducer: concatReducer, default: () => [] }),
@@ -37,8 +35,7 @@ export const VideoState = Annotation.Root({
   videoPath:      Annotation({ reducer: replace, default: () => '' }),
   editManifest:   Annotation({ reducer: replace, default: () => null }),
 
-  // Send-private (used by fan-out for asset_generator, narration_generator, scene_writer)
-  _asset:       Annotation({ reducer: replace, default: () => null }),
+  // Send-private (used by fan-out for narration_generator, scene_composer)
   _sceneIndex:  Annotation({ reducer: replace, default: () => -1 }),
 
   // Error accumulator
