@@ -409,6 +409,33 @@ function sanitizeTSX(tsx) {
   out = out.replace(/spring\(\s*\{\s*\n?\s*fps\s*,?\s*\n?\s*\}\s*\)/g, 'spring({ frame: Math.max(0, frame), fps })');
   out = out.replace(/spring\(\s*\{\s*fps\s*\}\s*\)/g, 'spring({ frame: Math.max(0, frame), fps })');
 
+  // Auto-inject missing remotion imports if the component uses them but they aren't imported
+  const REMOTION_CORE = ['useCurrentFrame', 'useVideoConfig', 'interpolate', 'spring', 'Sequence', 'AbsoluteFill', 'staticFile', 'Img'];
+  const missingCore = REMOTION_CORE.filter(fn => out.includes(fn) && !out.includes(`'remotion'`) && !out.includes(`"remotion"`));
+  if (missingCore.length > 0) {
+    const needed = REMOTION_CORE.filter(fn => out.includes(fn));
+    out = `import { ${needed.join(', ')} } from 'remotion';\n` + out;
+  }
+  if (out.includes('<Audio') && !out.includes("'@remotion/media'") && !out.includes('"@remotion/media"')) {
+    const lastImport = out.lastIndexOf('\nimport ');
+    const insertAt = out.indexOf('\n', lastImport + 1) + 1;
+    out = out.slice(0, insertAt) + `import { Audio } from '@remotion/media';\n` + out.slice(insertAt);
+  }
+  if (out.includes('loadInter') && !out.includes('@remotion/google-fonts/Inter')) {
+    const lastImport = out.lastIndexOf('\nimport ');
+    const insertAt = out.indexOf('\n', lastImport + 1) + 1;
+    out = out.slice(0, insertAt) + `import { loadFont as loadInter } from '@remotion/google-fonts/Inter';\n` + out.slice(insertAt);
+  }
+
+  // Move module-level hook calls (useVideoConfig, useCurrentFrame) inside the component.
+  // Pattern: hook call at module level before `export const SceneN = () => {`
+  out = out.replace(
+    /((?:^|\n)const\s*\{[^}]+\}\s*=\s*useVideoConfig\(\);[^\n]*\n(?:const\s+t\s*=.*\n)?)([\s\S]*?)(export\s+const\s+\w+\s*=\s*\(\s*\)\s*=>\s*\{)/m,
+    (match, hookBlock, middle, compStart) => {
+      return middle + compStart + '\n  ' + hookBlock.trim().replace(/\n/g, '\n  ');
+    }
+  );
+
   // Remove mapRange from @remotion/animation-utils import (not exported by that package)
   out = out.replace(/,\s*mapRange/g, '').replace(/mapRange,\s*/g, '');
   out = out.replace(/import\s*\{\s*\}\s*from\s*'@remotion\/animation-utils';?\n?/g, '');
