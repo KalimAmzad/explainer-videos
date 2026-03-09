@@ -10,7 +10,7 @@ import path from 'path';
 import { setupLangSmith, validateKeys, LANGSMITH, PATHS } from './config.mjs';
 
 const tracingEnabled = setupLangSmith();
-validateKeys(['anthropic', 'gemini', 'openai', 'openrouter']);
+validateKeys(['anthropic', 'gemini', 'openrouter']);
 
 const { buildGraph } = await import('./graph.mjs');
 

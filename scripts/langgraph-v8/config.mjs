@@ -23,8 +23,8 @@ const env = loadEnv();
 
 export const MODELS = {
   contentPlanner:     'claude-haiku-4-5-20251001',   // Theme + content planning
-  storyboardDesigner: 'gpt-5.2',                     // Visual blueprint (OpenAI)
-  sceneCoder:         'moonshotai/kimi-k2.5',        // TSX generation (OpenRouter)
+  storyboardDesigner: 'claude-haiku-4-5-20251001',    // Visual blueprint (Anthropic)
+  sceneCoder:         'qwen/qwen3.5-35b-a3b',        // TSX generation (OpenRouter)
   imageGen:           'gemini-3.1-flash-image-preview',
   tts:                'gemini-2.5-flash-preview-tts',
 };

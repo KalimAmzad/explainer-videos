@@ -227,8 +227,12 @@ function sanitizeTSX(tsx) {
   // Remove ctrl char artifacts
   out = out.replace(/<ctrl\d+>/g, '').replace(/<\/ctrl\d+>/g, '');
 
-  // Fix google-fonts import casing
-  out = out.replace(/@remotion\/google-fonts\/([a-z])/g, (m, c) => `@remotion/google-fonts/${c.toUpperCase()}`);
+  // Fix google-fonts import path: "Space-Grotesk" → "SpaceGrotesk", "DM-Sans" → "DMSans"
+  out = out.replace(/@remotion\/google-fonts\/([A-Za-z][A-Za-z0-9-]*)/g, (m, name) => {
+    // Remove hyphens and uppercase the letter after each hyphen (or leave as-is if already upper)
+    const pascal = name.replace(/-([a-zA-Z])/g, (_, c) => c.toUpperCase()).replace(/^([a-z])/, (_, c) => c.toUpperCase());
+    return `@remotion/google-fonts/${pascal}`;
+  });
 
   // Remove AnimatedEmoji imports and replace with native emoji
   out = out.replace(/import\s*\{[^}]*AnimatedEmoji[^}]*\}\s*from\s*['"]@remotion\/animated-emoji['"];?\n?/g, '');
@@ -261,6 +265,28 @@ function sanitizeTSX(tsx) {
     out = out.slice(0, insertAt) + polyfill + out.slice(insertAt);
   }
 
+  // Ensure staticFile is imported if used
+  if (out.includes('staticFile(') && !/import\s*\{[^}]*staticFile[^}]*\}\s*from\s*['"]remotion['"]/.test(out)) {
+    // Add staticFile to existing remotion import, or add a new one
+    const remotionImport = out.match(/import\s*\{([^}]+)\}\s*from\s*['"]remotion['"]/);
+    if (remotionImport) {
+      const existing = remotionImport[1];
+      if (!existing.includes('staticFile')) {
+        out = out.replace(remotionImport[0], remotionImport[0].replace(remotionImport[1], `${existing.trimEnd()}, staticFile `));
+      }
+    } else {
+      out = `import { staticFile } from 'remotion';\n${out}`;
+    }
+  }
+
+  // Ensure Img is imported if used
+  if (out.includes('<Img ') && !/import\s*\{[^}]*Img[^}]*\}\s*from\s*['"]remotion['"]/.test(out)) {
+    const remotionImport = out.match(/import\s*\{([^}]+)\}\s*from\s*['"]remotion['"]/);
+    if (remotionImport && !remotionImport[1].includes('Img')) {
+      out = out.replace(remotionImport[0], remotionImport[0].replace(remotionImport[1], `${remotionImport[1].trimEnd()}, Img `));
+    }
+  }
+
   // Dedup CSS keys in style objects
   out = out.replace(/style=\{\{([\s\S]*?)\}\}/g, (match, body) => {
     const lines = body.split('\n');
@@ -275,6 +301,14 @@ function sanitizeTSX(tsx) {
       deduped.unshift(lines[i]);
     }
     return `style={{${deduped.join('\n')}}}`;
+  });
+
+  // Remove unused google-fonts imports (LLM often imports all example fonts)
+  out = out.replace(/import\s*\{\s*loadFont\s+as\s+(\w+)\s*\}\s*from\s*'@remotion\/google-fonts\/[^']+';?\n?/g, (match, alias) => {
+    // Check if the alias is used elsewhere in the code (beyond the import itself)
+    const rest = out.replace(match, '');
+    if (!rest.includes(alias)) return ''; // unused — remove
+    return match; // used — keep
   });
 
   return out;

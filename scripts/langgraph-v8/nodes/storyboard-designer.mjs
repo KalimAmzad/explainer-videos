@@ -1,5 +1,5 @@
 /**
- * Node 2: Storyboard Designer — GPT-5.2 designs complete visual blueprint.
+ * Node 2: Storyboard Designer — designs complete visual blueprint.
  *
  * Takes content plan + theme, outputs structured storyboard JSON with:
  *   - Layout selection per scene
@@ -12,17 +12,17 @@
  */
 import fs from 'fs';
 import path from 'path';
-import { ChatOpenAI } from '@langchain/openai';
+import { ChatAnthropic } from '@langchain/anthropic';
 import { HumanMessage } from '@langchain/core/messages';
 import { MODELS, KEYS } from '../config.mjs';
 import { buildStoryboardPrompt } from '../prompts/storyboard-designer.mjs';
 
 export async function storyboardDesignerNode(state) {
-  console.log('\n  ── Storyboard Designer (GPT-5.2) ──');
+  console.log(`\n  ── Storyboard Designer (${MODELS.storyboardDesigner}) ──`);
 
-  const model = new ChatOpenAI({
+  const model = new ChatAnthropic({
     model: MODELS.storyboardDesigner,
-    apiKey: KEYS.openai,
+    apiKey: KEYS.anthropic,
     maxTokens: 16384,
     temperature: 0.7,
   });
@@ -37,8 +37,10 @@ export async function storyboardDesignerNode(state) {
     ? response.content
     : response.content.map(c => c.text || '').join('');
 
+  // Strip <think> blocks (if model produces them)
+  text = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+
   // Strip markdown fences
-  text = text.trim();
   if (text.startsWith('```')) {
     text = text.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '');
   }
@@ -50,7 +52,7 @@ export async function storyboardDesignerNode(state) {
   if (lastClose !== -1) text = text.slice(0, lastClose + 1);
 
   const usage = response.usage_metadata;
-  console.log(`    [GPT-5.2] ${usage?.input_tokens || '?'} in / ${usage?.output_tokens || '?'} out`);
+  console.log(`    [${MODELS.storyboardDesigner}] ${usage?.input_tokens || '?'} in / ${usage?.output_tokens || '?'} out`);
 
   const storyboard = JSON.parse(text);
 

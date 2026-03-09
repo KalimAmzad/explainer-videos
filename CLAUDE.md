@@ -250,10 +250,10 @@ START → content_planner (Haiku: theme + content)
 | Node | Model | Purpose |
 |------|-------|---------|
 | Content Planner | `claude-haiku-4-5` | Theme + content planning |
-| Storyboard Designer | `gpt-5.2` | Visual blueprint (layout, assets, animations) |
+| Storyboard Designer | `claude-haiku-4-5` | Visual blueprint (layout, assets, animations) |
 | Asset Producer | No LLM | Icons8 HTTP API + Gemini image gen |
 | Narration TTS | `gemini-2.5-flash-preview-tts` | Text-to-speech audio |
-| Scene Coder | `moonshotai/kimi-k2.5` | Single-pass TSX generation |
+| Scene Coder | `qwen/qwen3.5-35b-a3b` | Single-pass TSX generation (OpenRouter) |
 
 ### Key Design Principles
 - **Storyboard locks creative decisions** before expensive downstream work

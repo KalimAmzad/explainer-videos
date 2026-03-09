@@ -87,14 +87,32 @@ export async function sceneCoderNode(state) {
     apiKey: KEYS.openrouter,
     configuration: { baseURL: OPENROUTER_BASE_URL },
     maxTokens: 32768,
-    temperature: 0.0,
+    temperature: 0.7,
     model_kwargs: { enable_thinking: false },
   });
 
-  const response = await model.invoke([
-    new SystemMessage(system),
-    new HumanMessage(user),
-  ]);
+  // Timeout: abort if model takes longer than 4 minutes
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 240_000);
+  let response;
+  try {
+    response = await model.invoke(
+      [new SystemMessage(system), new HumanMessage(user)],
+      { signal: controller.signal },
+    );
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (err.name === 'AbortError' || err.message?.includes('aborted')) {
+      console.error(`    Scene ${sceneNumber}: LLM call timed out (4 min)`);
+      return {
+        compiledScenes: [{ sceneNumber, tsxContent: '', durationFrames, error: 'timeout' }],
+        errors: [`scene-coder [Scene ${sceneNumber}]: timed out`],
+      };
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   let rawText = typeof response.content === 'string'
     ? response.content

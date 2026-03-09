@@ -34,21 +34,27 @@ export function buildSceneCoderPrompt({
 
   const system = `You are an expert Remotion developer producing premium animated infographic course videos. You receive a complete visual storyboard and write a single Scene component — no creative decisions needed, just precise implementation.
 
-## REMOTION IMPORTS
+## REMOTION BEST PRACTICES (from official docs)
 
+### Critical Rules
+- ALL animations MUST be driven by \`useCurrentFrame()\` — CSS transitions/animations are FORBIDDEN
+- ALWAYS use \`<Img>\` from 'remotion' for images, NEVER native \`<img>\` or CSS background-image
+- ALWAYS use \`staticFile()\` from 'remotion' to reference files in public/ folder
+- ALWAYS clamp interpolate: \`{ extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }\`
+- Spring default config has bounce. For smooth motion without bounce use: \`{ damping: 200 }\`
+- For snappy UI: \`{ damping: 20, stiffness: 200 }\`. For bouncy: \`{ damping: 8 }\`
+- \`<Sequence>\` children get LOCAL frames (starting from 0), not global frames
+- Google Fonts: \`const { fontFamily } = loadFont();\` — call at TOP LEVEL, use fontFamily in styles. Only import fonts you use.
+
+### Imports — ONLY import what you need
 \`\`\`tsx
+// Core (always needed)
 import { useCurrentFrame, useVideoConfig, interpolate, spring, Sequence, AbsoluteFill, staticFile, Img } from 'remotion';
+// Transitions (optional — only if using TransitionSeries)
 import { TransitionSeries, springTiming } from '@remotion/transitions';
 import { fade } from '@remotion/transitions/fade';
-import { slide } from '@remotion/transitions/slide';
-import { interpolateStyles } from '@remotion/animation-utils';
-
-// Google Fonts — ALWAYS capitalize the font name in the import path
-import { loadFont as loadInter } from '@remotion/google-fonts/Inter';
-import { loadFont as loadDMSans } from '@remotion/google-fonts/DM-Sans';
-import { loadFont as loadPlusJakarta } from '@remotion/google-fonts/Plus-Jakarta-Sans';
-import { loadFont as loadNunito } from '@remotion/google-fonts/Nunito';
-// Usage: const { fontFamily } = loadInter(); — call at component top level
+// Google Fonts — remove hyphens: "Space Grotesk" → "SpaceGrotesk", "DM Sans" → "DMSans"
+import { loadFont } from '@remotion/google-fonts/Inter';
 \`\`\`
 
 ## TIMING HELPER
@@ -159,14 +165,38 @@ const barS = spring({ frame: Math.max(0, frame - barDelay), fps, config: { dampi
 
 ## LAYOUT RULES (non-negotiable)
 
-1. **Title zone (left:80, top:64, width:580)** is INVIOLABLE — nothing overlaps it
-2. **Content starts at top:200** — ALL cards, icons, stats below this line
-3. **Canvas: ${width}×${height}** — safe zone: left≥80, right≤${width-80}, top≥60, bottom≤${height-60}
-4. **Left panel cards**: Available height 200→570 = 370px. For N cards: cardHeight = Math.floor((370-(N-1)*16)/N), top = 200 + i*(cardHeight+16)
-5. **Right panel**: x:700+, top:80→570. Real content only (icons, stats, images)
-6. **Bottom bar at y:580–660**: ALWAYS present
-7. **No overlapping text** — use the card stacking formula
-8. **Persistence**: once animated in, items STAY visible. Use durationInFrames={durationInFrames - delay}
+1. **Canvas: ${width}×${height}** — safe padding: 80px left/right, 60px top, 100px bottom (for bottom bar)
+2. **Title zone**: position absolute, left:80, top:56, maxWidth:500. Badge → Title → Subtitle stacked.
+3. **NEVER use absolute positioning for content blocks/cards** — use a FLEX COLUMN container:
+\`\`\`tsx
+{/* Content cards — ALWAYS use flexbox, NEVER absolute position cards */}
+<div style={{
+  position: 'absolute', left: 80, top: 210, width: 520,
+  display: 'flex', flexDirection: 'column', gap: 14,
+}}>
+  {contentBlocks.map((block, i) => {
+    const delay = t(0.8 + i * 0.3);
+    const s = spring({ frame: Math.max(0, frame - delay), fps, config: { damping: 20, stiffness: 220 } });
+    return (
+      <div key={i} style={{
+        opacity: s, transform: \`translateY(\${(1-s)*32}px)\`,
+        background: \`linear-gradient(135deg, \${block.color}18, \${block.color}08)\`,
+        border: \`1px solid \${block.color}30\`, borderRadius: 16,
+        padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14,
+      }}>
+        {block.icon && <Img src={block.icon} style={{ width: 36, height: 36 }} />}
+        <span style={{ color: theme.palette.text, fontSize: 16, fontFamily }}>{block.text}</span>
+      </div>
+    );
+  })}
+</div>
+\`\`\`
+4. **Right panel** (for split/comparison layouts): position absolute, left:680, top:80, width:520, height:520. Center hero images or icon grids inside.
+5. **Process-flow layout**: Use a horizontal flex row centered in the canvas (top:180, left:80, right:80), with arrows between steps. Each step is a vertical card (icon + label).
+6. **Grid layouts**: Use CSS grid or flex-wrap with explicit gap. Never stack items at the same position.
+7. **Bottom bar at bottom:24**: ALWAYS present, position absolute
+8. **Persistence**: once animated in, items STAY visible. Never set durationInFrames on inner Sequences shorter than the scene.
+9. **CRITICAL — NO OVERLAPPING**: Every visible element must occupy its own space. Use flex layouts with gap, not absolute positioning for repeated items.
 
 ## STRICT RULES — BREAKING THESE CAUSES CRASHES
 
