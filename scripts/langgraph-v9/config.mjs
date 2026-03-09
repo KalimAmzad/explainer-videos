@@ -27,6 +27,7 @@ const env = loadEnv();
 export const MODELS = {
   contentPlanner: 'claude-haiku-4-5-20251001',    // Scene breakdown only
   sceneCoder:     'minimax/minimax-m2.5',          // Creative brain via OpenRouter
+  criticReviser:  'minimax/minimax-m2.5',          // Creative director via OpenRouter
   imageGen:       'gemini-3.1-flash-image-preview', // Nano Banana — hero illustrations
   tts:            'gemini-2.5-flash-preview-tts',  // TTS from scene coder's narration script
 };

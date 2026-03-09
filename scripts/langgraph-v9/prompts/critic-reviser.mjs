@@ -65,11 +65,40 @@ The #1 quality issue. Check that:
 - Key phrases from narration appear as on-screen text labels
 - No visual elements appear before/after they're narrated
 
-### 3. ANIMATION QUALITY
-Check that:
+### 3. ANIMATION STAGGERING & AUDIO SYNC (HIGHEST PRIORITY)
+This is the #1 problem. Elements appear ALL AT ONCE instead of progressively synced to narration.
 
+**RULE: Each visual section MUST appear ONLY when the narrator starts talking about it.**
+
+Check the narration segments. If narration segment 1 is at p(0.0)–p(0.18), ALL visual elements for that section must start animating at p(0.0), NOT at p(0.0) along with everything else.
+
+**Bad pattern (everything at once):**
+\`\`\`tsx
+// ❌ All 5 cards spring from p(0.15) — viewer sees wall of content
+const card1 = spring({ frame: Math.max(0, frame - p(0.15)), fps, ... });
+const card2 = spring({ frame: Math.max(0, frame - p(0.15)), fps, ... });
+const card3 = spring({ frame: Math.max(0, frame - p(0.15)), fps, ... });
+\`\`\`
+
+**Good pattern (staggered with narration):**
+\`\`\`tsx
+// ✅ Cards appear one-by-one as narrator mentions each concept
+// Narration segment 2 (p(0.18)–p(0.32)) mentions Ihram
+const card1 = spring({ frame: Math.max(0, frame - p(0.20)), fps, ... });
+// Narration segment 3 (p(0.32)–p(0.46)) mentions Tawaf
+const card2 = spring({ frame: Math.max(0, frame - p(0.34)), fps, ... });
+// Narration segment 4 (p(0.46)–p(0.60)) mentions Sa'y
+const card3 = spring({ frame: Math.max(0, frame - p(0.48)), fps, ... });
+\`\`\`
+
+**How to fix:**
+1. Read each narration segment's startPct/endPct
+2. Map each visual element to the narration segment that describes it
+3. Set the element's animation start to match that segment's startPct
+4. Within a segment, stagger sub-elements by 0.02-0.03
+
+Also verify:
 - ALL elements use spring() or interpolate() — nothing appears instantly
-- Cards/items are STAGGERED (0.03-0.05 apart), never all at once
 - Background has pulsing glow orbs (continuous motion)
 - SVG paths use strokeDasharray/strokeDashoffset for draw-on
 - Numbers use counting animation (spring + Math.round)

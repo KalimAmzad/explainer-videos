@@ -339,12 +339,30 @@ const progressW = interpolate(frame, [0, durationInFrames], [0, 100],
 
 ## MOTION RULES
 
-1. **STAGGER** — elements appear one-by-one (use p(start + i * 0.03) for items)
-2. **CONTINUOUS MOTION** — pulsing glows throughout entire scene
-3. **SPRING PHYSICS** — all entrances use spring(), never linear for reveals
-4. **DRAW-ON** — SVG paths stroke in progressively
-5. **COUNTERS** — numbers count up, never appear instantly
-6. **BREATHING ROOM** — generous spacing between elements
+1. **PROGRESSIVE REVEAL synced to narration** — each visual section appears ONLY when the narrator starts talking about it. If narration segment 2 starts at p(0.18), the visuals for that section start animating at p(0.18), NOT earlier.
+2. **STAGGER within sections** — multiple items within one section appear 0.02–0.03 apart
+3. **CONTINUOUS MOTION** — pulsing glows throughout entire scene
+4. **SPRING PHYSICS** — all entrances use spring(), never linear for reveals
+5. **DRAW-ON** — SVG paths stroke in progressively
+6. **COUNTERS** — numbers count up, never appear instantly
+7. **BREATHING ROOM** — generous spacing between elements
+
+### CRITICAL: Do NOT show all content at once
+The viewer should see the scene build progressively as the narrator speaks. Map EACH visual element to the narration segment that describes it:
+
+\`\`\`tsx
+// Narration [0.0–0.18]: "Umrah consists of five pillars..."
+// → Show title + subtitle at p(0.0)
+
+// Narration [0.18–0.32]: "First, Ihram..."
+// → Show Ihram card at p(0.20)
+
+// Narration [0.32–0.46]: "Second, Tawaf..."
+// → Show Tawaf card at p(0.34)
+
+// Narration [0.46–0.60]: "Third, Sa'y..."
+// → Show Sa'y card at p(0.48)
+\`\`\`
 
 ## CRITICAL: NO OVERLAPPING COMPONENTS
 

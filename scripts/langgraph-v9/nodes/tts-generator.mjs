@@ -31,7 +31,7 @@ function estimateDurationFromText(text) {
 
 export async function ttsGeneratorNode(state) {
   const sceneIndex = state._sceneIndex;
-  const allScenes = state.compiledScenes || [];
+  const allScenes = (state.revisedScenes?.length > 0 ? state.revisedScenes : state.compiledScenes) || [];
 
   // Find scenes that have narration, sorted by scene number
   const withNarration = allScenes

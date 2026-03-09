@@ -53,9 +53,9 @@ console.log(`  Thread:     ${threadId}`);
 console.log(`  SceneCoder: ${MODELS.sceneCoder}`);
 if (tracingEnabled) console.log(`  Tracing:    LangSmith (${LANGSMITH.project})`);
 console.log();
-console.log('  Pipeline: content_planner → [scene_coder × N] (Sonnet 4.6)');
-console.log('            → asset_producer (Nano Banana, max 3 images)');
-console.log('            → [tts_generator × N] → video_compiler');
+console.log(`  Pipeline: content_planner → [scene_coder × N] (${MODELS.sceneCoder})`);
+console.log(`            → [critic_reviser × N] (${MODELS.criticReviser})`);
+console.log('            → asset_producer → [tts_generator × N] → video_compiler');
 console.log();
 
 fs.mkdirSync(outputDir, { recursive: true });

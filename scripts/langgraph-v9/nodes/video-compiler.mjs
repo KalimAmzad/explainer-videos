@@ -345,7 +345,7 @@ function sanitizeTSX(tsx) {
 export async function videoCompilerNode(state) {
   console.log('\n  ── Video Compiler (deterministic) ──');
 
-  const compiledScenes = state.compiledScenes || [];
+  const compiledScenes = (state.revisedScenes?.length > 0 ? state.revisedScenes : state.compiledScenes) || [];
   const narrations = state.narrations || [];
   const theme = state.theme || {};
   const outputDir = state.outputDir;

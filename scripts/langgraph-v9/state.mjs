@@ -36,6 +36,9 @@ export const VideoState = Annotation.Root({
   // Scene Coder (fan-in via concatReducer)
   compiledScenes: Annotation({ reducer: concatReducer, default: () => [] }),
 
+  // Critic-Reviser (fan-in via concatReducer)
+  revisedScenes: Annotation({ reducer: concatReducer, default: () => [] }),
+
   // Asset manifest (fan-in from scene coders)
   assetManifest: Annotation({ reducer: concatReducer, default: () => [] }),
 

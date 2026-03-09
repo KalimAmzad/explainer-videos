@@ -8,13 +8,13 @@
  *   - Code correctness (crash patterns, imports)
  *   - Component suggestions (add missing visual elements)
  *
- * Model: gemini-2.5-flash (fast, capable code reviewer)
+ * Model: minimax/minimax-m2.5 via OpenRouter
  * Input: compiledScenes[i] (TSX + narration from scene coder)
  * Output: updated compiledScenes[i] (improved TSX + narration)
  */
 import fs from 'fs';
 import path from 'path';
-import { ChatAnthropic } from '@langchain/anthropic';
+import { ChatOpenAI } from '@langchain/openai';
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 import { MODELS, KEYS, CANVAS } from '../config.mjs';
 import { buildCriticReviserPrompt } from '../prompts/critic-reviser.mjs';
@@ -116,12 +116,15 @@ export async function criticReviserNode(state) {
     height: CANVAS.height,
   });
 
-  // LLM call — Sonnet for strong code review + creative improvement
-  const model = new ChatAnthropic({
+  // LLM call via OpenRouter — creative review + improvement
+  const model = new ChatOpenAI({
     model: MODELS.criticReviser,
-    apiKey: KEYS.anthropic,
-    maxTokens: 16384,
-    temperature: 0.4, // Lower temp for focused improvements
+    apiKey: KEYS.openrouter,
+    maxTokens: 32768,
+    temperature: 0.4,
+    configuration: {
+      baseURL: 'https://openrouter.ai/api/v1',
+    },
   });
 
   let response;
