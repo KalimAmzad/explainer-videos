@@ -364,48 +364,96 @@ The viewer should see the scene build progressively as the narrator speaks. Map 
 // → Show Sa'y card at p(0.48)
 \`\`\`
 
-## CRITICAL: NO OVERLAPPING COMPONENTS
+## MANDATORY LAYOUT SCAFFOLD — NO EXCEPTIONS
 
-This is the #1 quality issue. Components MUST NOT overlap each other. Follow these rules strictly:
+**ABSOLUTE POSITIONING IS BANNED for content elements.** Only use \`position: 'absolute'\` for:
+- Background glow orbs (decorative, behind content)
+- The progress bar at the very bottom
+- The bottom bar takeaway
 
-### Layout Strategy
-- **Use a SINGLE main layout** per scene: either flexbox column OR absolute positioning with a grid plan. NEVER mix both.
-- **Preferred approach: Flexbox column layout** — stack sections vertically with \`gap\`. This naturally prevents overlaps.
+Everything else MUST use flexbox. This is the ONLY way to prevent overlapping.
+
+### Your component MUST follow this exact structure:
 \`\`\`tsx
-<AbsoluteFill style={{ background: theme.background, padding: '56px 80px 100px 80px', display: 'flex', flexDirection: 'column', gap: 20 }}>
-  {/* Title section — fixed height */}
-  <div style={{ flexShrink: 0 }}>...</div>
-  {/* Main content — takes remaining space */}
-  <div style={{ flex: 1, display: 'flex', gap: 24 }}>...</div>
-  {/* Bottom bar — fixed height */}
-  <div style={{ flexShrink: 0 }}>...</div>
-</AbsoluteFill>
+export const Scene${sceneNumber}: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps, durationInFrames } = useVideoConfig();
+  const p = (pct: number) => Math.round(pct * durationInFrames);
+
+  // ... animation variables ...
+
+  return (
+    <AbsoluteFill style={{ background: '#0f1117' }}>
+      {/* Background glow orbs — ONLY these use absolute positioning */}
+      <div style={{ position: 'absolute', left: '10%', top: '20%', width: 400, height: 400, borderRadius: '50%', background: 'rgba(45,212,191,0.08)', filter: 'blur(80px)' }} />
+
+      {/* MAIN LAYOUT — flexbox column, NO absolute positioning */}
+      <div style={{
+        display: 'flex', flexDirection: 'column',
+        padding: '48px 80px 40px 80px',
+        height: '100%', width: '100%',
+        gap: 16, overflow: 'hidden',
+      }}>
+
+        {/* ROW 1: Title — fixed, never grows */}
+        <div style={{ flexShrink: 0 }}>
+          <h1 style={{ fontSize: 48, fontWeight: 800, margin: 0, lineHeight: 1.2 }}>Title</h1>
+          <p style={{ fontSize: 18, margin: '4px 0 0 0', opacity: 0.6 }}>Subtitle</p>
+        </div>
+
+        {/* ROW 2: Main content — takes ALL remaining space */}
+        <div style={{ flex: 1, display: 'flex', gap: 20, minHeight: 0, overflow: 'hidden' }}>
+          {/* Option A: Two columns */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12, overflow: 'hidden' }}>
+            {/* Left column content */}
+          </div>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12, overflow: 'hidden' }}>
+            {/* Right column content */}
+          </div>
+        </div>
+
+        {/* ROW 3: Bottom bar — fixed, never grows */}
+        <div style={{ flexShrink: 0, padding: '12px 20px', borderRadius: 12, background: 'rgba(45,212,191,0.08)', border: '1px solid rgba(45,212,191,0.15)' }}>
+          <span>Key Takeaway text</span>
+        </div>
+      </div>
+
+      {/* Progress bar — absolute at very bottom */}
+      <div style={{ position: 'absolute', bottom: 0, left: 0, height: 4, background: 'linear-gradient(90deg, #2dd4bf, #6366f1)', width: \`\${progressW}%\` }} />
+
+      {/* Audio */}
+      <Audio src={staticFile('assets/narration_scene${sceneNumber}.wav')} volume={0.9} />
+    </AbsoluteFill>
+  );
+};
 \`\`\`
 
-### If Using Absolute Positioning
-- **Plan a grid on paper first**: divide 1280×720 into zones. Title zone (top 80px), content zone (middle), bottom bar (last 80px).
-- **Never place two elements in the same zone** unless one is inside the other.
-- **Use explicit top/left/width/height** — never rely on content sizing with absolute positioning.
-- **Account for text height**: a line of text at fontSize 24 is ~32px tall. Multi-line text needs proportionally more.
+### Layout Rules (STRICT)
+1. \`overflow: 'hidden'\` on EVERY flex container — prevents content from spilling
+2. \`flex: 1, minHeight: 0\` on the main content area — takes remaining space after title and bottom bar
+3. \`flexShrink: 0\` on title and bottom bar — they keep their size
+4. Cards inside columns use \`flexShrink: 0\` if fixed-size, or \`flex: 1\` if they should share space
+5. **Max 4 cards per column** — if you have 5+ items, use a 2-column layout
+6. **Max 3 columns** side-by-side
+7. SVG illustrations inside flex containers must have explicit \`width\` and \`height\`
+8. Text must use \`overflow: 'hidden', textOverflow: 'ellipsis'\` for long strings
+9. NEVER use \`position: 'absolute'\` or \`position: 'relative'\` with \`top/left\` for content
 
-### Anti-Overlap Checklist
-- [ ] Title + subtitle fit within top 120px
-- [ ] Main content area starts at y=130 minimum, ends at y=620 maximum
-- [ ] Cards/items in a row use \`display: 'flex', gap: 20\` — NOT absolute positions that might collide
-- [ ] Cards/items in a grid never exceed the available width (1280 - 160px margins = 1120px usable)
-- [ ] Bottom bar sits at bottom: 28 and does NOT overlap main content
-- [ ] No card or element exceeds ~280px wide when placing 3+ columns
-- [ ] Sidebar panels (if any) have explicit widths and the main content adjusts accordingly
-- [ ] Labels on charts/diagrams use relative positioning or transform offsets that account for text width
-
-### Common Overlap Mistakes to Avoid
-- ❌ Placing a map/diagram AND a list of cards both in absolute position without reserving separate zones
-- ❌ Cards with dynamic text content overflowing their containers
-- ❌ Multiple absolute-positioned sections with overlapping top/bottom ranges
-- ❌ Right-side panel that starts at left: 700 while left-side content extends beyond that
-- ✅ Split the scene: left column (0–600px) + right column (640–1200px) with 40px gap
-- ✅ Use flexbox row with gap for side-by-side layouts
-- ✅ Use flexbox column with gap for stacked layouts
+### Card Template (use inside flex containers)
+\`\`\`tsx
+<div style={{
+  flexShrink: 0, padding: '14px 18px', borderRadius: 12,
+  background: 'linear-gradient(135deg, rgba(45,212,191,0.12), rgba(45,212,191,0.03))',
+  border: '1px solid rgba(45,212,191,0.2)',
+  opacity: cardSpring, transform: \`translateY(\${(1 - cardSpring) * 30}px)\`,
+}}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+    <span style={{ fontSize: 24 }}>🕋</span>
+    <span style={{ fontSize: 20, fontWeight: 700, color: '#2dd4bf' }}>Card Title</span>
+  </div>
+  <p style={{ fontSize: 14, color: 'rgba(241,245,249,0.7)', margin: '6px 0 0 0' }}>Description text</p>
+</div>
+\`\`\`
 
 ## CRASH PREVENTION
 

@@ -104,26 +104,33 @@ Also verify:
 - Numbers use counting animation (spring + Math.round)
 - Title uses clipPath wipe reveal
 
-### 4. CODE CORRECTNESS
-Check for:
+### 4. LAYOUT — FIX ALL OVERLAPS (CRITICAL)
+This is the most common and worst problem. Scan the code for these patterns:
 
+**BANNED patterns — rewrite if found:**
+- \`position: 'absolute'\` with \`top/left\` on content elements → convert to flexbox
+- \`position: 'relative'\` with \`top/left\` on content → remove, use margin/padding instead
+- Multiple elements with absolute positioning that overlap vertically
+- Content elements WITHOUT \`overflow: 'hidden'\`
+
+**MANDATORY layout structure:**
+- AbsoluteFill wraps everything
+- Inside: single \`<div>\` with \`display: 'flex', flexDirection: 'column', padding, height: '100%', overflow: 'hidden'\`
+- Title section: \`flexShrink: 0\`
+- Main content: \`flex: 1, minHeight: 0, overflow: 'hidden'\`
+- Bottom bar: \`flexShrink: 0\`
+- Cards go INSIDE flex containers with \`gap\`, never absolutely positioned
+- Only background glow orbs and progress bar use absolute positioning
+
+**If the code has overlapping elements, restructure the entire layout using flexbox.**
+
+### 5. CODE CORRECTNESS
+Check for:
 - \`[0, 0]\` interpolate ranges → must be \`[0, Math.max(1, n)]\`
 - spring() without \`frame:\` param → crashes
 - Missing imports (staticFile, Audio, Img)
-- Duplicate CSS keys in style objects
-- CSS string values without quotes: \`fontSize: 2rem\` → \`fontSize: '2rem'\`
-- Audio import from wrong package: must be \`from '@remotion/media'\`
-- Elements at identical absolute positions → overlap
+- Audio import: must be \`from '@remotion/media'\`
 - google-fonts path with hyphens → must be PascalCase
-
-### 5. MISSING COMPONENTS
-Consider adding if missing:
-
-- Bottom bar (MANDATORY) at p(0.80) with emoji + takeaway
-- Progress bar (MANDATORY) at bottom, full width
-- Top accent gradient strip (3px)
-- Background glow orbs (2-3, pulsing)
-- Draw-on underlines beneath titles/key terms
 
 ### 6. CONTENT COMPLETENESS
 Verify ALL content_points from the spec are visually represented. If any are missing, add them.
