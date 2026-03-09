@@ -1,9 +1,9 @@
 /**
- * Node 2: Research Planner — Haiku plans WHAT to teach.
+ * Node 2: Research Planner — GPT-5.4 plans WHAT to teach.
  * Purely educational content planning: scenes, teaching points, narration.
  * No layout, no assets, no positions, no animations.
  */
-import { ChatAnthropic } from '@langchain/anthropic';
+import { ChatOpenAI } from '@langchain/openai';
 import { HumanMessage } from '@langchain/core/messages';
 import { MODELS, KEYS } from '../config.mjs';
 import { buildResearchPlannerPrompt } from '../prompts/research-planner.mjs';
@@ -12,9 +12,9 @@ export async function researchPlannerNode(state) {
   console.log('\n  ── Research Planner ──');
   console.log(`    Topic: ${state.topic}`);
 
-  const model = new ChatAnthropic({
+  const model = new ChatOpenAI({
     model: MODELS.researchPlanner,
-    anthropicApiKey: KEYS.anthropic,
+    apiKey: KEYS.openai,
     maxTokens: 4096,
   });
 

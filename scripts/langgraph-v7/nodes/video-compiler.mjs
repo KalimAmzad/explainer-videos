@@ -406,6 +406,21 @@ function sanitizeTSX(tsx) {
     }
   );
 
+  // Fix spring() calls missing the required 'frame' property
+  out = out.replace(/spring\(\s*\{\s*\n?\s*fps\s*,?\s*\n?\s*\}\s*\)/g, 'spring({ frame: Math.max(0, frame), fps })');
+  out = out.replace(/spring\(\s*\{\s*fps\s*\}\s*\)/g, 'spring({ frame: Math.max(0, frame), fps })');
+
+  // Remove mapRange from @remotion/animation-utils import (not exported by that package)
+  out = out.replace(/,\s*mapRange/g, '').replace(/mapRange,\s*/g, '');
+  out = out.replace(/import\s*\{\s*\}\s*from\s*'@remotion\/animation-utils';?\n?/g, '');
+  // If mapRange still used, inject a local polyfill after the last import line
+  if (out.includes('mapRange(')) {
+    const polyfill = `\nconst mapRange = (v: number, fL: number, fH: number, tL: number, tH: number) =>\n  interpolate(v, [fL, Math.max(fL + 0.001, fH)], [tL, tH], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });\n`;
+    const lastImport = out.lastIndexOf('\nimport ');
+    const insertAt = out.indexOf('\n', lastImport + 1) + 1;
+    out = out.slice(0, insertAt) + polyfill + out.slice(insertAt);
+  }
+
   // Remove duplicate keys in style objects (keep last occurrence)
   out = out.replace(/style=\{\{([\s\S]*?)\}\}/g, (match, body) => {
     const lines = body.split('\n');

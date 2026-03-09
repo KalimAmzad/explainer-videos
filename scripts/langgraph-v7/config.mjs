@@ -23,16 +23,17 @@ const env = loadEnv();
 
 export const MODELS = {
   themeDesigner:   'claude-haiku-4-5-20251001',
-  researchPlanner: 'claude-haiku-4-5-20251001',
+  researchPlanner: 'gpt-5.4',         // OpenAI GPT-5.4
   assetSvgGen:     'claude-haiku-4-5-20251001',
   imageGen:        'gemini-3.1-flash-image-preview',
-  sceneComposer:   'gemini-3.1-pro-preview', // Gemini flash-lite for scene composition
-  tts:             'gemini-2.5-flash-preview-tts',     // Gemini TTS model
+  sceneComposer:   'gpt-5.4',         // OpenAI GPT-5.4
+  tts:             'gemini-2.5-flash-preview-tts',
 };
 
 export const KEYS = {
   gemini:    env.GEMINI_API_KEY    || process.env.GEMINI_API_KEY,
   anthropic: env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY,
+  openai:    env.OPENAI_API_KEY    || process.env.OPENAI_API_KEY,
 };
 
 export const LANGSMITH = {
@@ -80,6 +81,7 @@ export function validateKeys(nodes = ['anthropic']) {
   const missing = [];
   if (nodes.includes('gemini') && !KEYS.gemini) missing.push('GEMINI_API_KEY');
   if (nodes.includes('anthropic') && !KEYS.anthropic) missing.push('ANTHROPIC_API_KEY');
+  if (nodes.includes('openai') && !KEYS.openai) missing.push('OPENAI_API_KEY');
   if (missing.length) throw new Error(`Missing API keys in .env: ${missing.join(', ')}`);
 }
 

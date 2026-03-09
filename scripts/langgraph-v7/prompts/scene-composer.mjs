@@ -64,8 +64,8 @@ import { slide } from '@remotion/transitions/slide';
 import { wipe } from '@remotion/transitions/wipe';
 import { flip } from '@remotion/transitions/flip';
 
-// Animation utilities
-import { mapRange, interpolateStyles } from '@remotion/animation-utils';
+// Animation utilities (only interpolateStyles is available — do NOT import mapRange)
+import { interpolateStyles } from '@remotion/animation-utils';
 
 // Google Fonts — ALWAYS capitalize the font name in the import path
 import { loadFont as loadInter } from '@remotion/google-fonts/Inter';         // NOT /inter
@@ -214,14 +214,6 @@ Canvas: ${width}×${height}. Safe zone: left≥80, right≤${width-80}, top≥60
 </div>
 
 // DO NOT import or use AnimatedEmoji from @remotion/animated-emoji
-\`\`\`
-
-### mapRange (animation-utils)
-\`\`\`tsx
-// Map frame ranges to values — like interpolate but more readable
-import { mapRange } from '@remotion/animation-utils';
-
-const opacity = mapRange(frame, t(0), Math.max(t(0)+1, t(0.5)), 0, 1, 'clamp');
 \`\`\`
 
 ### Google Fonts
@@ -459,6 +451,8 @@ const statS = spring({ frame: Math.max(0, frame - t(1)), fps, config: { damping:
 | Export name | \`export const Scene${sceneNumber}\` | any other name |
 | Emoji | \`<span style={{fontSize:'2.5rem'}}>🔥</span>\` | \`<AnimatedEmoji .../>\` (webm CDN fails) |
 | Arrow fn params | \`items.map((item: {a:string}) => ...)\` | \`items.map((item) => ...)\` implicit any |
+| spring() call | always include \`frame:\` e.g. \`spring({ frame, fps })\` | \`spring({ fps })\` — frame is required |
+| mapRange | use \`interpolate(v,[fL,fH],[tL,tH],{extrapolateLeft:'clamp'...})\` | \`mapRange\` — NOT exported from animation-utils |
 | Stagger layout | each card: \`top: 200 + i * cardHeight\` | all cards at same top (overlap!) |
 | Right panel | real content (icons, stats, text) | empty colored rectangles |
 | Bottom half | content in y:400–660 range | leaving bottom 40% blank |
