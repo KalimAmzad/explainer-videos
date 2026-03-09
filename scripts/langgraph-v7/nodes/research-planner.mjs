@@ -1,11 +1,11 @@
 /**
- * Node 2: Research Planner — GPT-5.4 plans WHAT to teach.
+ * Node 2: Research Planner — Kimi K2.5 via OpenRouter plans WHAT to teach.
  * Purely educational content planning: scenes, teaching points, narration.
  * No layout, no assets, no positions, no animations.
  */
 import { ChatOpenAI } from '@langchain/openai';
 import { HumanMessage } from '@langchain/core/messages';
-import { MODELS, KEYS } from '../config.mjs';
+import { MODELS, KEYS, OPENROUTER_BASE_URL } from '../config.mjs';
 import { buildResearchPlannerPrompt } from '../prompts/research-planner.mjs';
 
 export async function researchPlannerNode(state) {
@@ -14,7 +14,8 @@ export async function researchPlannerNode(state) {
 
   const model = new ChatOpenAI({
     model: MODELS.researchPlanner,
-    apiKey: KEYS.openai,
+    apiKey: KEYS.openrouter,
+    configuration: { baseURL: OPENROUTER_BASE_URL },
     maxTokens: 4096,
   });
 

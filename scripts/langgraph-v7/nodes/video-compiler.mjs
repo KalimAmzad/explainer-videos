@@ -244,15 +244,14 @@ function copyTemplate(destDir) {
     throw new Error(`Remotion template not found at: ${TEMPLATE_DIR}`);
   }
 
-  // Copy entire template recursively
+  // Copy template (skip node_modules — symlinked below, and skip scene stubs / assets)
   fs.cpSync(TEMPLATE_DIR, destDir, {
     recursive: true,
     force: true,
     filter: (src) => {
       const rel = path.relative(TEMPLATE_DIR, src);
-      // Skip template scene stubs (pipeline writes real scenes)
+      if (rel === 'node_modules' || rel.startsWith('node_modules/')) return false;
       if (rel.startsWith('src/scenes') && rel !== 'src/scenes') return false;
-      // Skip public/assets — narrations + generated assets already live there
       if (rel.startsWith('public/assets') && rel !== 'public/assets') return false;
       return true;
     },

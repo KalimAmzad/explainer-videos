@@ -10,6 +10,7 @@
 import fs from 'fs';
 import path from 'path';
 import { ChatOpenAI } from '@langchain/openai';
+import { OPENROUTER_BASE_URL } from '../config.mjs';
 import { HumanMessage, SystemMessage, ToolMessage } from '@langchain/core/messages';
 import { tool } from '@langchain/core/tools';
 import { z } from 'zod';
@@ -24,11 +25,11 @@ function extractTSX(text) {
   if (!text) return '';
   let code = text.trim();
 
-  // Strip markdown code fences
-  const fence = code.match(/```(?:tsx|typescript|ts|jsx|react)?\s*\n([\s\S]*?)\n```/);
+  // Try code fence with any language tag (greedy — handles truncated closing fences)
+  const fence = code.match(/```(?:tsx|typescript|typescriptreact|ts|jsx|react|js|javascript)?\s*\n([\s\S]+?)(?:\n```|$)/);
   if (fence) return fence[1].trim();
 
-  // Strip any preamble before the first import/comment/export
+  // No fence — strip any preamble before first import/comment/export
   const importIdx = code.search(/^(?:import|\/\*\*?|\/\/|export)/m);
   if (importIdx > 0) code = code.slice(importIdx).trim();
 
@@ -252,7 +253,8 @@ export async function sceneComposerNode(state) {
   // ReAct agent loop
   const model = new ChatOpenAI({
     model: MODELS.sceneComposer,
-    apiKey: KEYS.openai,
+    apiKey: KEYS.openrouter,
+    configuration: { baseURL: OPENROUTER_BASE_URL },
     maxTokens: 16384,
     temperature: 0.7,
   }).bindTools(tools);
