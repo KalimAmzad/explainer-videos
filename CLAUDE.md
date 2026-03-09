@@ -121,47 +121,177 @@ To convert HTML to MP4 (uses Playwright + ffmpeg):
 npm run capture -- output/video.html 60
 ```
 
-## LangGraph Pipeline
+## LangGraph Pipeline v3 (Legacy — SVG+GSAP in HTML)
 
-An agentic alternative to the sequential shell pipeline. Uses LangGraph StateGraph with 6 nodes, tool-calling, and checkpointing.
+Uses LangGraph StateGraph with 6 nodes for single-HTML output.
 
-### Running
 ```bash
 npm run langgraph -- "Topic Name" --duration=60 --audience="target audience"
 ```
 
+Key files: `scripts/langgraph/`
+
+## LangGraph Pipeline v7 (Legacy — Remotion + ReAct Scene Composer)
+
+Replaced by v8. Uses a ReAct agent (scene_composer) with tool calls for asset sourcing + TSX generation in a single loop.
+
+### Running
+```bash
+npm run langgraph7 -- "Topic Name" --duration=60 --scenes=5 --audience="general"
+```
+
 ### Architecture
 ```
-START → content_research → asset_agent ⇄ asset_tools → asset_decomposition → animation → playback → quality_review → END
+START → theme_designer → research_planner → scene_designer
+→ [asset_generator × M] → merge_assets
+→ [narration_generator × N] → merge_narrations
+→ [scene_writer × N] → merge_scenes
+→ video_compiler → END
 ```
 
-### Nodes
-1. **Content Research** — Gemini generates comprehensive video blueprint with layout, timing, animation sequence
-2. **Asset Sourcing Agent** — ReAct loop: Icons8 search + download, Gemini SVG generation, sketchy conversion
-3. **Asset Decomposition** — Gemini Vision decomposes complex assets into animatable SVG elements
-4. **Animation** — Deterministic layout computation + GSAP timeline code generation
-5. **Playback** — HTML assembly with enhanced controls (speed, scene jumps, keyboard shortcuts, fullscreen)
-6. **Quality Review** — LLM reviews HTML for common issues (overlaps, timing gaps, off-canvas)
+### Nodes (10 total: 6 LLM + 4 deterministic)
+1. **Theme Designer** (Haiku) — Color palette, fonts, stroke width
+2. **Research Planner** (Haiku) — Scene breakdown, key concepts, narration text
+3. **Scene Designer** (Haiku) — Template selection, asset enumeration, sync blocks, animation assignments
+4. **Asset Generator** (Haiku/Gemini, fan-out × M) — SVG via Haiku, images via Gemini `gemini-3.1-flash-image-preview`, icons via Icons8
+5. **Narration Generator** (Gemini TTS, fan-out × N) — Per-scene TTS audio
+6. **Scene Writer** (Sonnet, fan-out × N) — LLM writes complete Remotion TSX per scene with proper animations
+7. **Video Compiler** (deterministic) — Scaffolds Remotion project, Root.tsx, audio integration
 
-### Checkpointing
-Uses MemorySaver for resume-from-failure. Re-run with `--thread=<id>` to resume from last checkpoint.
+### Key Design Principles
+- LLMs do **classification** (template selection, animation assignment) AND **code generation** (Remotion TSX)
+- 12 pre-built CSS layout templates handle spatial positioning
+- Pre-built animation components (WipeReveal, DrawOnSVG, FadeScale, FadeIn, Typewriter)
+- Narration audio synced to scene animations
+- Scene Writer LLM has full Remotion API reference in prompt
+
+### Models
+| Node | Model | Purpose |
+|------|-------|---------|
+| Theme/Research/Scene Design | `claude-haiku-4-5` | Classification, planning |
+| SVG Generation | `claude-haiku-4-5` | Generate SVG with sub-elements |
+| Image Generation | `gemini-3.1-flash-image-preview` | AI illustrations (Nano Banana) |
+| Narration TTS | `gemini-2.5-flash-preview-tts` | Text-to-speech audio |
+| Scene Writer | `claude-sonnet-4-6` | Write Remotion TSX code |
 
 ### Key Files
 ```
-scripts/langgraph/
+scripts/langgraph-v7/
 ├── index.mjs          — CLI entry point
-├── graph.mjs          — StateGraph definition
-├── state.mjs          — State schema (Annotation)
-├── nodes/             — 6 node implementations
-├── tools/             — Icons8, SVG generator, sketchy converter
-├── prompts/           — System prompts for LLM nodes
-└── lib/               — Shared utilities (re-exports pipeline gemini-client)
+├── graph.mjs          — StateGraph (10 nodes, 3 fan-out stages)
+├── state.mjs          — State schema (Annotation + concatReducer)
+├── config.mjs         — Models, API keys, canvas config
+├── nodes/
+│   ├── theme-designer.mjs
+│   ├── research-planner.mjs
+│   ├── scene-designer.mjs
+│   ├── asset-generator.mjs      — Fan-out per asset (SVG/image/icon)
+│   ├── narration-generator.mjs  — Fan-out per scene (Gemini TTS)
+│   ├── scene-writer.mjs         — Fan-out per scene (Sonnet writes TSX)
+│   └── video-compiler.mjs       — Scaffold Remotion project + Root.tsx
+├── prompts/
+│   ├── theme-designer.mjs
+│   ├── research-planner.mjs
+│   ├── scene-designer.mjs       — Template catalog + sync modes
+│   ├── asset-svg-gen.mjs
+│   └── scene-writer.mjs         — Remotion API reference + animation patterns
+└── remotion-template/            — Pre-built Remotion project template
+    └── src/
+        ├── layouts/              — 12 layout templates (CSS flexbox)
+        ├── animations/           — 5 animation components
+        ├── components/           — StyledText, SVGAsset, ImageAsset
+        └── ThemeContext.tsx       — React context for theme
+```
+
+### Output
+```
+output/{topic-slug}/
+├── remotion/                     — Complete Remotion project
+│   ├── src/scenes/Scene{N}.tsx   — LLM-generated scene code
+│   ├── public/assets/            — SVGs, PNGs, narration WAVs
+│   └── package.json
+├── scene-designs.json            — Debug: scene designer output
+└── edit-manifest.json            — Edit metadata
 ```
 
 ### Dependencies
-`@langchain/google`, `@langchain/core`, `@langchain/langgraph`, `zod` (+ existing: sharp, potrace, svg2roughjs)
+`@langchain/langgraph`, `@anthropic-ai/sdk`, `@google/genai`, `remotion`, `@remotion/cli`, `@remotion/paths`, `@remotion/google-fonts`
 
-See `docs/langgraph-implementation-plan.md` for full architecture details.
+## LangGraph Pipeline v8 (Active — Production Pipeline)
+
+Replaces v7. Separates creative decisions (storyboard) from execution (asset fetching + code gen). ~78% fewer tokens than v7.
+
+### Running
+```bash
+npm run langgraph8 -- "Topic Name" --duration=60 --scenes=5 --audience="general"
+```
+
+### Architecture
+```
+START → content_planner (Haiku: theme + content)
+      → storyboard_designer (GPT-5.2: visual blueprint)
+      → [narration_gen × N + asset_producer × M] (parallel, no LLM for assets)
+      → merge_production
+      → [scene_coder × N] (Kimi K2.5, single-pass TSX, NO tools)
+      → merge_scenes
+      → video_compiler (deterministic)
+      → END
+```
+
+### Nodes (8 total: 3 LLM + 1 TTS + 4 deterministic)
+1. **Content Planner** (Haiku) — Theme design + scene breakdown + narration scripts
+2. **Storyboard Designer** (GPT-5.2) — Visual blueprint: layout, assets, animations per scene
+3. **Asset Producer** (fan-out × M, NO LLM) — Icons8 HTTP + Gemini image gen
+4. **Narration Generator** (Gemini TTS, fan-out × N) — Per-scene TTS audio
+5. **Scene Coder** (Kimi K2.5 via OpenRouter, fan-out × N) — Single-pass TSX from storyboard spec
+6. **Video Compiler** (deterministic) — Scaffold Remotion project
+
+### Models
+| Node | Model | Purpose |
+|------|-------|---------|
+| Content Planner | `claude-haiku-4-5` | Theme + content planning |
+| Storyboard Designer | `gpt-5.2` | Visual blueprint (layout, assets, animations) |
+| Asset Producer | No LLM | Icons8 HTTP API + Gemini image gen |
+| Narration TTS | `gemini-2.5-flash-preview-tts` | Text-to-speech audio |
+| Scene Coder | `moonshotai/kimi-k2.5` | Single-pass TSX generation |
+
+### Key Design Principles
+- **Storyboard locks creative decisions** before expensive downstream work
+- **Asset sourcing is deterministic** — no LLM tokens wasted on tool calls
+- **Scene coding is single-pass** — no agent loop, no tools, just TSX from spec
+- **True parallelism** — narration + assets run simultaneously
+- **Partial retry** — re-run one scene_coder without re-running entire pipeline
+
+### Key Files
+```
+scripts/langgraph-v8/
+├── index.mjs          — CLI entry point
+├── graph.mjs          — StateGraph (8 nodes, 2 fan-out stages)
+├── state.mjs          — State schema
+├── config.mjs         — Models, API keys
+├── nodes/
+│   ├── content-planner.mjs      — Haiku: theme + content (2 calls)
+│   ├── storyboard-designer.mjs  — GPT-5.2: visual blueprint
+│   ├── asset-producer.mjs       — HTTP: Icons8 + Gemini (no LLM)
+│   ├── narration-generator.mjs  — Gemini TTS
+│   ├── scene-coder.mjs          — Kimi K2.5: single-pass TSX
+│   └── video-compiler.mjs       — Deterministic: Remotion scaffold
+└── prompts/
+    ├── content-planner.mjs
+    ├── storyboard-designer.mjs
+    └── scene-coder.mjs
+```
+
+### Output
+```
+output/{topic-slug}-v8-run{N}/
+├── remotion/                     — Complete Remotion project
+│   ├── src/scenes/Scene{N}.tsx   — LLM-generated scene code
+│   ├── public/assets/            — Icons, PNGs, narration WAVs
+│   └── package.json
+├── storyboard.json               — Debug: storyboard designer output
+└── edit-manifest.json            — Edit metadata
+```
 
 ## Reference
 Full system prompt with all style rules, animation patterns, and code examples:
