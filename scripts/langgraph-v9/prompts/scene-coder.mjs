@@ -34,9 +34,13 @@ Think in this order:
 
 ## YOUR OUTPUT FORMAT
 
-Your response MUST contain exactly two sections:
+Your response MUST contain these sections in order (asset manifest is OPTIONAL):
 
 \`\`\`
+---ASSET_MANIFEST---
+[
+  {"id": "img_scene${sceneNumber}_hero", "type": "image", "prompt": "Detailed description of the illustration to generate..."}
+]
 ---NARRATION_JSON---
 [
   {"text": "Narration for section 1...", "startPct": 0.0, "endPct": 0.18},
@@ -114,9 +118,66 @@ import { Audio } from '@remotion/media';
 import { loadFont } from '@remotion/google-fonts/Inter';  // PascalCase, no hyphens
 \`\`\`
 
-## DRAWING EVERYTHING IN CODE
+## VISUAL ASSET STRATEGY — HYBRID APPROACH
 
-Draw ALL visuals using React/SVG/CSS — no external images or icons.
+You have THREE tools for visuals. Use the right one for each element:
+
+### 1. CODE-DRAWN (React/SVG/CSS) — Primary tool, use for MOST things
+Charts, graphs, formulas, flow diagrams, counters, progress rings, timelines, tables, text cards, icons, symbols, geometric patterns, arrows, simple illustrations.
+**Draw these inline in your TSX. This is your main weapon.**
+
+### 2. INLINE SVG ILLUSTRATIONS — For icons, symbols, and simple drawings
+Draw SVG icons/illustrations directly in your TSX. These are theme-matched and can be stroke-animated.
+\`\`\`tsx
+{/* Mosque icon — draw it yourself for perfect style match */}
+<svg width={80} height={80} viewBox="0 0 80 80" fill="none">
+  <path d="M40 10 C30 10 20 25 20 35 L20 65 L60 65 L60 35 C60 25 50 10 40 10Z"
+    stroke={theme.palette.primary} strokeWidth={2}
+    strokeDasharray={200} strokeDashoffset={interpolate(frame, [p(0.2), p(0.4)], [200, 0],
+    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })} />
+  <circle cx={40} cy={8} r={4} fill={theme.palette.secondary}
+    opacity={interpolate(frame, [p(0.35), p(0.4)], [0, 1],
+    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })} />
+</svg>
+\`\`\`
+
+### 3. AI-GENERATED IMAGES — For complex real-world scenes (MAX 1 PER SCENE)
+When a scene needs a complex real-world visual that code can't replicate well (e.g., aerial view of Kaaba, human anatomy, laboratory scene, historical event), request ONE AI-generated illustration.
+
+**How to request:** Add an entry to the ASSET_MANIFEST section:
+\`\`\`json
+[{"id": "img_scene${sceneNumber}_hero", "type": "image", "prompt": "Flat illustration of pilgrims in white ihram garments performing Tawaf around the Kaaba, aerial view, educational infographic style, dark background, teal and gold accent colors, clean vector art"}]
+\`\`\`
+
+**How to use in TSX:** Reference via \`staticFile\` + use \`<Img>\` from remotion:
+\`\`\`tsx
+import { Img } from 'remotion';
+// ...
+const heroSpring = spring({ frame: Math.max(0, frame - p(0.15)), fps, config: { damping: 20, stiffness: 180 } });
+<Img src={staticFile('assets/img_scene${sceneNumber}_hero.png')} style={{
+  width: 400, height: 300, objectFit: 'contain', borderRadius: 16,
+  opacity: heroSpring, transform: \`scale(\${0.9 + heroSpring * 0.1})\`,
+}} />
+\`\`\`
+
+**RULES for AI images:**
+- Maximum 1 image per scene, 3 across the entire video
+- Only use when code-drawn visuals genuinely can't represent the concept
+- The prompt MUST specify: style (flat illustration/infographic), colors (matching theme), dark background
+- ID format: \`img_scene{N}_descriptive_name\`
+- If you don't need an image, omit the ---ASSET_MANIFEST--- section entirely
+
+### When to use which:
+| Visual need | Tool |
+|-------------|------|
+| Charts, graphs, data viz | Code-drawn (React/SVG/CSS) |
+| Icons, symbols, arrows | Inline SVG (stroke-animated) |
+| Flow diagrams, timelines | Code-drawn with SVG arrows |
+| Formulas, equations | Code-drawn (monospace text) |
+| Geometric/Islamic patterns | Inline SVG |
+| Person doing Tawaf, Kaaba | AI image (Nano Banana) |
+| Cell cross-section, anatomy | AI image (Nano Banana) |
+| Process steps, numbered lists | Code-drawn cards |
 
 ### Bar Charts
 \`\`\`tsx
@@ -283,8 +344,50 @@ const progressW = interpolate(frame, [0, durationInFrames], [0, 100],
 3. **SPRING PHYSICS** — all entrances use spring(), never linear for reveals
 4. **DRAW-ON** — SVG paths stroke in progressively
 5. **COUNTERS** — numbers count up, never appear instantly
-6. **NO OVERLAPS** — use flex with gap, or carefully spaced absolute positions
-7. **BREATHING ROOM** — generous spacing between elements
+6. **BREATHING ROOM** — generous spacing between elements
+
+## CRITICAL: NO OVERLAPPING COMPONENTS
+
+This is the #1 quality issue. Components MUST NOT overlap each other. Follow these rules strictly:
+
+### Layout Strategy
+- **Use a SINGLE main layout** per scene: either flexbox column OR absolute positioning with a grid plan. NEVER mix both.
+- **Preferred approach: Flexbox column layout** — stack sections vertically with \`gap\`. This naturally prevents overlaps.
+\`\`\`tsx
+<AbsoluteFill style={{ background: theme.background, padding: '56px 80px 100px 80px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+  {/* Title section — fixed height */}
+  <div style={{ flexShrink: 0 }}>...</div>
+  {/* Main content — takes remaining space */}
+  <div style={{ flex: 1, display: 'flex', gap: 24 }}>...</div>
+  {/* Bottom bar — fixed height */}
+  <div style={{ flexShrink: 0 }}>...</div>
+</AbsoluteFill>
+\`\`\`
+
+### If Using Absolute Positioning
+- **Plan a grid on paper first**: divide 1280×720 into zones. Title zone (top 80px), content zone (middle), bottom bar (last 80px).
+- **Never place two elements in the same zone** unless one is inside the other.
+- **Use explicit top/left/width/height** — never rely on content sizing with absolute positioning.
+- **Account for text height**: a line of text at fontSize 24 is ~32px tall. Multi-line text needs proportionally more.
+
+### Anti-Overlap Checklist
+- [ ] Title + subtitle fit within top 120px
+- [ ] Main content area starts at y=130 minimum, ends at y=620 maximum
+- [ ] Cards/items in a row use \`display: 'flex', gap: 20\` — NOT absolute positions that might collide
+- [ ] Cards/items in a grid never exceed the available width (1280 - 160px margins = 1120px usable)
+- [ ] Bottom bar sits at bottom: 28 and does NOT overlap main content
+- [ ] No card or element exceeds ~280px wide when placing 3+ columns
+- [ ] Sidebar panels (if any) have explicit widths and the main content adjusts accordingly
+- [ ] Labels on charts/diagrams use relative positioning or transform offsets that account for text width
+
+### Common Overlap Mistakes to Avoid
+- ❌ Placing a map/diagram AND a list of cards both in absolute position without reserving separate zones
+- ❌ Cards with dynamic text content overflowing their containers
+- ❌ Multiple absolute-positioned sections with overlapping top/bottom ranges
+- ❌ Right-side panel that starts at left: 700 while left-side content extends beyond that
+- ✅ Split the scene: left column (0–600px) + right column (640–1200px) with 40px gap
+- ✅ Use flexbox row with gap for side-by-side layouts
+- ✅ Use flexbox column with gap for stacked layouts
 
 ## CRASH PREVENTION
 
@@ -330,13 +433,16 @@ ${JSON.stringify(theme, null, 2)}
 ### Canvas: ${width}×${height} at ${fps} fps
 
 ### Your Workflow
-1. **Plan visual sections** — What components does this scene need? (title, diagram, chart, formula, table, summary...)
-2. **Code each section** in React/SVG/CSS — draw everything in code, no external images
-3. **Assign proportional timing** — each section gets a % range (e.g., title: 0–0.12, diagram: 0.12–0.5, chart: 0.5–0.75, bottom bar: 0.80–0.95)
-4. **Write narration per section** — what the narrator says while each visual appears (~2.5 words/sec)
+1. **Plan visual sections** — What components does this scene need? (title, diagram, chart, hero image, formula, summary...)
+2. **Decide asset needs** — Does this scene need an AI-generated hero image? If yes, add to ASSET_MANIFEST. If not, skip it.
+3. **Code each section** in React/SVG/CSS — draw icons/symbols as inline SVG, use \`<Img>\` for any requested AI images
+4. **Assign proportional timing** — each section gets a % range
+5. **Write narration per section** — what the narrator says while each visual appears (~2.5 words/sec)
 
-### Output
+### Output (asset manifest is optional — only include if you need an AI image)
 \`\`\`
+---ASSET_MANIFEST---
+[{"id": "img_scene${sceneNumber}_hero", "type": "image", "prompt": "Detailed prompt..."}]
 ---NARRATION_JSON---
 [{"text": "...", "startPct": 0.0, "endPct": 0.18}, ...]
 ---TSX_CODE---

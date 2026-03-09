@@ -345,8 +345,7 @@ function sanitizeTSX(tsx) {
 export async function videoCompilerNode(state) {
   console.log('\n  ── Video Compiler (deterministic) ──');
 
-  // Use revised scenes if critic ran, otherwise use first draft
-  const compiledScenes = (state.revisedScenes?.length > 0 ? state.revisedScenes : state.compiledScenes) || [];
+  const compiledScenes = state.compiledScenes || [];
   const narrations = state.narrations || [];
   const theme = state.theme || {};
   const outputDir = state.outputDir;

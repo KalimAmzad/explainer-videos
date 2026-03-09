@@ -25,15 +25,16 @@ function loadEnv() {
 const env = loadEnv();
 
 export const MODELS = {
-  contentPlanner: 'claude-haiku-4-5-20251001',   // Scene breakdown only
-  sceneCoder:     'gemini-3.1-flash-lite-preview', // Creative brain: plan + code + narration
-  criticReviser:  'claude-sonnet-4-6',              // Creative director: review + improve
+  contentPlanner: 'claude-haiku-4-5-20251001',    // Scene breakdown only
+  sceneCoder:     'minimax/minimax-m2.5',          // Creative brain via OpenRouter
+  imageGen:       'gemini-3.1-flash-image-preview', // Nano Banana — hero illustrations
   tts:            'gemini-2.5-flash-preview-tts',  // TTS from scene coder's narration script
 };
 
 export const KEYS = {
-  gemini:    env.GEMINI_API_KEY    || process.env.GEMINI_API_KEY,
-  anthropic: env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY,
+  gemini:     env.GEMINI_API_KEY     || process.env.GEMINI_API_KEY,
+  anthropic:  env.ANTHROPIC_API_KEY  || process.env.ANTHROPIC_API_KEY,
+  openrouter: env.OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY,
 };
 
 export const LANGSMITH = {
@@ -55,6 +56,7 @@ export function validateKeys(nodes = ['anthropic']) {
   const missing = [];
   if (nodes.includes('gemini') && !KEYS.gemini) missing.push('GEMINI_API_KEY');
   if (nodes.includes('anthropic') && !KEYS.anthropic) missing.push('ANTHROPIC_API_KEY');
+  if (nodes.includes('openrouter') && !KEYS.openrouter) missing.push('OPENROUTER_API_KEY');
   if (missing.length) throw new Error(`Missing API keys in .env: ${missing.join(', ')}`);
 }
 

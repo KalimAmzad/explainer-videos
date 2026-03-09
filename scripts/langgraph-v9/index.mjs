@@ -10,7 +10,7 @@ import path from 'path';
 import { setupLangSmith, validateKeys, LANGSMITH, PATHS, MODELS } from './config.mjs';
 
 const tracingEnabled = setupLangSmith();
-validateKeys(['anthropic', 'gemini']);
+validateKeys(['anthropic', 'gemini', 'openrouter']);
 
 const { buildGraph } = await import('./graph.mjs');
 
@@ -51,13 +51,11 @@ console.log(`  Audience:   ${audience || 'general audience'}`);
 console.log(`  Output:     ${outputDir}`);
 console.log(`  Thread:     ${threadId}`);
 console.log(`  SceneCoder: ${MODELS.sceneCoder}`);
-console.log(`  Critic:     ${MODELS.criticReviser}`);
 if (tracingEnabled) console.log(`  Tracing:    LangSmith (${LANGSMITH.project})`);
 console.log();
-console.log('  Pipeline: content_planner → [scene_coder × N] (first draft)');
-console.log('            → [critic_reviser × N] (creative director)');
-console.log('            → [tts_generator × N] (from revised narration)');
-console.log('            → video_compiler');
+console.log('  Pipeline: content_planner → [scene_coder × N] (Sonnet 4.6)');
+console.log('            → asset_producer (Nano Banana, max 3 images)');
+console.log('            → [tts_generator × N] → video_compiler');
 console.log();
 
 fs.mkdirSync(outputDir, { recursive: true });

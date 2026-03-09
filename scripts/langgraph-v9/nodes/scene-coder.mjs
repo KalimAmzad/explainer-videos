@@ -7,19 +7,12 @@
  *   3. Writes narration script matched to visuals
  *   4. Outputs complete Remotion TSX + narration JSON
  *
- * Model: gemini-3.1-pro-preview (needs strong reasoning + code gen)
+ * Model: configurable via OpenRouter (default: minimax/minimax-m2.5)
  * No tools, no agent loop — single LLM call.
- *
- * Output: {
- *   compiledScenes: [{
- *     sceneNumber, tsxContent, durationFrames,
- *     narrationSegments: [{text, startSec, endSec}]
- *   }]
- * }
  */
 import fs from 'fs';
 import path from 'path';
-import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
+import { ChatOpenAI } from '@langchain/openai';
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 import { MODELS, KEYS, CANVAS } from '../config.mjs';
 import { buildSceneCoderPrompt } from '../prompts/scene-coder.mjs';
@@ -34,7 +27,7 @@ import { buildSceneCoderPrompt } from '../prompts/scene-coder.mjs';
  *   ...
  */
 function parseSceneCoderOutput(text) {
-  if (!text) return { narration: [], tsx: '' };
+  if (!text) return { narration: [], assets: [], tsx: '' };
 
   let clean = text.trim();
 
@@ -47,21 +40,37 @@ function parseSceneCoderOutput(text) {
   }
 
   // Try to split on markers
+  const assetMarker = '---ASSET_MANIFEST---';
   const narrationMarker = '---NARRATION_JSON---';
   const tsxMarker = '---TSX_CODE---';
 
+  const assetIdx = clean.indexOf(assetMarker);
   const narrationIdx = clean.indexOf(narrationMarker);
   const tsxIdx = clean.indexOf(tsxMarker);
 
+  let assets = [];
   let narration = [];
   let tsx = '';
 
+  // Parse asset manifest if present
+  if (assetIdx !== -1) {
+    const assetEnd = narrationIdx !== -1 ? narrationIdx : tsxIdx !== -1 ? tsxIdx : clean.length;
+    let assetBlock = clean.slice(assetIdx + assetMarker.length, assetEnd).trim();
+    if (assetBlock.startsWith('```')) {
+      assetBlock = assetBlock.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '');
+    }
+    try {
+      assets = JSON.parse(assetBlock);
+    } catch (e) {
+      console.warn(`    Warning: could not parse asset manifest: ${e.message}`);
+      assets = [];
+    }
+  }
+
   if (narrationIdx !== -1 && tsxIdx !== -1) {
-    // Both markers found — parse structured output
     const narrationBlock = clean.slice(narrationIdx + narrationMarker.length, tsxIdx).trim();
     tsx = clean.slice(tsxIdx + tsxMarker.length).trim();
 
-    // Strip code fences from narration block
     let narrationJson = narrationBlock;
     if (narrationJson.startsWith('```')) {
       narrationJson = narrationJson.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '');
@@ -74,10 +83,8 @@ function parseSceneCoderOutput(text) {
       narration = [];
     }
   } else if (tsxIdx !== -1) {
-    // Only TSX marker — no narration
     tsx = clean.slice(tsxIdx + tsxMarker.length).trim();
   } else {
-    // No markers — treat entire output as TSX (fallback)
     tsx = clean;
   }
 
@@ -85,14 +92,12 @@ function parseSceneCoderOutput(text) {
   if (tsx.startsWith('```')) {
     tsx = tsx.replace(/^```(?:tsx|typescript|typescriptreact|ts|jsx|react|js|javascript)?\s*\n?/, '').replace(/\n?```\s*$/, '');
   }
-  // Strip trailing markers/fences
   tsx = tsx.replace(/\n---[\w_]*---\s*$/, '').replace(/\n```\s*$/, '').replace(/\n---\s*$/, '').trimEnd();
 
-  // Strip preamble before first import
   const importIdx = tsx.search(/^(?:import|\/\*\*?|\/\/|export)/m);
   if (importIdx > 0) tsx = tsx.slice(importIdx).trim();
 
-  return { narration, tsx };
+  return { narration, assets, tsx };
 }
 
 export async function sceneCoderNode(state) {
@@ -132,12 +137,15 @@ export async function sceneCoderNode(state) {
     height: CANVAS.height,
   });
 
-  // Single-pass LLM call
-  const model = new ChatGoogleGenerativeAI({
+  // Single-pass LLM call via OpenRouter
+  const model = new ChatOpenAI({
     model: MODELS.sceneCoder,
-    apiKey: KEYS.gemini,
-    maxOutputTokens: 32768,
+    apiKey: KEYS.openrouter,
+    maxTokens: 32768,
     temperature: 0.7,
+    configuration: {
+      baseURL: 'https://openrouter.ai/api/v1',
+    },
   });
 
   // Retry with timeout: up to 2 attempts, 5 min each
@@ -180,7 +188,7 @@ export async function sceneCoderNode(state) {
   console.log(`    [${MODELS.sceneCoder}] ${usage?.input_tokens || '?'} in / ${usage?.output_tokens || '?'} out`);
 
   // Parse structured output
-  const { narration, tsx } = parseSceneCoderOutput(rawText);
+  const { narration, assets, tsx } = parseSceneCoderOutput(rawText);
 
   if (!tsx) {
     console.error(`    Scene ${sceneNumber}: empty TSX returned`);
@@ -205,6 +213,10 @@ export async function sceneCoderNode(state) {
   }
   console.log(`    Duration: ${durationFrames} frames (${durationSec.toFixed(1)}s) — will adjust to TTS audio`);
   console.log(`    TSX: ${tsx.length} chars`);
+  if (assets.length > 0) {
+    console.log(`    Assets requested: ${assets.length}`);
+    for (const a of assets) console.log(`      - [${a.type}] ${a.id}: ${(a.prompt || '').slice(0, 60)}...`);
+  }
 
   // Write scene file for debugging
   const scenesDir = path.join(state.outputDir, 'remotion', 'src', 'scenes');
@@ -228,5 +240,6 @@ export async function sceneCoderNode(state) {
       durationFrames,
       narrationSegments: narration,
     }],
+    assetManifest: assets,
   };
 }

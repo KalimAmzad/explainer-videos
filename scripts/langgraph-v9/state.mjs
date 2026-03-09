@@ -1,9 +1,9 @@
 /**
- * LangGraph v9 state schema — Scene-Coder-First Pipeline.
+ * LangGraph v9 state schema — Scene-Coder-First Pipeline (Single Pass).
  *
  * Flow:
  *   START → content_planner
- *         → [scene_coder × N] (creative brain: TSX + narration script)
+ *         → [scene_coder × N] (Sonnet 4.6: TSX + narration, single pass)
  *         → merge_scenes
  *         → [tts_generator × N] (audio from scene coder's narration)
  *         → merge_tts
@@ -31,13 +31,13 @@ export const VideoState = Annotation.Root({
 
   // Content Planner output
   theme:    Annotation({ reducer: replace, default: () => null }),
-  scenes:   Annotation({ reducer: replace, default: () => [] }),  // [{sceneNumber, title, concepts, keyPoints, estimatedDuration}]
+  scenes:   Annotation({ reducer: replace, default: () => [] }),
 
-  // Scene Coder (fan-in via concatReducer) — first draft
+  // Scene Coder (fan-in via concatReducer)
   compiledScenes: Annotation({ reducer: concatReducer, default: () => [] }),
 
-  // Critic-Reviser (fan-in via concatReducer) — improved version
-  revisedScenes: Annotation({ reducer: concatReducer, default: () => [] }),
+  // Asset manifest (fan-in from scene coders)
+  assetManifest: Annotation({ reducer: concatReducer, default: () => [] }),
 
   // TTS Generator (fan-in via concatReducer)
   narrations: Annotation({ reducer: concatReducer, default: () => [] }),
