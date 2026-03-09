@@ -23,10 +23,10 @@ const env = loadEnv();
 
 export const MODELS = {
   themeDesigner:   'claude-haiku-4-5-20251001',
-  researchPlanner: 'moonshotai/kimi-k2.5', // OpenRouter
+  researchPlanner: 'qwen/qwen3.5-35b-a3b', // OpenRouter
   assetSvgGen:     'claude-haiku-4-5-20251001',
   imageGen:        'gemini-3.1-flash-image-preview',
-  sceneComposer:   'moonshotai/kimi-k2.5', // OpenRouter
+  sceneComposer:   'qwen/qwen3.5-35b-a3b', // OpenRouter
   tts:             'gemini-2.5-flash-preview-tts',
 };
 

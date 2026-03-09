@@ -16,7 +16,10 @@ export async function researchPlannerNode(state) {
     model: MODELS.researchPlanner,
     apiKey: KEYS.openrouter,
     configuration: { baseURL: OPENROUTER_BASE_URL },
-    maxTokens: 4096,
+    maxTokens: 32768,
+    temperature: 0.7,
+    // Disable extended thinking for Qwen3 thinking models on OpenRouter
+    model_kwargs: { enable_thinking: false },
   });
 
   const prompt = buildResearchPlannerPrompt({
@@ -31,10 +34,19 @@ export async function researchPlannerNode(state) {
     ? response.content
     : response.content.map(c => c.text || '').join('');
 
+  // Strip <think>...</think> blocks (Qwen3 thinking models)
+  text = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+
   // Strip markdown fences
-  text = text.trim();
   if (text.startsWith('```')) {
     text = text.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '');
+  } else {
+    // Find first JSON object/array (handles thinking preamble without tags)
+    const jsonStart = text.search(/[{[]/);
+    if (jsonStart > 0) text = text.slice(jsonStart);
+    // Strip any trailing text after closing brace/bracket
+    const lastClose = Math.max(text.lastIndexOf('}'), text.lastIndexOf(']'));
+    if (lastClose !== -1) text = text.slice(0, lastClose + 1);
   }
 
   const usage = response.usage_metadata;
