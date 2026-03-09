@@ -303,6 +303,9 @@ function sanitizeTSX(tsx) {
     return `style={{${deduped.join('\n')}}}`;
   });
 
+  // Fix unquoted CSS unit values: fontSize: 2rem → fontSize: '2rem'
+  out = out.replace(/:\s*(\d+(?:\.\d+)?)(rem|em|vh|vw|%)(\s*[,}\)])/g, ": '$1$2'$3");
+
   // Remove unused google-fonts imports (LLM often imports all example fonts)
   out = out.replace(/import\s*\{\s*loadFont\s+as\s+(\w+)\s*\}\s*from\s*'@remotion\/google-fonts\/[^']+';?\n?/g, (match, alias) => {
     // Check if the alias is used elsewhere in the code (beyond the import itself)

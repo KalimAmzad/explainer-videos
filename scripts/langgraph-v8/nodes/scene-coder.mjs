@@ -64,7 +64,7 @@ export async function sceneCoderNode(state) {
   const durationFrames = Math.round((narrationDuration + 0.5) * CANVAS.fps);
 
   console.log(`    Duration: ${narrationDuration.toFixed(1)}s narration → ${durationFrames} frames`);
-  console.log(`    Layout: ${sceneSpec.layout}`);
+  if (sceneSpec.layout) console.log(`    Layout: ${sceneSpec.layout}`);
   console.log(`    Assets: ${(sceneSpec.assets || []).map(a => a.id).join(', ')}`);
 
   // Build prompt with storyboard spec + resolved assets
@@ -91,27 +91,36 @@ export async function sceneCoderNode(state) {
     model_kwargs: { enable_thinking: false },
   });
 
-  // Timeout: abort if model takes longer than 4 minutes
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 240_000);
+  // Retry with timeout: up to 2 attempts, 4 min each
   let response;
-  try {
-    response = await model.invoke(
-      [new SystemMessage(system), new HumanMessage(user)],
-      { signal: controller.signal },
-    );
-  } catch (err) {
-    clearTimeout(timeoutId);
-    if (err.name === 'AbortError' || err.message?.includes('aborted')) {
-      console.error(`    Scene ${sceneNumber}: LLM call timed out (4 min)`);
-      return {
-        compiledScenes: [{ sceneNumber, tsxContent: '', durationFrames, error: 'timeout' }],
-        errors: [`scene-coder [Scene ${sceneNumber}]: timed out`],
-      };
+  const MAX_ATTEMPTS = 2;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 240_000);
+    try {
+      response = await model.invoke(
+        [new SystemMessage(system), new HumanMessage(user)],
+        { signal: controller.signal },
+      );
+      clearTimeout(timeoutId);
+      break; // success
+    } catch (err) {
+      clearTimeout(timeoutId);
+      const isTimeout = err.name === 'AbortError' || err.message?.includes('aborted');
+      if (isTimeout && attempt < MAX_ATTEMPTS) {
+        console.log(`    Scene ${sceneNumber}: attempt ${attempt} timed out, retrying in 5s...`);
+        await new Promise(r => setTimeout(r, 5000));
+        continue;
+      }
+      if (isTimeout) {
+        console.error(`    Scene ${sceneNumber}: LLM call timed out after ${MAX_ATTEMPTS} attempts`);
+        return {
+          compiledScenes: [{ sceneNumber, tsxContent: '', durationFrames, error: 'timeout' }],
+          errors: [`scene-coder [Scene ${sceneNumber}]: timed out (${MAX_ATTEMPTS} attempts)`],
+        };
+      }
+      throw err;
     }
-    throw err;
-  } finally {
-    clearTimeout(timeoutId);
   }
 
   let rawText = typeof response.content === 'string'

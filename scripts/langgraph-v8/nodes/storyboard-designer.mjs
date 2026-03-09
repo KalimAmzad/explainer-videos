@@ -62,7 +62,7 @@ export async function storyboardDesignerNode(state) {
   console.log(`    Storyboard: ${scenes.length} scenes, ${totalAssets} total assets`);
   for (const s of scenes) {
     const assetSummary = (s.assets || []).map(a => `${a.id}(${a.type})`).join(', ');
-    console.log(`      Scene ${s.scene_number}: layout="${s.layout}", assets=[${assetSummary}]`);
+    console.log(`      Scene ${s.scene_number}: assets=[${assetSummary}]`);
   }
 
   // Save storyboard for debugging

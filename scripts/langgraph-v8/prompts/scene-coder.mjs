@@ -1,8 +1,9 @@
 /**
  * v8 Scene Coder prompt — single-pass TSX generation.
  *
- * Given a complete storyboard spec + resolved assets + narration timing,
- * writes one Remotion TSX component. NO TOOLS, NO AGENT LOOP.
+ * Given storyboard spec + resolved assets + narration timing,
+ * writes one Remotion TSX component with FULL creative freedom on layout.
+ * NO TOOLS, NO AGENT LOOP.
  */
 
 export function buildSceneCoderPrompt({
@@ -23,7 +24,6 @@ export function buildSceneCoderPrompt({
   const pointCount = Math.max(1, teachingPoints.length);
   const beatFrames = Math.max(30, Math.floor(narrationFrames / pointCount));
 
-  // Build resolved asset mapping
   const assetLines = (sceneSpec.assets || []).map(a => {
     const resolved = resolvedAssets.find(r => r.id === a.id);
     if (resolved?.status === 'ok') {
@@ -32,206 +32,166 @@ export function buildSceneCoderPrompt({
     return `- ${a.id} → FAILED (use emoji fallback) ❌`;
   }).join('\n');
 
-  const system = `You are an expert Remotion developer producing premium animated infographic course videos. You receive a complete visual storyboard and write a single Scene component — no creative decisions needed, just precise implementation.
+  const system = `You are an expert Remotion motion-graphics developer. You produce premium animated infographic scenes that feel like Kurzgesagt / Linear.app — NOT static slides.
 
-## REMOTION BEST PRACTICES (from official docs)
+You have FULL creative freedom on layout and spatial design. The storyboard tells you WHAT to show; you decide WHERE and HOW.
 
-### Critical Rules
-- ALL animations MUST be driven by \`useCurrentFrame()\` — CSS transitions/animations are FORBIDDEN
-- ALWAYS use \`<Img>\` from 'remotion' for images, NEVER native \`<img>\` or CSS background-image
-- ALWAYS use \`staticFile()\` from 'remotion' to reference files in public/ folder
-- ALWAYS clamp interpolate: \`{ extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }\`
-- Spring default config has bounce. For smooth motion without bounce use: \`{ damping: 200 }\`
-- For snappy UI: \`{ damping: 20, stiffness: 200 }\`. For bouncy: \`{ damping: 8 }\`
-- \`<Sequence>\` children get LOCAL frames (starting from 0), not global frames
-- Google Fonts: \`const { fontFamily } = loadFont();\` — call at TOP LEVEL, use fontFamily in styles. Only import fonts you use.
+## IMPORTS
 
-### Imports — ONLY import what you need
 \`\`\`tsx
-// Core (always needed)
+// Core
+import React from 'react';
 import { useCurrentFrame, useVideoConfig, interpolate, spring, Sequence, AbsoluteFill, staticFile, Img } from 'remotion';
-// Transitions (optional — only if using TransitionSeries)
-import { TransitionSeries, springTiming } from '@remotion/transitions';
-import { fade } from '@remotion/transitions/fade';
-// Google Fonts — remove hyphens: "Space Grotesk" → "SpaceGrotesk", "DM Sans" → "DMSans"
+// Google Fonts — PascalCase, no hyphens: "Space Grotesk" → "SpaceGrotesk"
 import { loadFont } from '@remotion/google-fonts/Inter';
+// Template components (import any you need)
+import { AnimatedCounter } from '../components/AnimatedCounter';
+import { FloatingElement } from '../components/FloatingElement';
+import { ProgressRing } from '../components/ProgressRing';
 \`\`\`
 
-## TIMING HELPER
+## TEMPLATE COMPONENTS
+
+**AnimatedCounter** — counts from 0 to target value
+\`\`\`tsx
+<AnimatedCounter value={67} suffix="%" startFrame={t(1.5)} style={{ fontSize: 72, fontWeight: 900, color: '#818cf8' }} />
+\`\`\`
+
+**FloatingElement** — continuous hover motion (makes icons ALIVE, not static)
+\`\`\`tsx
+<FloatingElement amplitude={6} period={3} phase={0.2} startFrame={t(1)}>
+  <Img src={staticFile('assets/icon.png')} style={{ width: 48, height: 48 }} />
+</FloatingElement>
+\`\`\`
+
+**ProgressRing** — animated circular progress
+\`\`\`tsx
+<ProgressRing value={85} size={120} color="#818cf8" startFrame={t(2)} />
+\`\`\`
+
+## TIMING
+
 \`\`\`tsx
 const { fps, durationInFrames } = useVideoConfig();
 const frame = useCurrentFrame();
 const t = (sec: number) => Math.round(sec * fps);
 \`\`\`
 
-## ANIMATION IMPLEMENTATIONS
+## ANIMATION PATTERNS
 
-### wipe_reveal (for titles/text)
+### Text wipe reveal
 \`\`\`tsx
-const titleWipe = interpolate(frame, [t(delay), Math.max(t(delay)+1, t(delay + 0.6))], [0, 100], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
-<div style={{ clipPath: \`inset(0 \${100 - titleWipe}% 0 0)\` }}>
-  <h1>Title</h1>
+const wipe = interpolate(frame, [t(delay), Math.max(t(delay)+1, t(delay+0.6))], [0, 100], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+<div style={{ clipPath: \`inset(0 \${100-wipe}% 0 0)\` }}><h1>Title</h1></div>
+\`\`\`
+
+### Spring slide (cards, staggered)
+\`\`\`tsx
+const s = spring({ frame: Math.max(0, frame - t(delay)), fps, config: { damping: 20, stiffness: 220 } });
+<div style={{ opacity: s, transform: \`translateY(\${(1-s)*40}px)\` }}>{/* card */}</div>
+\`\`\`
+
+### Bounce pop (stats)
+\`\`\`tsx
+const pop = spring({ frame: Math.max(0, frame - t(delay)), fps, config: { damping: 8, stiffness: 200 } });
+<div style={{ transform: \`scale(\${pop})\` }}><AnimatedCounter value={40} suffix="%" startFrame={t(delay)} /></div>
+\`\`\`
+
+### Hero image fade-scale
+\`\`\`tsx
+const hero = spring({ frame: Math.max(0, frame - t(delay)), fps, config: { damping: 14, stiffness: 180 } });
+<div style={{ opacity: hero, transform: \`scale(\${0.85 + 0.15*hero})\` }}>
+  <Img src={staticFile('assets/hero.png')} style={{ width: 400, borderRadius: 24 }} />
 </div>
 \`\`\`
 
-### spring_slide (for cards/items, staggered)
+### Pulsing glow (background)
 \`\`\`tsx
-const s = spring({ frame: Math.max(0, frame - delay), fps, config: { damping: 20, stiffness: 220 } });
-<div style={{ opacity: s, transform: \`translateY(\${(1-s)*32}px)\` }}>
-  {/* card content */}
-</div>
+const pulse = Math.sin(frame / fps * 1.2) * 0.12 + 0.88;
+<div style={{ position: 'absolute', left: '10%', top: '20%', width: 500, height: 400, borderRadius: '50%',
+  background: \`\${color}18\`, filter: 'blur(100px)', opacity: pulse }} />
 \`\`\`
 
-### fade_scale (for hero images)
+### Draw-on underline
 \`\`\`tsx
-const heroS = spring({ frame: Math.max(0, frame - t(delay)), fps, config: { damping: 14, stiffness: 180 } });
-<div style={{ opacity: heroS, transform: \`scale(\${0.7 + 0.3 * heroS})\` }}>
-  <Img src={staticFile('assets/hero.png')} style={{ width: 220, height: 220, borderRadius: 32 }} />
-</div>
+const draw = interpolate(frame, [t(delay), Math.max(t(delay)+1, t(delay+0.8))], [0, 100], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+<div style={{ height: 3, width: \`\${draw}%\`, background: \`linear-gradient(to right, \${color1}, \${color2})\`, borderRadius: 2 }} />
 \`\`\`
 
-### pop (for stats/icons)
+## DESIGN GUIDELINES
+
+### Canvas: ${width}×${height}
+- Safe margins: 80px sides, 56px top, 100px bottom (for bottom bar)
+- Dark background with 2-3 pulsing glow orbs (use theme colors with low alpha)
+- Top accent strip: 3px gradient bar
+
+### Cards (glassmorphism)
 \`\`\`tsx
-const popS = spring({ frame: Math.max(0, frame - t(delay)), fps, config: { damping: 10, stiffness: 200 } });
-<div style={{ transform: \`scale(\${popS})\` }}>
-  <span style={{ fontSize: 96, fontWeight: 900 }}>67%</span>
-</div>
+background: \`linear-gradient(135deg, \${color}15, \${color}05)\`,
+border: \`1px solid \${color}25\`, borderRadius: 16,
+padding: '16px 20px', boxShadow: \`0 8px 32px \${color}12\`,
 \`\`\`
 
-### fade_up (for bottom bar)
-\`\`\`tsx
-const barDelay = Math.round(durationInFrames * 0.7);
-const barS = spring({ frame: Math.max(0, frame - barDelay), fps, config: { damping: 20 } });
-<div style={{ opacity: barS, transform: \`translateY(\${(1-barS)*24}px)\` }}>
-  {/* bottom bar */}
-</div>
-\`\`\`
+### Bottom bar (MANDATORY every scene)
+- Position: absolute, bottom: 28, left/right: 80
+- Spring slide up at ~72% of duration
+- Emoji + takeaway text
 
-## PREMIUM DESIGN PATTERNS
+### Progress bar (MANDATORY)
+- Bottom: 0, full width, height: 4, fills left→right over duration
 
-### Background (always use — dark with glowing radials)
-\`\`\`tsx
-<AbsoluteFill style={{
-  background: \`
-    radial-gradient(ellipse 700px 500px at 15% 50%, \${theme.palette.primary}22 0%, transparent 70%),
-    radial-gradient(ellipse 500px 400px at 85% 20%, \${theme.palette.accent1}18 0%, transparent 65%),
-    \${theme.background}
-  \`,
-  overflow: 'hidden',
-}}>
-  {/* Top gradient accent strip */}
-  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3,
-    background: \`linear-gradient(to right, \${theme.palette.primary}, \${theme.palette.accent1}, \${theme.palette.secondary})\` }} />
-\`\`\`
+## MOTION GRAPHICS RULES
 
-### Glassmorphism card
-\`\`\`tsx
-<div style={{
-  background: \`linear-gradient(135deg, \${color}18, \${color}08)\`,
-  border: \`1px solid \${color}30\`,
-  borderRadius: 20, padding: '28px 20px',
-  boxShadow: \`0 8px 32px \${color}20, inset 0 1px 0 \${color}20\`,
-}}>
-\`\`\`
+1. **STAGGER everything** — cards appear one-by-one (0.3-0.5s apart), never simultaneously
+2. **FloatingElement on ALL icons** — every icon must float gently with different phases
+3. **AnimatedCounter for numbers** — "40%" counts from 0, never appears as static text
+4. **Continuous background motion** — pulsing glow orbs throughout entire duration
+5. **Spring bounce on key moments** — stats/numbers pop in with bounce (damping: 8)
+6. **Draw-on accents** — underlines and dividers animate left-to-right
+7. **NO OVERLAPPING CONTENT** — use flex containers with gap for repeated items. Never position two text blocks at the same coordinates.
 
-### Title zone (MANDATORY — always top-left)
-\`\`\`tsx
-<div style={{ position: 'absolute', left: 80, top: 64, width: 580 }}>
-  {/* Badge → Title → Subtitle → Accent underline */}
-</div>
-\`\`\`
+## LAYOUT FREEDOM
 
-### Bottom bar (MANDATORY — every scene)
-\`\`\`tsx
-<div style={{
-  position: 'absolute', bottom: 24, left: 80, right: 80, borderRadius: 16,
-  background: \`linear-gradient(135deg, \${theme.palette.primary}28, \${theme.palette.accent1}18)\`,
-  border: \`1px solid \${theme.palette.primary}40\`,
-  padding: '18px 28px', display: 'flex', alignItems: 'center', gap: 16,
-}}>
-  <span style={{ fontSize: '1.5rem' }}>💡</span>
-  <span style={{ fontFamily: theme.primaryFont, fontSize: 17, color: theme.palette.text }}>
-    Key takeaway text
-  </span>
-</div>
-\`\`\`
+You own the spatial design. Use any arrangement that best serves the content:
+- Flex column for card lists (with gap: 14+)
+- Flex row for process flows
+- Absolute positioning for hero images and decorative elements
+- Grid for equal-weight items
+- **Just ensure nothing overlaps and everything has breathing room**
 
-### Progress bar (MANDATORY — bottom edge)
-\`\`\`tsx
-<div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 4,
-  background: theme.palette.primary,
-  width: \`\${interpolate(frame, [0, Math.max(1, durationInFrames)], [0, 100], { extrapolateRight: 'clamp' })}%\` }} />
-\`\`\`
-
-## LAYOUT RULES (non-negotiable)
-
-1. **Canvas: ${width}×${height}** — safe padding: 80px left/right, 60px top, 100px bottom (for bottom bar)
-2. **Title zone**: position absolute, left:80, top:56, maxWidth:500. Badge → Title → Subtitle stacked.
-3. **NEVER use absolute positioning for content blocks/cards** — use a FLEX COLUMN container:
-\`\`\`tsx
-{/* Content cards — ALWAYS use flexbox, NEVER absolute position cards */}
-<div style={{
-  position: 'absolute', left: 80, top: 210, width: 520,
-  display: 'flex', flexDirection: 'column', gap: 14,
-}}>
-  {contentBlocks.map((block, i) => {
-    const delay = t(0.8 + i * 0.3);
-    const s = spring({ frame: Math.max(0, frame - delay), fps, config: { damping: 20, stiffness: 220 } });
-    return (
-      <div key={i} style={{
-        opacity: s, transform: \`translateY(\${(1-s)*32}px)\`,
-        background: \`linear-gradient(135deg, \${block.color}18, \${block.color}08)\`,
-        border: \`1px solid \${block.color}30\`, borderRadius: 16,
-        padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14,
-      }}>
-        {block.icon && <Img src={block.icon} style={{ width: 36, height: 36 }} />}
-        <span style={{ color: theme.palette.text, fontSize: 16, fontFamily }}>{block.text}</span>
-      </div>
-    );
-  })}
-</div>
-\`\`\`
-4. **Right panel** (for split/comparison layouts): position absolute, left:680, top:80, width:520, height:520. Center hero images or icon grids inside.
-5. **Process-flow layout**: Use a horizontal flex row centered in the canvas (top:180, left:80, right:80), with arrows between steps. Each step is a vertical card (icon + label).
-6. **Grid layouts**: Use CSS grid or flex-wrap with explicit gap. Never stack items at the same position.
-7. **Bottom bar at bottom:24**: ALWAYS present, position absolute
-8. **Persistence**: once animated in, items STAY visible. Never set durationInFrames on inner Sequences shorter than the scene.
-9. **CRITICAL — NO OVERLAPPING**: Every visible element must occupy its own space. Use flex layouts with gap, not absolute positioning for repeated items.
-
-## STRICT RULES — BREAKING THESE CAUSES CRASHES
+## CRASH PREVENTION
 
 | Rule | Correct | Wrong |
 |------|---------|-------|
-| interpolate range | \`[0, Math.max(1, n)]\` | \`[0, 0]\` (crashes) |
-| Sequence duration | \`Math.max(1, dur - from)\` | zero or negative |
-| spring frame | \`Math.max(0, frame - start)\` | negative frame |
-| CSS transitions | ❌ never \`transition:\` | use spring/interpolate |
-| Background in interpolate | ❌ string colors crash | use ternary or direct value |
-| Duplicate CSS keys | ❌ two \`transform:\` | merge into one string |
-| File start | First line must be \`import\` | no preamble text |
-| Export name | \`export const Scene${sceneNumber}\` | any other name |
-| Emoji | \`<span style={{fontSize:'2.5rem'}}>🔥</span>\` | never AnimatedEmoji |
-| spring() | always include \`frame:\` | \`spring({ fps })\` crashes |
-| google-fonts | \`/Inter\` (capital) | \`/inter\` (lowercase, fails) |
+| interpolate range | \`[0, Math.max(1, n)]\` | \`[0, 0]\` crashes |
+| spring frame | \`Math.max(0, frame - x)\` | negative frame |
+| CSS transitions | ❌ NEVER | use spring/interpolate |
+| Colors in interpolate | ❌ strings crash | use direct value |
+| Duplicate CSS keys | merge transforms | two \`transform:\` breaks |
+| First line | \`import\` | no preamble text |
+| Export name | \`export const Scene${sceneNumber}\` | wrong name |
+| Emoji | \`<span style={{fontSize:'2rem'}}>🔥</span>\` | never AnimatedEmoji |
+| spring() | must include \`frame:\` | \`spring({ fps })\` crashes |
+| google-fonts | \`/SpaceGrotesk\` | \`/Space-Grotesk\` |
+| Images | \`<Img>\` from remotion | native \`<img>\` |
+| Assets | \`staticFile()\` from remotion | string paths |
 
-Output ONLY the TSX code. No explanation, no markdown fences.`;
+Output ONLY TSX code. No explanation, no markdown fences.`;
 
   const user = `## Scene ${sceneNumber} of ${totalScenes}
 
-### Storyboard Spec
+### Storyboard
 \`\`\`json
 ${JSON.stringify(sceneSpec, null, 2)}
 \`\`\`
 
-### Resolved Assets
+### Assets
 ${assetLines || '(no assets)'}
 
 ### Timing
-- Narration: ${narrationDuration.toFixed(1)}s → ${narrationFrames} frames
-- Total: ${totalFrames} frames (narration + 0.5s buffer)
+- Duration: ${narrationDuration.toFixed(1)}s → ${totalFrames} frames (${fps} fps)
 - Beat: ~${beatFrames} frames per teaching point
-- FPS: ${fps}
-${hasNarrationFile ? `- Audio: staticFile('assets/narration_scene${sceneNumber}.wav')` : '- No narration audio'}
+${hasNarrationFile ? `- Audio: staticFile('assets/narration_scene${sceneNumber}.wav')` : '- No audio'}
 
 ### Theme
 \`\`\`json
@@ -239,18 +199,18 @@ ${JSON.stringify(theme, null, 2)}
 \`\`\`
 
 ### Task
-Implement this scene as \`export const Scene${sceneNumber}: React.FC = () => { ... }\`
+Write \`export const Scene${sceneNumber}: React.FC = () => { ... }\`
 
-Follow the storyboard EXACTLY:
-- Use the specified layout ("${sceneSpec.layout}")
-- Place assets at their designated positions using resolved paths above
-- Implement each animation as specified in the storyboard
-- Include all content_blocks with correct text and colors
-- Add the bottom bar with emoji and takeaway text
-- Add progress bar at bottom edge
-- If an asset is marked FAILED, use a native emoji span as fallback
+You have full creative freedom on layout. Make it feel like premium motion graphics:
+- Wrap every icon in FloatingElement
+- Use AnimatedCounter for any numbers/stats
+- Stagger all card entrances
+- Pulsing background glows
+- Bottom bar + progress bar
+- NO overlapping content — use flex with gap
+- If an asset is FAILED, use a native emoji span
 
-Output ONLY TSX code.`;
+Output ONLY TSX.`;
 
   return { system, user };
 }
